@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "start": "DEBUG=express-lambda node ./bin/www",
-    "start:dev": "nodemon ./bin/www",
+    "start:dev": "nodemon --inspect --inspect-brk ./bin/www",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/unit/*.test.js",
-    "test-integration": "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/integration/*.test.js"
+    "test-integration":
+      "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/integration/*.test.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "engines": {
     "node": "6.10"
