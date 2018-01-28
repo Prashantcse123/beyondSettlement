@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
@@ -11,9 +11,22 @@ const users = require("./routes/users");
 
 const app = express();
 
+const config = {
+  token: process.env.SPLUNK_TOKEN,
+  url: process.env.SPLUNK_URL
+};
+
+const splunkStream = splunkBunyan.createStream(config);
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger("dev"));
+app.use(
+  require("express-bunyan-logger")({
+    name: "logger",
+    streams: [splunkStream]
+  })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

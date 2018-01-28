@@ -1,10 +1,10 @@
 module.exports = {
   development: {
     dialect: "postgres",
-    username: "",
-    password: "",
+    username: "docker",
+    password: "docker",
     database: "todos_development",
-    host: "127.0.0.1",
+    host: "db",
     port: "5432"
   },
   test: {
@@ -12,7 +12,7 @@ module.exports = {
     username: "",
     password: "",
     database: "todos_test",
-    host: "127.0.0.1",
+    host: "db",
     port: "5432"
   }
 };
