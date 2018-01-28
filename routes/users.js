@@ -1,39 +1,40 @@
-const models = require("../models");
-const express = require("express");
+const models = require('../models');
+const express = require('express');
+
 const router = express.Router();
 
-router.post("/", (req, res) => {
+router.post('/', (req, res) => {
   models.User.create({
-    username: req.body.username
-  }).then(user => {
+    username: req.body.username,
+  }).then((user) => {
     res.status(201).json(user);
   });
 });
 
-router.delete("/:userId", (req, res) => {
+router.delete('/:userId', (req, res) => {
   models.User.destroy({
     where: {
-      id: req.params.userId
-    }
+      id: req.params.userId,
+    },
   }).then(() => {
     res.status(204).json();
   });
 });
 
-router.post("/:userId/tasks", (req, res) => {
+router.post('/:userId/tasks', (req, res) => {
   models.Task.create({
     title: req.body.title,
-    UserId: req.params.userId
-  }).then(task => {
+    UserId: req.params.userId,
+  }).then((task) => {
     res.status(201).json(task);
   });
 });
 
-router.delete("/:userId/tasks/:taskId", (req, res) => {
+router.delete('/:userId/tasks/:taskId', (req, res) => {
   models.Task.destroy({
     where: {
-      id: req.params.taskId
-    }
+      id: req.params.taskId,
+    },
   }).then(() => {
     res.status(204).json();
   });
