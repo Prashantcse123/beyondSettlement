@@ -1,5 +1,7 @@
 FROM node:6-alpine
 
+RUN apk add -U python
+
 # Install git
 RUN apk add --no-cache git
 

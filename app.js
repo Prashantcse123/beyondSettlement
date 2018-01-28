@@ -5,6 +5,7 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const splunkBunyan = require('splunk-bunyan-logger');
 
 const routes = require('./routes/api/v1/index');
 const users = require('./routes/api/v1/users');
