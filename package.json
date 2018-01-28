@@ -7,10 +7,10 @@
     "start:dev": "nodemon --inspect --inspect-brk ./bin/www",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/unit/*.test.js",
-    "test-integration":
-      "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/integration/*.test.js",
+    "test-integration": "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/integration/*.test.js",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "security-check": "nsp check"
   },
   "engines": {
     "node": "6.10"
@@ -39,6 +39,7 @@
     "expect.js": "^0.3.1",
     "mocha": "^3.0.2",
     "nodemon": "^1.14.11",
+    "nsp": "^3.1.0",
     "supertest": "^2.0.0"
   }
 }
