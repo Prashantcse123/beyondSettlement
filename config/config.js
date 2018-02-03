@@ -1,11 +1,11 @@
 module.exports = {
   development: {
     dialect: 'postgres',
-    username: 'docker',
-    password: 'docker',
-    database: 'todos_development',
-    host: 'db',
-    port: '5432',
+    username: 'postgres',
+    password: 'pass',
+    database: 'beyond_settlements',
+    host: 'localhost',
+    port: '5433',
   },
   test: {
     dialect: 'postgres',

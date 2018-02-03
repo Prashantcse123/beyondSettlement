@@ -7,8 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const splunkBunyan = require('splunk-bunyan-logger');
 
-const routes = require('./routes/api/v1/index');
-const users = require('./routes/api/v1/users');
+const api = require('./routes/api');
 
 const app = express();
 
@@ -17,22 +16,24 @@ const config = {
   url: process.env.SPLUNK_URL,
 };
 
-const splunkStream = splunkBunyan.createStream(config);
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app.use(require('express-bunyan-logger')({
-  name: 'logger',
-  streams: [splunkStream],
-}));
+if (process.env.NODE_ENV === 'production') {
+  const splunkStream = splunkBunyan.createStream(config);
+  app.use(require('express-bunyan-logger')({
+    name: 'logger',
+    streams: [splunkStream],
+  }));
+}
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('api/v1/', routes);
-app.use('api/v1/users', users);
+// api
+app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
