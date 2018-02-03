@@ -11,6 +11,7 @@ docker-compose build
 ### Run
 ```
 docker-compose run --rm app node_modules/.bin/sequelize db:create
+docker-compose run --rm app node_modules/.bin/sequelize db:migrate
 docker-compose up app
 ```
 
