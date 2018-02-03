@@ -1,5 +1,20 @@
 # Express Lambda
 
+
+## Run with Docker
+
+### Install 
+```
+docker-compose build
+```
+
+### Run
+```
+docker-compose run --rm app node_modules/.bin/sequelize db:create
+docker-compose up app
+```
+
+
 ## Starting App
 
 ```
