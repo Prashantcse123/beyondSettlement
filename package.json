@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "DEBUG=express-lambda node www",
-    "start:dev": "nodemon www",
+    "start:dev": "node www.js",
     "start:inspect": "nodemon --inspect --inspect-brk www",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/unit/*.test.js",
