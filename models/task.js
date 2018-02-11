@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
       foreignKey: {
         allowNull: false,
+        name: 'userId',
       },
     });
   };
