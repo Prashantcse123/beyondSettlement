@@ -1,8 +1,6 @@
 const express = require('express');
-
 const router = express.Router();
-const users = require('./users');
-const migrate = require('./migrate');
+const states = require('./states');
 
 router.get('/', (req, res) => {
   res.json([
@@ -11,14 +9,12 @@ router.get('/', (req, res) => {
       firstName: 'Bob',
       lastName: 'Smith',
       email: 'bob@gmail.com',
-    },
-    {
+    }, {
       id: 2,
       firstName: 'Tammy',
       lastName: 'Norton',
       email: 'tnorton@yahoo.com',
-    },
-    {
+    }, {
       id: 3,
       firstName: 'Tina',
       lastName: 'Lee',
@@ -27,7 +23,6 @@ router.get('/', (req, res) => {
   ]);
 });
 
-router.use('/users', users);
-router.use('/migrate', migrate);
+router.use('/states', states);
 
 module.exports = router;
