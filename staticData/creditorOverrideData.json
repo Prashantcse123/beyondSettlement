@@ -2,7 +2,7 @@
  {
    "creditorName": "Wells Fargo",
    "productTypeName": "Credit cards",
-   "accountNumberFlag": 1,
+   "accountNumberFlag": true,
    "rangeFlag": null,
    "concat": "Wells Fargo1",
    "prePctSettlementRate": 0.6,
@@ -15,7 +15,7 @@
  {
    "creditorName": "Wells Fargo",
    "productTypeName": "loans",
-   "accountNumberFlag": 0,
+   "accountNumberFlag": false,
    "rangeFlag": null,
    "concat": "Wells Fargo0",
    "prePctSettlementRate": 10000,
@@ -28,7 +28,7 @@
  {
    "creditorName": "Discover",
    "productTypeName": "Credit cards",
-   "accountNumberFlag": 1,
+   "accountNumberFlag": true,
    "rangeFlag": null,
    "concat": "Discover1",
    "prePctSettlementRate": 0.5,
@@ -41,7 +41,7 @@
  {
    "creditorName": "Discover",
    "productTypeName": "loans",
-   "accountNumberFlag": 0,
+   "accountNumberFlag": false,
    "rangeFlag": null,
    "concat": "Discover0",
    "prePctSettlementRate": 10000,
@@ -54,7 +54,7 @@
  {
    "creditorName": "Us bank",
    "productTypeName": "Credit cards",
-   "accountNumberFlag": 1,
+   "accountNumberFlag": true,
    "rangeFlag": null,
    "concat": "Us bank1",
    "prePctSettlementRate": 0.5,
@@ -67,7 +67,7 @@
  {
    "creditorName": "Us bank",
    "productTypeName": "loans",
-   "accountNumberFlag": 0,
+   "accountNumberFlag": false,
    "rangeFlag": null,
    "concat": "Us bank0",
    "prePctSettlementRate": 10000,

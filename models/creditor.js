@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Creditor = sequelize.define('Creditor', {
-    creditorName: DataTypes.STRING,
+    name: DataTypes.STRING,
     preAvgPctSettlement: DataTypes.INTEGER,
     preSettlementTerm: DataTypes.INTEGER,
     preMinPay: DataTypes.INTEGER,
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Creditor.associate = function (models) {
     models.Creditor.hasMany(models.Account, {foreignKey: 'creditorId'});
-    models.Creditor.hasMany(models.CreditorOverride, {foreignKey: 'creditorId'});
+    // models.Creditor.hasMany(models.CreditorOverride, {foreignKey: 'creditorId'});
   };
 
   return Creditor;
