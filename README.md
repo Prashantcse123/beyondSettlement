@@ -40,7 +40,7 @@ described. You can find those files in the repo.
 First we will create a bare Express App using `express-generator` [Express Generator](https://expressjs.com/en/starter/generator.html)
 
 ```bash
-# install express generator globally
+# install express generator globally  
 yarn global add express-generator
 
 # create the sample app
