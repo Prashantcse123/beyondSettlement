@@ -1,0 +1,74 @@
+[
+ {
+   "criteria": "Creditor score",
+   "weightage": 26,
+   "maxPoints": 10,
+   "minPoints": 1,
+   "maxScore": 260,
+   "minScore": 26,
+   "remarks": ""
+ },
+ {
+   "criteria": "State of residency",
+   "weightage": 21,
+   "maxPoints": 22,
+   "minPoints": 1,
+   "maxScore": 462,
+   "minScore": 21,
+   "remarks": ""
+ },
+ {
+   "criteria": "Monthly payment",
+   "weightage": 5,
+   "maxPoints": 25,
+   "minPoints": 1,
+   "maxScore": 125,
+   "minScore": 5,
+   "remarks": ""
+ },
+ {
+   "criteria": "Account delinquency",
+   "weightage": 19,
+   "maxPoints": 20,
+   "minPoints": 0,
+   "maxScore": 380,
+   "minScore": 0,
+   "remarks": ""
+ },
+ {
+   "criteria": "% Avg settlement",
+   "weightage": 5,
+   "maxPoints": 20,
+   "minPoints": 1,
+   "maxScore": 100,
+   "minScore": 5,
+   "remarks": ""
+ },
+ {
+   "criteria": "Settlement term",
+   "weightage": 5,
+   "maxPoints": 10,
+   "minPoints": 3,
+   "maxScore": 50,
+   "minScore": 15,
+   "remarks": "Max # of months allowable by creditor"
+ },
+ {
+   "criteria": "Enrolled debt",
+   "weightage": 5,
+   "maxPoints": 20,
+   "minPoints": 2,
+   "maxScore": 100,
+   "minScore": 10,
+   "remarks": ""
+ },
+ {
+   "criteria": "Account status",
+   "weightage": 14,
+   "maxPoints": 20,
+   "minPoints": 5,
+   "maxScore": 280,
+   "minScore": 70,
+   "remarks": ""
+ }
+]

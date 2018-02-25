@@ -1,0 +1,42 @@
+[
+ {
+   "rangeFrom": 100,
+   "rangeTo": 36,
+   "points": 10
+ },
+ {
+   "rangeFrom": 36,
+   "rangeTo": 30,
+   "points": 10
+ },
+ {
+   "rangeFrom": 30,
+   "rangeTo": 24,
+   "points": 10
+ },
+ {
+   "rangeFrom": 24,
+   "rangeTo": 18,
+   "points": 10
+ },
+ {
+   "rangeFrom": 18,
+   "rangeTo": 12,
+   "points": 10
+ },
+ {
+   "rangeFrom": 12,
+   "rangeTo": 6,
+   "points": 10
+ },
+ {
+   "rangeFrom": 6,
+   "rangeTo": 1,
+   "points": 5
+ },
+ {
+   "rangeFrom": 1,
+   "rangeTo": 0,
+   "points": 3
+ }
+]

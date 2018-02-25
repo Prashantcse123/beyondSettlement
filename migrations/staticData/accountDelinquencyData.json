@@ -1,0 +1,87 @@
+[
+ {
+   "rangeFrom": 0,
+   "rangeTo": 90,
+   "points": 0
+ },
+ {
+   "rangeFrom": 90,
+   "rangeTo": 180,
+   "points": 15
+ },
+ {
+   "rangeFrom": 180,
+   "rangeTo": 270,
+   "points": 20
+ },
+ {
+   "rangeFrom": 270,
+   "rangeTo": 360,
+   "points": 20
+ },
+ {
+   "rangeFrom": 360,
+   "rangeTo": 450,
+   "points": 20
+ },
+ {
+   "rangeFrom": 450,
+   "rangeTo": 540,
+   "points": 20
+ },
+ {
+   "rangeFrom": 540,
+   "rangeTo": 630,
+   "points": 20
+ },
+ {
+   "rangeFrom": 630,
+   "rangeTo": 720,
+   "points": 15
+ },
+ {
+   "rangeFrom": 720,
+   "rangeTo": 810,
+   "points": 15
+ },
+ {
+   "rangeFrom": 810,
+   "rangeTo": 900,
+   "points": 15
+ },
+ {
+   "rangeFrom": 900,
+   "rangeTo": 1080,
+   "points": 12
+ },
+ {
+   "rangeFrom": 1080,
+   "rangeTo": 1170,
+   "points": 12
+ },
+ {
+   "rangeFrom": 1170,
+   "rangeTo": 1260,
+   "points": 12
+ },
+ {
+   "rangeFrom": 1260,
+   "rangeTo": 1350,
+   "points": 8
+ },
+ {
+   "rangeFrom": 1350,
+   "rangeTo": 1440,
+   "points": 8
+ },
+ {
+   "rangeFrom": 1440,
+   "rangeTo": 1530,
+   "points": 8
+ },
+ {
+   "rangeFrom": 1530,
+   "rangeTo": 10000,
+   "points": 6
+ }
+]

@@ -1,0 +1,162 @@
+[
+ {
+   "rangeFrom": 0,
+   "rangeTo": 500,
+   "points": 20
+ },
+ {
+   "rangeFrom": 500,
+   "rangeTo": 1000,
+   "points": 19
+ },
+ {
+   "rangeFrom": 1000,
+   "rangeTo": 2000,
+   "points": 18
+ },
+ {
+   "rangeFrom": 2000,
+   "rangeTo": 3000,
+   "points": 17
+ },
+ {
+   "rangeFrom": 3000,
+   "rangeTo": 4000,
+   "points": 16
+ },
+ {
+   "rangeFrom": 4000,
+   "rangeTo": 5000,
+   "points": 15
+ },
+ {
+   "rangeFrom": 5000,
+   "rangeTo": 6000,
+   "points": 14
+ },
+ {
+   "rangeFrom": 6000,
+   "rangeTo": 7000,
+   "points": 13
+ },
+ {
+   "rangeFrom": 7000,
+   "rangeTo": 8000,
+   "points": 12
+ },
+ {
+   "rangeFrom": 8000,
+   "rangeTo": 9000,
+   "points": 11
+ },
+ {
+   "rangeFrom": 9000,
+   "rangeTo": 10000,
+   "points": 10
+ },
+ {
+   "rangeFrom": 10000,
+   "rangeTo": 11000,
+   "points": 9
+ },
+ {
+   "rangeFrom": 11000,
+   "rangeTo": 12000,
+   "points": 8
+ },
+ {
+   "rangeFrom": 12000,
+   "rangeTo": 13000,
+   "points": 7
+ },
+ {
+   "rangeFrom": 13000,
+   "rangeTo": 14000,
+   "points": 6
+ },
+ {
+   "rangeFrom": 14000,
+   "rangeTo": 15000,
+   "points": 5
+ },
+ {
+   "rangeFrom": 15000,
+   "rangeTo": 16000,
+   "points": 5
+ },
+ {
+   "rangeFrom": 16000,
+   "rangeTo": 17000,
+   "points": 5
+ },
+ {
+   "rangeFrom": 17000,
+   "rangeTo": 18000,
+   "points": 5
+ },
+ {
+   "rangeFrom": 18000,
+   "rangeTo": 19000,
+   "points": 5
+ },
+ {
+   "rangeFrom": 19000,
+   "rangeTo": 20000,
+   "points": 5
+ },
+ {
+   "rangeFrom": 20000,
+   "rangeTo": 21000,
+   "points": 4
+ },
+ {
+   "rangeFrom": 21000,
+   "rangeTo": 22000,
+   "points": 4
+ },
+ {
+   "rangeFrom": 22000,
+   "rangeTo": 23000,
+   "points": 4
+ },
+ {
+   "rangeFrom": 23000,
+   "rangeTo": 24000,
+   "points": 4
+ },
+ {
+   "rangeFrom": 24000,
+   "rangeTo": 25000,
+   "points": 4
+ },
+ {
+   "rangeFrom": 25000,
+   "rangeTo": 26000,
+   "points": 3
+ },
+ {
+   "rangeFrom": 26000,
+   "rangeTo": 27000,
+   "points": 3
+ },
+ {
+   "rangeFrom": 27000,
+   "rangeTo": 28000,
+   "points": 3
+ },
+ {
+   "rangeFrom": 28000,
+   "rangeTo": 29000,
+   "points": 3
+ },
+ {
+   "rangeFrom": 29000,
+   "rangeTo": 30000,
+   "points": 3
+ },
+ {
+   "rangeFrom": 30000,
+   "rangeTo": 500000,
+   "points": 2
+ }
+]
