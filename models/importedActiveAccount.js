@@ -1,0 +1,35 @@
+module.exports = (sequelize, DataTypes) => {
+  const ImportedActiveAccount = sequelize.define('ImportedActiveAccount', {
+    programname: DataTypes.STRING,
+    tradelinename: DataTypes.STRING,
+    creditor: DataTypes.STRING,
+    enrolledstate: DataTypes.STRING,
+    avg_monthly_payment: DataTypes.STRING,
+    account_deliquency: DataTypes.STRING,
+    fund_in_cft: DataTypes.STRING,
+    m0_bal: DataTypes.STRING,
+    m1_bal: DataTypes.STRING,
+    m2_bal: DataTypes.STRING,
+    m3_bal: DataTypes.STRING,
+    m4_bal: DataTypes.STRING,
+    m5_bal: DataTypes.STRING,
+    m6_bal: DataTypes.STRING,
+    m7_bal: DataTypes.STRING,
+    m8_bal: DataTypes.STRING,
+    m9_bal: DataTypes.STRING,
+    m10_bal: DataTypes.STRING,
+    m11_bal: DataTypes.STRING,
+    m12_bal: DataTypes.STRING,
+    max_term: DataTypes.INTEGER,
+    max_term_fund_accumulation: DataTypes.STRING,
+    enrolled_debt: DataTypes.STRING,
+    verifiedbalance: DataTypes.FLOAT,
+    originalbalance: DataTypes.FLOAT,
+    currentbalance: DataTypes.FLOAT,
+    currentstage: DataTypes.STRING,
+    tradeline_last_negotiated: DataTypes.STRING,
+    account_number: DataTypes.STRING,
+  });
+
+  return ImportedActiveAccount;
+};

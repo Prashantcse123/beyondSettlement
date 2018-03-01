@@ -435,7 +435,8 @@ router.get('/drop_temp_creditor_variables', (req, res) => {
 });
 
 router.get('/select_temp_creditor_variables', (req, res) => {
-  const sql = 'select top 2 ##temp_Creditor_Variables.* from ##temp_Creditor_Variables';
+  // const sql = 'select top 2 ##temp_Creditor_Variables.* from ##temp_Creditor_Variables';
+  const sql = 'select ##temp_Creditor_Variables.* from ##temp_Creditor_Variables';
 
   redshift.query(sql, { raw: true })
     .then((data) => {
