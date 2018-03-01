@@ -2,32 +2,13 @@ const express = require('express');
 
 const router = express.Router();
 const users = require('./users');
-const migrate = require('./migrate');
+const sourceData = require('./sourceData');
 
 router.get('/', (req, res) => {
-  res.json([
-    {
-      id: 1,
-      firstName: 'Bob',
-      lastName: 'Smith',
-      email: 'bob@gmail.com',
-    },
-    {
-      id: 2,
-      firstName: 'Tammy',
-      lastName: 'Norton',
-      email: 'tnorton@yahoo.com',
-    },
-    {
-      id: 3,
-      firstName: 'Tina',
-      lastName: 'Lee',
-      email: 'lee.tina@hotmail.com, ',
-    },
-  ]);
+  res.json('Test OK');
 });
 
 router.use('/users', users);
-router.use('/migrate', migrate);
+router.use('/source/data', sourceData);
 
 module.exports = router;

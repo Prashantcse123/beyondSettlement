@@ -29,6 +29,7 @@
     "node-redshift": "^0.1.5",
     "pg": "^6.1.0",
     "pg-hstore": "^2.3.2",
+    "require-sql": "^1.0.0",
     "sequelize": "^3.23.6",
     "sequelize-cli": "^3.1.0",
     "serverless-http": "^1.5.3",
