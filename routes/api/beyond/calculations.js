@@ -1,11 +1,11 @@
 const models = require('../../../models');
 const express = require('express');
-const dataImportLogic = require('../../../logic/sourceData/dataImport');
+const creditorCalculationsLogic = require('../../../logic/calculations/creditorCalculations');
 
 const router = express.Router();
 
-router.get('/get', (req, res) => {
-  dataImportLogic.importData().then((data) => {
+router.get('/creditors/set', (req, res) => {
+  creditorCalculationsLogic.setData().then((data) => {
     res.status(200).json(data);
   })
 });

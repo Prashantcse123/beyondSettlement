@@ -1,16 +1,22 @@
 module.exports = (sequelize, DataTypes) => {
   const Creditor = sequelize.define('Creditor', {
     name: DataTypes.STRING,
+    numActive: DataTypes.INTEGER,
+    numEnrolled: DataTypes.INTEGER,
+    numTransferred: DataTypes.INTEGER,
+    numSettled: DataTypes.INTEGER,
+    type: DataTypes.STRING,
+    score: DataTypes.INTEGER,
     preAvgPctSettlement: DataTypes.INTEGER,
     preSettlementTerm: DataTypes.INTEGER,
     preMinPay: DataTypes.INTEGER,
     preDataPoints: DataTypes.INTEGER,
-    preHistoryOptionId: DataTypes.INTEGER,
+    // preHistoryOptionId: DataTypes.INTEGER,
     postAvgPctSettlement: DataTypes.INTEGER,
     postSettlementTerm: DataTypes.INTEGER,
     postMinPay: DataTypes.INTEGER,
     postDataPoints: DataTypes.INTEGER,
-    postHistoryOptionId: DataTypes.INTEGER,
+    // postHistoryOptionId: DataTypes.INTEGER,
   });
 
   Creditor.associate = function (models) {
