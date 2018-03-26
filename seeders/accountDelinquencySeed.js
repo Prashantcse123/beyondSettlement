@@ -10,6 +10,7 @@ module.exports = {
       sd.updatedAt = date;
     });
 
+    queryInterface.bulkDelete('AccountDelinquencies', null, {});
     return queryInterface.bulkInsert('AccountDelinquencies', staticData, {});
   },
 

@@ -5,7 +5,7 @@ const accountCalculations = {
   /// External Interface
   setData: () => {
     let init = [
-      accountCalculations.importAccountVariables(),
+      accountCalculations.importActiveAccounts(),
       accountCalculations.importCreditors(),
       accountCalculations.importCreditorOverrides()
     ];
@@ -19,15 +19,56 @@ const accountCalculations = {
   },
 
   /// Main Loop
+  // calculateAllRows: () => {
+  //   console.log('aaa111');
+  //   return new Promise(resolve => {
+  //     models.Account.destroy({truncate: true});
+  //     let promises = [];
+  //
+  //     accountCalculations._rawAccounts.filter(rawAccount =>
+  //       !!rawAccount.programname).forEach(rawAccount =>{
+  //         promises.push(accountCalculations.calculateRow(rawAccount));
+  //         console.log('aaaaa');
+  //       });
+  //
+  //     console.log('aaaaa');
+  //
+  //     // promises.reduce((promiseChain, currentTask) => {
+  //     //   return promiseChain.then(chainResults =>
+  //     //     // currentTask.then(currentResult =>
+  //     //     //   [ ...chainResults, currentResult ]
+  //     //     // )
+  //     //     currentTask.then(() => console.log('Another Account is done! :)'))
+  //     //   );
+  //     // }, Promise.resolve([])).then(arrayOfResults => {
+  //     //   resolve();
+  //     //   // Do something with all results
+  //     // });
+  //     Promise.all(promises).then(() => resolve());
+  //   });
+  // },
+
   calculateAllRows: () => {
     return new Promise(resolve => {
+      accountCalculations._newAccounts = [];
       models.Account.destroy({truncate: true});
-      let promises = [];
 
-      accountCalculations._rawAccounts.filter(rawAccount =>
-        !!rawAccount.programname).forEach(rawAccount =>
-          promises.push(accountCalculations.calculateRow(rawAccount)));
-      Promise.all(promises).then(() => resolve());
+      let rawAccounts = accountCalculations._rawAccounts.filter(rawAccount => !!rawAccount.programname);
+      let rowIndex = 0;
+      let calcRowIndex = () => {
+        console.log('index', rowIndex);
+        if (rowIndex === rawAccounts.length || rowIndex === 200) {
+          models.Account.bulkCreate(accountCalculations._newAccounts)
+            .then(() => resolve());
+          return;
+        }
+        accountCalculations.calculateRow(rawAccounts[rowIndex]).then(() => {
+          rowIndex++;
+          calcRowIndex();
+        });
+      };
+
+      calcRowIndex();
     });
   },
 
@@ -38,10 +79,12 @@ const accountCalculations = {
 
     return new Promise(resolve => {
       Promise.all(promises).then(() => {
-        models.Account.create(results).then(() => {
-          console.log('Account - "' + rawAccount.accountNumber + '"', 'Created with new calculated results');
+        accountCalculations._newAccounts.push(results);
+        // models.Account.create(results).then(() => {
+          console.log('Account - "' + rawAccount.account_number + '"', 'Created with new calculated results');
           resolve();
-        })});
+        // })
+      });
     });
   },
 
@@ -52,7 +95,7 @@ const accountCalculations = {
 
   /// Internal Service Functions --------------------------------------------------------------------------------------
 
-  importAccountVariables: () => {
+  importActiveAccounts: () => {
     return new Promise(resolve =>
       models.ImportedActiveAccount.findAll().then(results => {
         accountCalculations._rawAccounts = results;
@@ -98,6 +141,36 @@ const accountCalculations = {
     });
   },
 
+  fundBalancePaymentPct:          (rawAccount, columnIndex) => {
+    return new Promise(resolve => {
+      let result;
+      let endOfMonthPctColumnName = (columnIndex === 1 ? 'endOfCurrentMonth' : 'monthOut' + (columnIndex - 1));
+        let promises = [
+          accountCalculations.columns[endOfMonthPctColumnName](rawAccount),
+          accountCalculations.columns.minPaymentPct(rawAccount),
+          accountCalculations.creditorReprocess.avgPctSettlement(rawAccount)
+        ];
+
+        Promise.all(promises).then(results => {
+          let endOfMonthPctValue = results[0];
+          let minPaymentPct = results[1];
+          let avgPctSettlement = results[2];
+
+          try {
+            result = endOfMonthPctValue - Math.min(columnIndex * minPaymentPct, avgPctSettlement);
+          }catch(ex) {
+            result = null;
+          }
+
+          resolve(result);
+        });
+
+
+      accountCalculations.columns[endOfMonthPctColumnName](rawAccount).then(endOfMonthPctValue => {
+      });
+    });
+  },
+
   columns: {
 
     /// Pre Charge-off Columns
@@ -135,7 +208,7 @@ const accountCalculations = {
       let creditorFactors = [{
         creditors: ['Bank of America', 'Citibank', 'Best Buy', 'Sears', 'Macys', 'Home Depot', 'Costco', 'Capital One', 'Credit One Bank-Collections', 'Synchrony Bank', 'Walmart', 'Sams Club', 'Amazon/Synchrony', 'Discover', 'Wells Fargo', 'Gap', 'Belk', 'Toys R US', 'Old Navy', 'American Eagle', 'Banana republic', 'Chevron', 'Stein Mart', 'TJ Maxx', 'Care Credit', 'HHGregg', 'Guitar Center', 'Lowes', 'CABELAS', 'Compass Bank', 'Commerce Bank', 'American Express', 'Credit First National Bank'],
         factor: -30,
-        condition: rawAccount => rawAccount.account_deliquency - 30 < 0
+        condition: rawAccount => parseInt(rawAccount.account_deliquency) - 30 < 0
       }, {
         creditors: ['Barclays'],
         factor: 60,
@@ -161,15 +234,15 @@ const accountCalculations = {
           if (creditorFactor) {
             if (creditorFactor.condition) {
               if (creditorFactor.condition(rawAccount)) {
-                result = rawAccount.account_deliquency + creditorFactor.factor;
+                result = parseInt(rawAccount.account_deliquency) + creditorFactor.factor;
               }else{
                 result = 0;
               }
             }else{
-              result = rawAccount.account_deliquency + creditorFactor.factor;
+              result = parseInt(rawAccount.account_deliquency) + creditorFactor.factor;
             }
           }else{
-            result = rawAccount.account_deliquency;
+            result = parseInt(rawAccount.account_deliquency);
           }
         }
 
@@ -377,58 +450,283 @@ const accountCalculations = {
 
     /// ﻿Eligibility for settlement
     isEligible:                 (rawAccount) => {
-    //   return new Promise(resolve => {
-    //     let result;
-    //     let promises = [
-    //       accountCalculations.columns.lessThen5PctSettlementFlag(rawAccount),
-    //       accountCalculations.columns.notSettlePreChargeOffFlag(rawAccount),
-    //       accountCalculations.columns.delinquencyFlag(rawAccount),
-    //     ];
-    //
-    //     Promise.all(promises).then(results => {
-    //       let lessThen5PctSettlementFlag = results[0];
-    //       let notSettlePreChargeOffFlag = results[1];
-    //       let delinquencyFlag = results[2];
-    //
-    //       if (lessThen5PctSettlementFlag === 1 && notSettlePreChargeOffFlag !== 1 && delinquencyFlag === 1) {
-    //         if () {
-    //
-    //         }
-    //       }
-    //
-    //       resolve(result);
-    //     });
-    //   });
+      return new Promise(resolve => {
+        let result;
+        let relevantCreditors = ['US BANK', 'American Express', 'Elan Financial', 'Kroger'];
+        let promises = [
+          accountCalculations.columns.lessThen5PctSettlementFlag(rawAccount),
+          accountCalculations.columns.notSettlePreChargeOffFlag(rawAccount),
+          accountCalculations.columns.delinquencyFlag(rawAccount),
+          accountCalculations.columns.hasSufficientFundsAtTheEndOfSettlement(rawAccount),
+          accountCalculations.columns.minCheck(rawAccount),
+          accountCalculations.columns.accountDelinquency(rawAccount),
+        ];
+
+        Promise.all(promises).then(results => {
+          let lessThen5PctSettlementFlag = results[0];
+          let notSettlePreChargeOffFlag = results[1];
+          let delinquencyFlag = results[2];
+          let hasSufficientFundsAtTheEndOfSettlement = results[3];
+          let minCheck = results[4];
+          let accountDelinquency = results[5];
+
+          if (lessThen5PctSettlementFlag === 1 && notSettlePreChargeOffFlag !== 1 && delinquencyFlag === 1) {
+            if (hasSufficientFundsAtTheEndOfSettlement === 0) {
+              result = 0;
+            }else{
+              if (minCheck >= 0) {
+                if (relevantCreditors.includes(rawAccount.creditor) && accountDelinquency < 90) {
+                  result = 0;
+                }else{
+                  result = 1;
+                }
+              }else{
+                result = 0;
+              }
+            }
+          }else{
+            result = 0;
+          }
+
+          resolve(result);
+        });
+      });
     },
 
 
     /// Creditors tab ==> (will be calculated on the fly, see creditorReprocess on this file)
 
     /// Eligibility Criteria
-    hasSufficientFundsAtTheEndOfSettlement: DataTypes.INTEGER, // NOTE: ﻿Merilytics: Eligibilty based on fund availability at the end of calculated term or max allowable term
-    minPaymentPct: DataTypes.FLOAT, // NOTE: ﻿Merilytics: % Minimum payment to be paid
-    calculatedTerm: DataTypes.STRING, // NOTE: ﻿Merilytics: Calculating the projected settlement term based on fund availability
+    hasSufficientFundsAtTheEndOfSettlement: (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+        let promises = [
+          accountCalculations.creditorReprocess.avgPctSettlement(rawAccount),
+          accountCalculations.creditorReprocess.settlementTerm(rawAccount),
+          accountCalculations.columns.calculatedTerm(rawAccount),
+          accountCalculations.columns.maxTermOut(rawAccount)
+        ];
+
+        Promise.all(promises).then(results => {
+          let avgPctSettlement = results[0];
+          let settlementTerm = results[1];
+          let calculatedTerm = results[2];
+          let maxTermOut = results[3];
+
+          if (calculatedTerm === 'More than 13') {
+            if (maxTermOut >= avgPctSettlement) {
+              result = 1;
+            }else{
+              result = 0;
+            }
+          }else{
+            if (parseInt(calculatedTerm) <= settlementTerm) {
+              result = 1;
+            }else{
+              result = 0;
+            }
+          }
+
+          resolve(result);
+        });
+      });
+    },  // NOTE: ﻿Merilytics: Eligibilty based on fund availability at the end of calculated term or max allowable term
+    minPaymentPct:                  (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+        let promises = [
+          accountCalculations.creditorReprocess.avgPctSettlement(rawAccount),
+          accountCalculations.creditorReprocess.settlementTerm(rawAccount),
+          accountCalculations.creditorReprocess.minPayment(rawAccount)
+        ];
+
+        Promise.all(promises).then(results => {
+          let avgPctSettlement = results[0];
+          let settlementTerm = results[1];
+          let minPayment = results[2];
+          let originalBalance = rawAccount.originalbalance;
+          let currentBalance = rawAccount.currentbalance;
+
+          if (minPayment === 'evenpays') {
+            result = avgPctSettlement / settlementTerm;
+          }else{
+            try{
+              result = parseFloat(minPayment) / Math.max(originalBalance, currentBalance);
+            }catch(ex){
+              result = null;
+            }
+          }
+
+          resolve(result);
+        });
+      });
+    }, // NOTE: ﻿Merilytics: % Minimum payment to be paid
+    calculatedTerm:                 (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+        let promises = [
+          accountCalculations.creditorReprocess.avgPctSettlement(rawAccount),
+          accountCalculations.columns.feePct(rawAccount),
+          accountCalculations.columns.endOfCurrentMonth(rawAccount),
+          accountCalculations.columns.monthOut1(rawAccount),
+          accountCalculations.columns.monthOut2(rawAccount),
+          accountCalculations.columns.monthOut3(rawAccount),
+          accountCalculations.columns.monthOut4(rawAccount),
+          accountCalculations.columns.monthOut5(rawAccount),
+          accountCalculations.columns.monthOut6(rawAccount),
+          accountCalculations.columns.monthOut7(rawAccount),
+          accountCalculations.columns.monthOut8(rawAccount),
+          accountCalculations.columns.monthOut9(rawAccount),
+          accountCalculations.columns.monthOut10(rawAccount),
+          accountCalculations.columns.monthOut11(rawAccount),
+          accountCalculations.columns.monthOut12(rawAccount)
+        ];
+
+        Promise.all(promises).then(results => {
+          let feePct = results[0];
+          let avgPctSettlement = results[1];
+          let fundAccumulationValues = results;
+
+          fundAccumulationValues.shift();
+          fundAccumulationValues.shift();
+
+          let fundAccumulationValuesForCriteria = fundAccumulationValues.filter(fav =>
+            fav >= (feePct + avgPctSettlement));
+
+          if (!fundAccumulationValuesForCriteria.length) {
+            result = 'More than 13';
+          }else{
+            result = Math.min.apply(this, fundAccumulationValuesForCriteria);
+            result = fundAccumulationValuesForCriteria.indexOf(result) + 1;
+          }
+
+          resolve(result);
+        });
+      });
+    }, // NOTE: ﻿Merilytics: Calculating the projected settlement term based on fund availability
 
     /// ﻿Check for minimum payment every month of term
-    fundBalancePayment1: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (end of month) after making 1st payment
-    fundBalancePayment2: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (1 month out) after making 2 payments
-    fundBalancePayment3: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (2 month out) after making 3 payments
-    fundBalancePayment4: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (3 month out) after making 4 payments
-    fundBalancePayment5: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (4 month out) after making 5 payments
-    fundBalancePayment6: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (5 month out) after making 6 payments
-    fundBalancePayment7: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (6 month out) after making 7 payments
-    fundBalancePayment8: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (7 month out) after making 8 payments
-    fundBalancePayment9: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (8 month out) after making 9 payments
-    fundBalancePayment10: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (9 month out) after making 10 payments
-    fundBalancePayment11: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (10 month out) after making 11 payments
-    fundBalancePayment12: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (11 month out) after making 12 payments
-    fundBalancePayment13: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (12 month out) after making 13 payments
-    minCheck: DataTypes.STRING, // NOTE: ﻿Merilytics: If the minimum check <0, then a term payment will be NSF
-    termConsidered: DataTypes.STRING,
+    fundBalancePayment1: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 1), // NOTE: ﻿Merilytics: Balance fund  %  (end of month) after making 1st payment
+    fundBalancePayment2: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 2), // NOTE: ﻿Merilytics: Balance fund  %  (1 month out) after making 2 payments
+    fundBalancePayment3: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 3), // NOTE: ﻿Merilytics: Balance fund  %  (2 month out) after making 3 payments
+    fundBalancePayment4: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 4), // NOTE: ﻿Merilytics: Balance fund  %  (3 month out) after making 4 payments
+    fundBalancePayment5: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 5), // NOTE: ﻿Merilytics: Balance fund  %  (4 month out) after making 5 payments
+    fundBalancePayment6: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 6), // NOTE: ﻿Merilytics: Balance fund  %  (5 month out) after making 6 payments
+    fundBalancePayment7: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 7), // NOTE: ﻿Merilytics: Balance fund  %  (6 month out) after making 7 payments
+    fundBalancePayment8: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 8), // NOTE: ﻿Merilytics: Balance fund  %  (7 month out) after making 8 payments
+    fundBalancePayment9: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 9), // NOTE: ﻿Merilytics: Balance fund  %  (8 month out) after making 9 payments
+    fundBalancePayment10: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 10), // NOTE: ﻿Merilytics: Balance fund  %  (9 month out) after making 10 payments
+    fundBalancePayment11: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 11), // NOTE: ﻿Merilytics: Balance fund  %  (10 month out) after making 11 payments
+    fundBalancePayment12: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 12), // NOTE: ﻿Merilytics: Balance fund  %  (11 month out) after making 12 payments
+    fundBalancePayment13: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 13), // NOTE: ﻿Merilytics: Balance fund  %  (12 month out) after making 13 payments
+    minCheck:        (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+        let promises = [
+          accountCalculations.columns.termConsidered(rawAccount),
+          accountCalculations.columns.fundBalancePayment1(rawAccount),
+          accountCalculations.columns.fundBalancePayment2(rawAccount),
+          accountCalculations.columns.fundBalancePayment3(rawAccount),
+          accountCalculations.columns.fundBalancePayment4(rawAccount),
+          accountCalculations.columns.fundBalancePayment5(rawAccount),
+          accountCalculations.columns.fundBalancePayment6(rawAccount),
+          accountCalculations.columns.fundBalancePayment7(rawAccount),
+          accountCalculations.columns.fundBalancePayment8(rawAccount),
+          accountCalculations.columns.fundBalancePayment9(rawAccount),
+          accountCalculations.columns.fundBalancePayment10(rawAccount),
+          accountCalculations.columns.fundBalancePayment11(rawAccount),
+          accountCalculations.columns.fundBalancePayment12(rawAccount),
+          accountCalculations.columns.fundBalancePayment13(rawAccount)
+        ];
 
-    settlementAmountAsPctOfVerifiedDebt: DataTypes.FLOAT,
-    feePct: DataTypes.FLOAT,
-    feeAmount: DataTypes.FLOAT
+        Promise.all(promises).then(results => {
+          let termConsidered = results[0];
+          let fundBalancePaymentValues = [];
+
+          results.shift();
+
+          for (let i = 0; i < termConsidered; i++) {
+            fundBalancePaymentValues.push(results[i]);
+          }
+
+          try{
+            result = Math.min.apply(this, fundBalancePaymentValues);
+          }catch(ex) {
+            result = -1;
+          }
+
+          resolve(result);
+        });
+      });
+    }, // NOTE: ﻿Merilytics: If the minimum check <0, then a term payment will be NSF
+    termConsidered:        (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+
+        accountCalculations.columns.calculatedTerm(rawAccount).then(calculatedTerm => {
+          if (calculatedTerm === 'More than 13') {
+            result = 13;
+          }else{
+            result = parseInt(calculatedTerm);
+          }
+
+          resolve(result);
+        });
+      });
+    },
+    settlementAmountAsPctOfVerifiedDebt:        (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+        let originalBalance = rawAccount.originalbalance;
+        let currentBalance = rawAccount.currentbalance;
+
+        accountCalculations.creditorReprocess.avgPctSettlement(rawAccount).then(avgPctSettlement => {
+          if (!avgPctSettlement) {
+            result = null;
+          }else{
+            result = avgPctSettlement * Math.max(originalBalance, currentBalance) / originalBalance;
+          }
+
+          resolve(result);
+        });
+      });
+    },
+    feePct:        (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+
+        accountCalculations.columns.settlementAmountAsPctOfVerifiedDebt(rawAccount).then(settlementAmountAsPctOfVerifiedDebt => {
+          if (!settlementAmountAsPctOfVerifiedDebt) {
+            result = null;
+          }else if (settlementAmountAsPctOfVerifiedDebt > 1) {
+              result = 0;
+          }else if (settlementAmountAsPctOfVerifiedDebt >= 0.75) {
+            result = 1 - settlementAmountAsPctOfVerifiedDebt;
+          }else{
+            result = 0.25;
+          }
+
+          resolve(result);
+        });
+      });
+    },
+    feeAmount:        (rawAccount) => {
+      return new Promise(resolve => {
+        let result;
+        let originalBalance = rawAccount.originalbalance;
+
+        accountCalculations.columns.feePct(rawAccount).then(feePct => {
+          if (!feePct) {
+            result = null;
+          }else{
+            result = feePct * originalBalance;
+          }
+
+          resolve(result);
+        });
+      });
+    }
+
   },
 
   creditorReprocess: {

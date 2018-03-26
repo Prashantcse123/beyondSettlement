@@ -10,6 +10,7 @@ module.exports = {
       sd.updatedAt = date;
     });
 
+    queryInterface.bulkDelete('CreditorOverrides', null, {});
     return queryInterface.bulkInsert('CreditorOverrides', staticData, {});
   },
 

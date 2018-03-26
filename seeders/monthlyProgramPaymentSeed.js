@@ -10,6 +10,7 @@ module.exports = {
       sd.updatedAt = date;
     });
 
+    queryInterface.bulkDelete('MonthlyProgramPayments', null, {});
     return queryInterface.bulkInsert('MonthlyProgramPayments', staticData, {});
   },
 

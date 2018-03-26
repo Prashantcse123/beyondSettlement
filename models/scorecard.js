@@ -4,13 +4,13 @@ module.exports = (sequelize, DataTypes) => {
     /// Metadata
     tradeLineName: DataTypes.STRING,
     programName: DataTypes.STRING,
-    creditorName: DataTypes.STRING,
+    creditor: DataTypes.STRING,
     accountNumber: DataTypes.STRING,
-    monthlyPayment: DataTypes.FLOAT,
 
     /// Metrics
     metrics_creditorScore: DataTypes.INTEGER,
     metrics_stateOfResidency: DataTypes.STRING,
+    metrics_monthlyPayment: DataTypes.INTEGER,
     metrics_accountDelinquency: DataTypes.INTEGER,
     metrics_pctAvgSettlement: DataTypes.FLOAT,
     metrics_settlementTerm: DataTypes.INTEGER,
@@ -28,20 +28,22 @@ module.exports = (sequelize, DataTypes) => {
     /// Assigned Points
     points_creditorScore: DataTypes.INTEGER,
     points_stateOfResidency: DataTypes.INTEGER,
+    points_monthlyPayment: DataTypes.INTEGER,
     points_accountDelinquency: DataTypes.INTEGER,
-    points_pctAvgSettlement: DataTypes.FLOAT,
+    points_pctAvgSettlement: DataTypes.INTEGER,
     points_settlementTerm: DataTypes.INTEGER,
     points_accountStatus: DataTypes.INTEGER,
-    points_enrolledDebt: DataTypes.FLOAT,
+    points_enrolledDebt: DataTypes.INTEGER,
 
     /// ﻿Weighted Score
     weight_creditorScore: DataTypes.INTEGER,
     weight_stateOfResidency: DataTypes.INTEGER,
+    weight_monthlyPayment: DataTypes.INTEGER,
     weight_accountDelinquency: DataTypes.INTEGER,
-    weight_pctAvgSettlement: DataTypes.FLOAT,
+    weight_pctAvgSettlement: DataTypes.INTEGER,
     weight_settlementTerm: DataTypes.INTEGER,
     weight_accountStatus: DataTypes.INTEGER,
-    weight_enrolledDebt: DataTypes.FLOAT,
+    weight_enrolledDebt: DataTypes.INTEGER,
 
     /// Summary
     totalScore: DataTypes.INTEGER,

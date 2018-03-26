@@ -4,17 +4,17 @@ module.exports = (sequelize, DataTypes) => {
     // productTypeId: DataTypes.INTEGER,
     creditor: DataTypes.STRING,
     productType: DataTypes.STRING,
-    accountNumberFlag: DataTypes.BOOLEAN,
+    accountNumberFlag: DataTypes.INTEGER,
     rangeFlag: DataTypes.INTEGER,
     concat: DataTypes.STRING,
 
     /// ﻿Pre Charge-Off
-    prePctSettlementRate: DataTypes.INTEGER,
+    prePctSettlementRate: DataTypes.FLOAT,
     preSettlementTerm: DataTypes.INTEGER,
     preMinimumMonthlyPay: DataTypes.STRING,
 
     /// ﻿Post Charge-Off
-    postPctSettlementRate: DataTypes.INTEGER,
+    postPctSettlementRate: DataTypes.FLOAT,
     postSettlementTerm: DataTypes.INTEGER,
     postMinimumMonthlyPay: DataTypes.STRING,
   });

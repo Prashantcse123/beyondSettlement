@@ -6,29 +6,29 @@ module.exports = (sequelize, DataTypes) => {
     // creditorId: DataTypes.INTEGER,
     creditor: DataTypes.STRING,
     // enrolledStateId: DataTypes.INTEGER,
-    enrolledState: DataTypes.INTEGER,
-    avgMonthlyPayment: DataTypes.INTEGER,
+    enrolledState: DataTypes.STRING,
+    avgMonthlyPayment: DataTypes.FLOAT,
     accountDelinquency: DataTypes.INTEGER,
-    currentFund: DataTypes.INTEGER,
-    m0Bal: DataTypes.INTEGER,
-    m1Bal: DataTypes.INTEGER,
-    m2Bal: DataTypes.INTEGER,
-    m3Bal: DataTypes.INTEGER,
-    m4Bal: DataTypes.INTEGER,
-    m5Bal: DataTypes.INTEGER,
-    m6Bal: DataTypes.INTEGER,
-    m7Bal: DataTypes.INTEGER,
-    m8Bal: DataTypes.INTEGER,
-    m9Bal: DataTypes.INTEGER,
-    m10Bal: DataTypes.INTEGER,
-    m11Bal: DataTypes.INTEGER,
-    m12Bal: DataTypes.INTEGER,
+    currentFund: DataTypes.FLOAT,
+    m0Bal: DataTypes.FLOAT,
+    m1Bal: DataTypes.FLOAT,
+    m2Bal: DataTypes.FLOAT,
+    m3Bal: DataTypes.FLOAT,
+    m4Bal: DataTypes.FLOAT,
+    m5Bal: DataTypes.FLOAT,
+    m6Bal: DataTypes.FLOAT,
+    m7Bal: DataTypes.FLOAT,
+    m8Bal: DataTypes.FLOAT,
+    m9Bal: DataTypes.FLOAT,
+    m10Bal: DataTypes.FLOAT,
+    m11Bal: DataTypes.FLOAT,
+    m12Bal: DataTypes.FLOAT,
     maxTerm: DataTypes.INTEGER,
-    maxTermFundAccumulation: DataTypes.INTEGER,
-    enrolledDebt: DataTypes.INTEGER,
-    verifiedBalance: DataTypes.INTEGER,
-    originalBalance: DataTypes.INTEGER, // NOTE: ﻿Merilytics: Current debt pulled from "Balance" field of ClientCred table
-    currentBalance: DataTypes.INTEGER,
+    maxTermFundAccumulation: DataTypes.FLOAT,
+    enrolledDebt: DataTypes.FLOAT,
+    verifiedBalance: DataTypes.FLOAT,
+    originalBalance: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Current debt pulled from "Balance" field of ClientCred table
+    currentBalance: DataTypes.FLOAT,
     // currentAccountStatusId: DataTypes.INTEGER,
     currentStage: DataTypes.STRING,
     tradelineLastWorkedOn: DataTypes.DATE,
@@ -68,7 +68,6 @@ module.exports = (sequelize, DataTypes) => {
     /// ﻿Eligibility for settlement
     isEligible: DataTypes.STRING,
 
-
     /// Creditors tab ==> (will be calculated on the fly)
 
     /// Eligibility Criteria
@@ -90,8 +89,8 @@ module.exports = (sequelize, DataTypes) => {
     fundBalancePayment11: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (10 month out) after making 11 payments
     fundBalancePayment12: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (11 month out) after making 12 payments
     fundBalancePayment13: DataTypes.FLOAT, // NOTE: ﻿Merilytics: Balance fund  %  (12 month out) after making 13 payments
-    minCheck: DataTypes.STRING, // NOTE: ﻿Merilytics: If the minimum check <0, then a term payment will be NSF
-    termConsidered: DataTypes.STRING,
+    minCheck: DataTypes.INTEGER, // NOTE: ﻿Merilytics: If the minimum check <0, then a term payment will be NSF
+    termConsidered: DataTypes.INTEGER,
 
     settlementAmountAsPctOfVerifiedDebt: DataTypes.FLOAT,
     feePct: DataTypes.FLOAT,
