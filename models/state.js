@@ -4,9 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     points: DataTypes.INTEGER,
   });
 
-  State.associate = function (models) {
-    models.State.hasMany(models.Account, {foreignKey: 'enrolledStateId'});
-  };
+  // State.associate = function (models) {
+  //   models.State.hasMany(models.Account, {foreignKey: 'enrolledStateId'});
+  // };
 
   return State;
 };

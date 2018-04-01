@@ -4,6 +4,8 @@ const accountCalculations = {
 
   /// External Interface
   setData: () => {
+    accountCalculations.initColumns();
+
     let init = [
       accountCalculations.importActiveAccounts(),
       accountCalculations.importCreditors(),
@@ -17,6 +19,54 @@ const accountCalculations = {
             .catch(() => resolve('Account Calculations Error! :(')))
     );
   },
+
+  initColumns: () => {
+    accountCalculations._cachedColumns = {};
+
+    Object.keys(accountCalculations.columns).forEach(columnName => {
+      let oldFunc = accountCalculations.columns[columnName];
+      let newFunc = (account,b,c,d,e,f,g) => {
+        return new Promise(resolve => {
+          // console.log(Object.keys(accountCalculations._cachedColumns));
+          if (Object.keys(accountCalculations._cachedColumns).includes(columnName)) {
+            resolve(accountCalculations._cachedColumns[columnName]);
+          }else{
+            oldFunc(account,b,c,d,e,f,g).then(result => {
+              accountCalculations._cachedColumns[columnName] = result;
+              resolve(result);
+            });
+          }
+        });
+      };
+
+      accountCalculations.columns[columnName] = newFunc;
+    });
+  },
+
+  // initColumns: () => {
+  //   accountCalculations._cachedColumns = {};
+  //
+  //   Object.keys(accountCalculations.columns).forEach(columnName => {
+  //     let oldFunc = accountCalculations.columns[columnName];
+  //     let newFunc = (account,b,c,d,e,f,g) => {
+  //       let cachedColumnName = account.account_number + columnName;
+  //
+  //       return new Promise(resolve => {
+  //         console.log(Object.keys(accountCalculations._cachedColumns));
+  //         if (Object.keys(accountCalculations._cachedColumns).includes(cachedColumnName)) {
+  //           resolve(accountCalculations._cachedColumns[cachedColumnName]);
+  //         }else{
+  //           oldFunc(account,b,c,d,e,f,g).then(result => {
+  //             accountCalculations._cachedColumns[cachedColumnName] = result;
+  //             resolve(result);
+  //           });
+  //         }
+  //       });
+  //     };
+  //
+  //     accountCalculations.columns[columnName] = newFunc;
+  //   });
+  // },
 
   /// Main Loop
   // calculateAllRows: () => {
@@ -50,14 +100,13 @@ const accountCalculations = {
 
   calculateAllRows: () => {
     return new Promise(resolve => {
-      accountCalculations._newAccounts = [];
-      models.Account.destroy({truncate: true});
-
       let rawAccounts = accountCalculations._rawAccounts.filter(rawAccount => !!rawAccount.programname);
       let rowIndex = 0;
       let calcRowIndex = () => {
-        console.log('index', rowIndex);
-        if (rowIndex === rawAccounts.length || rowIndex === 200) {
+        // console.clear();
+        console.log('index', rowIndex, rawAccounts.length);
+        if (rowIndex === rawAccounts.length) {
+          console.log('bulk insert');
           models.Account.bulkCreate(accountCalculations._newAccounts)
             .then(() => resolve());
           return;
@@ -68,20 +117,30 @@ const accountCalculations = {
         });
       };
 
+      accountCalculations._newAccounts = [];
+      models.Account.destroy({truncate: true});
       calcRowIndex();
     });
   },
+
+
+  // calculateChunkOfRows(chunk) {
+  //
+  // }
 
   calculateRow: (rawAccount) => {
     let results = {};
     let promises = Object.keys(accountCalculations.columns).map(column =>
       accountCalculations.setCalculationValue(rawAccount, column, results));
 
+    accountCalculations._cachedColumns = {};
+
     return new Promise(resolve => {
       Promise.all(promises).then(() => {
         accountCalculations._newAccounts.push(results);
         // models.Account.create(results).then(() => {
-          console.log('Account - "' + rawAccount.account_number + '"', 'Created with new calculated results');
+        //   console.log('Account - "' + rawAccount.account_number + '"', 'Created with new calculated results');
+          // console.log(results);
           resolve();
         // })
       });
@@ -145,28 +204,24 @@ const accountCalculations = {
     return new Promise(resolve => {
       let result;
       let endOfMonthPctColumnName = (columnIndex === 1 ? 'endOfCurrentMonth' : 'monthOut' + (columnIndex - 1));
-        let promises = [
-          accountCalculations.columns[endOfMonthPctColumnName](rawAccount),
-          accountCalculations.columns.minPaymentPct(rawAccount),
-          accountCalculations.creditorReprocess.avgPctSettlement(rawAccount)
-        ];
+      let promises = [
+        accountCalculations.columns[endOfMonthPctColumnName](rawAccount),
+        accountCalculations.columns.minPaymentPct(rawAccount),
+        accountCalculations.creditorReprocess.avgPctSettlement(rawAccount)
+      ];
 
-        Promise.all(promises).then(results => {
-          let endOfMonthPctValue = results[0];
-          let minPaymentPct = results[1];
-          let avgPctSettlement = results[2];
+      Promise.all(promises).then(results => {
+        let endOfMonthPctValue = results[0];
+        let minPaymentPct = results[1];
+        let avgPctSettlement = results[2];
 
-          try {
-            result = endOfMonthPctValue - Math.min(columnIndex * minPaymentPct, avgPctSettlement);
-          }catch(ex) {
-            result = null;
-          }
+        try {
+          result = parseFloat(endOfMonthPctValue) - Math.min(columnIndex * minPaymentPct, avgPctSettlement);
+        }catch(ex) {
+          result = null;
+        }
 
-          resolve(result);
-        });
-
-
-      accountCalculations.columns[endOfMonthPctColumnName](rawAccount).then(endOfMonthPctValue => {
+        resolve(result);
       });
     });
   },
@@ -351,6 +406,7 @@ const accountCalculations = {
           Promise.all(promises).then(results => {
             try{
               result = Math.min.apply(this, results) / avgPctSettlement;
+              // console.log('minmin', avgPctSettlement, results);
             }catch (ex) {
               result = 0;
             }
@@ -733,6 +789,7 @@ const accountCalculations = {
 
     reprocessColumnWithOverride:  (rawAccount, creditorColumnSuffix, creditorOverrideColumnSuffix, fallbackValue) => {
       return new Promise(resolve => {
+        let result;
         let promises = [
           accountCalculations.columns.calc_accountDelinquency(rawAccount),
           accountCalculations.columns.rangesFlag(rawAccount),
@@ -750,33 +807,44 @@ const accountCalculations = {
 
           if (creditorOverride) {
             if (calc_accountDelinquency < 180) {
-              resolve(creditorOverride['pre' + creditorOverrideColumnSuffix]);
+              result = creditorOverride['pre' + creditorOverrideColumnSuffix];
             }else{
-              resolve(creditorOverride['post' + creditorOverrideColumnSuffix]);
+              result = creditorOverride['post' + creditorOverrideColumnSuffix];
             }
           }else{
             if (creditor) {
+              let preCreditorColumnValue = creditor['pre' + creditorColumnSuffix];
+                  preCreditorColumnValue = (!preCreditorColumnValue ? -1 : preCreditorColumnValue);
+              let postCreditorColumnValue = creditor['post' + creditorColumnSuffix];
+                  postCreditorColumnValue = (!postCreditorColumnValue ? -1 : postCreditorColumnValue);
+
               if (calc_accountDelinquency < 180) {
-                if (creditor['pre' + creditorColumnSuffix] !== -1) {
-                  resolve(creditor['pre' + creditorColumnSuffix]);
-                }else if (creditor['post' + creditorColumnSuffix] !== -1) {
-                  resolve(creditor['post' + creditorColumnSuffix]);
+                if (preCreditorColumnValue !== -1) {
+                  result = preCreditorColumnValue;
+                }else if (postCreditorColumnValue !== -1) {
+                  result = postCreditorColumnValue;
                 }else{
-                  resolve(fallbackValue);
+                  result = fallbackValue;
                 }
               }else{
-                if (creditor['post' + creditorColumnSuffix] !== -1) {
-                  resolve(creditor['post' + creditorColumnSuffix]);
-                }else if (creditor['pre' + creditorColumnSuffix] !== -1) {
-                  resolve(creditor['pre' + creditorColumnSuffix]);
+                if (postCreditorColumnValue !== -1) {
+                  result = postCreditorColumnValue;
+                }else if (preCreditorColumnValue !== -1) {
+                  result = preCreditorColumnValue;
                 }else{
-                  resolve(fallbackValue);
+                  result = fallbackValue;
                 }
               }
             }else{
-              resolve(fallbackValue);
+              result = fallbackValue;
             }
           }
+
+          if (!result) {
+            console.log(creditorColumnSuffix, 'is null for creditor', rawAccount.creditor, 'and account', rawAccount.account_number)
+          }
+
+          resolve(result);
         });
       });
     },

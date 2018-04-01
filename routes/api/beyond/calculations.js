@@ -24,6 +24,14 @@ router.get('/scorecard/set', (req, res) => {
   });
 });
 
+router.get('/all', (req, res) => {
+  Promise.resolve()
+    .then(() => creditorCalculationsLogic.setData())
+    .then(() => accountCalculationsLogic.setData())
+    .then(() => scorecardCalculationsLogic.setData());
+});
+
+
 router.get('/test', (req, res) => {
   res.status(200).json('Test Success! :)');
 });

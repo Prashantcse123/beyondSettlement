@@ -49,7 +49,7 @@ const scorecardCalculations = {
       let rowIndex = 0;
       let calcRowIndex = () => {
         console.log('index', rowIndex);
-        if (rowIndex === accounts.length || rowIndex === 200) {
+        if (rowIndex === accounts.length) {
           models.Scorecard.bulkCreate(scorecardCalculations._newRecords)
             .then(() => resolve());
           return;
