@@ -13,10 +13,16 @@ const accountCalculations = {
     ];
 
     return new Promise((resolve, reject) =>
-      Promise.all(init).then(() =>
-        accountCalculations.calculateAllRows()
-            .then (() => resolve('Account Calculations Success! :)'))
-            .catch(() => resolve('Account Calculations Error! :(')))
+      Promise.all(init).then(() => {
+        console.log(accountCalculations._rawAccounts[0]);
+        console.log(accountCalculations._creditors[0]);
+        console.log(accountCalculations._creditorOverrides[0]);
+
+        resolve();
+      })
+        // accountCalculations.calculateAllRows()
+        //     .then (() => resolve('Account Calculations Success! :)'))
+        //     .catch(() => resolve('Account Calculations Error! :(')))
     );
   },
 
