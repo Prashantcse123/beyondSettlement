@@ -1,0 +1,96 @@
+.message-center {
+  transition: opacity 0.3s;
+  opacity: 0;
+  margin-bottom: 24px;
+  pointer-events: none;
+  &.open {
+    opacity: 1;
+    .message-center-content {
+      pointer-events: all;
+      width: auto;
+    }
+  }
+  .message-center-content {
+    display: inline-block;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid;
+    padding: 8px 10px;
+    width: 0;
+    transition: width 0.2s;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 15px gray;
+    .message-center-icon {
+      display: inline-block;
+      vertical-align: middle;
+      padding: 3px;
+    }
+    .message-center-text {
+      display: inline-block;
+      margin: 0 8px;
+      text-shadow: 0 0 10px lightgray;
+      padding: 8px;
+    }
+    .message-center-tools {
+      float: right;
+      display: inline-block;
+    }
+    .message-center-close {
+      display: inline-block;
+      float: right;
+    }
+    &.type-general {
+      border-color: #16afca;
+      .message-center-icon, .message-center-close {
+        svg {
+          fill: #16afca !important;
+        }
+      }
+      .message-center-tools {
+        button {
+          color: #16afca !important;
+        }
+      }
+    }
+    &.type-info {
+      border-color: #1e80f0;
+      .message-center-icon, .message-center-close {
+        svg {
+          fill: #1e80f0 !important;
+        }
+      }
+      .message-center-tools {
+        button {
+          color: #1e80f0 !important;
+        }
+      }
+    }
+    &.type-error {
+      border-color: #fc226e;
+      .message-center-icon, .message-center-close {
+        svg {
+          fill: #fc226e !important;
+        }
+      }
+      .message-center-tools {
+        button {
+          color: #fc226e !important;
+        }
+      }
+    }
+    &.type-natural {
+      border-color: lightgray;
+      .message-center-icon, .message-center-close {
+        svg {
+          fill: lightgray !important;
+        }
+      }
+      .message-center-tools {
+        button {
+          color: lightgray !important;
+        }
+      }
+    }
+  }
+}

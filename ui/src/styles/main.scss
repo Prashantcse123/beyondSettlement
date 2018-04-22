@@ -1,0 +1,191 @@
+//// Base
+//
+//@import 'base/variables';
+//@import 'base/reset';
+//@import 'base/base';
+//@import 'base/typography';
+@import 'base/screens';
+//
+//// Components
+//
+//@import 'components/topbar';
+//@import 'components/topnav';
+//@import 'components/page';
+//
+//// Pages
+//
+//@import 'pages/home';
+//@import 'pages/posts';
+//@import 'pages/post';
+
+
+html {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-weight: 100;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 100 !important;
+}
+
+.dark {
+  color: white;
+  border-color: white;
+  svg {
+    color: white !important;
+  }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: white;
+  opacity: 0.2;
+  z-index: 999999;
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+
+[hidden], .hidden {
+  display: none !important;
+}
+
+[disabled], .disabled {
+  opacity: 0.6;
+  pointer-events: none !important;
+  * {pointer-events: none !important;}
+}
+
+.progress {
+  width: 100% !important;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+.half-width {
+  width: 50% !important;
+}
+
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
+}
+
+.space-right {
+  margin-right: 42px !important;
+}
+
+.truncate {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.unselectable {
+  -webkit-user-select: none; /* Safari & Chrome */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+.app-tooltip {
+  position: absolute;
+  color: white;
+  max-width: 300px;
+  padding: 4px 8px;
+  border-radius: 1px;
+  font-weight: 100 !important;
+  font-size: 12px;
+  z-index: 9999999999;
+  box-shadow: 0 0 10px gray;
+  //white-space: pre-line;
+  //word-break: break-all;
+  text-align: center;
+  text-shadow: none;
+  opacity: 1;
+}
+
+.app-tooltip {
+  background: #666;
+  &.error {
+    background: #fe0101;
+  }
+}
+
+@media (resolution: 150dpi) {
+  path {
+    color: red;
+  }
+}
+
+
+.show-print {
+  display: none !important;
+}
+
+@media print {
+  #root {
+    height: auto !important;
+    //overflow: unset !important;
+    .app {
+      height: auto !important;
+      overflow: visible !important;
+    }
+  }
+  body {
+    transform: scale(1) !important;
+    width: auto !important;
+    height: auto !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .printable, .printable * {
+    visibility: visible;
+  }
+  .printable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: auto;
+    .pagebreak {
+      display: block !important;
+      page-break-before: always !important;
+    }
+    .stop-pagebreak {
+      page-break-after: avoid !important;
+    }
+  }
+  .show-print {
+    display: inline-block !important;
+  }
+  .hide-print {
+    display: none !important;
+  }
+}
