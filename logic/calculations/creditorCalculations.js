@@ -1,16 +1,65 @@
 const models = require('../../models/index');
+const calculationsHelper = require('./calculationsHelper');
 
 const creditorCalculations = {
 
   /// External Interface
   setData: () => {
-    return new Promise((resolve, reject) =>
+    calculationsHelper.initCache(creditorCalculations);
+
+    let init = Promise.all([
+      creditorCalculations.importCreditors(),
       creditorCalculations.importCreditorVariables()
-        .then(() =>
-          creditorCalculations.calculateAllRows()
-            .then (() => resolve('Creditor Calculations Success! :)'))
-            .catch(() => resolve('Creditor Calculations Error! :(')))
-        );
+    ]);
+
+    return new Promise((resolve, reject) =>
+      init.then(() => {
+        let creditors = creditorCalculations._creditors;
+
+        calculationsHelper.calculateAllRows(creditorCalculations, 'Creditor', creditors, 'update')
+          .then (() => resolve('Creditor Calculations Success! :)'))
+          .catch(() => resolve('Creditor Calculations Error! :('))
+      })
+    );
+  },
+
+  /// Main Loop
+  // calculateAllRows: () => {
+  //   return new Promise(resolve => {
+  //       models.Creditor.findAll().then(creditors => {
+  //         let promises = [];
+  //
+  //         creditors.forEach(creditor =>
+  //           promises.push(creditorCalculations.calculateRow(creditor)));
+  //         Promise.all(promises).then(() => resolve());
+  //       });
+  //     });
+  //   },
+  //
+  // calculateRow: (creditor) => {
+  //   let results = {};
+  //   let promises = Object.keys(creditorCalculations.columns).map(column =>
+  //     creditorCalculations.setCalculationValue(creditor, column, results));
+  //
+  //   return new Promise(resolve => {
+  //     Promise.all(promises).then(() =>{
+  //       creditor.update(results).then(() => {
+  //         console.log('Creditor - "' + creditor.name + '"', 'Updated with new calculated results');
+  //         resolve();
+  //       })});
+  //   });
+  // },
+
+  /// Internal Service Functions
+  // setCalculationValue:  (creditor, columnName, results) => {
+  //   creditorCalculations.columns[columnName](creditor).then(result => results[columnName] = result)
+  // },
+  importCreditors:         () => {
+    return new Promise(resolve =>
+      models.Creditor.findAll().then(results => {
+        creditorCalculations._creditors = results;
+        resolve();
+      }));
   },
 
   importCreditorVariables: () => {
@@ -21,37 +70,6 @@ const creditorCalculations = {
       }));
   },
 
-  /// Main Loop
-  calculateAllRows: () => {
-    return new Promise(resolve => {
-        models.Creditor.findAll().then(creditors => {
-          let promises = [];
-
-          creditors.forEach(creditor =>
-            promises.push(creditorCalculations.calculateRow(creditor)));
-          Promise.all(promises).then(() => resolve());
-        });
-      });
-    },
-
-  calculateRow: (creditor) => {
-    let results = {};
-    let promises = Object.keys(creditorCalculations.columns).map(column =>
-      creditorCalculations.setCalculationValue(creditor, column, results));
-
-    return new Promise(resolve => {
-      Promise.all(promises).then(() =>{
-        creditor.update(results).then(() => {
-          console.log('Creditor - "' + creditor.name + '"', 'Updated with new calculated results');
-          resolve();
-        })});
-    });
-  },
-
-  /// Internal Service Functions
-  setCalculationValue:  (creditor, columnName, results) => {
-    creditorCalculations.columns[columnName](creditor).then(result => results[columnName] = result)
-  },
   rawDataColumnMatch:   (creditor, rawDataColumnName, fallbackValue) => {
     return new Promise((resolve) => {
       let result;

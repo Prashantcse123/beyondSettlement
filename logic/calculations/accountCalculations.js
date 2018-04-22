@@ -1,53 +1,54 @@
 const models = require('../../models/index');
+const calculationsHelper = require('./calculationsHelper');
 
 const accountCalculations = {
 
   /// External Interface
   setData: () => {
-    accountCalculations.initColumns();
+    calculationsHelper.initCache(accountCalculations);
 
-    let init = [
+    let init = Promise.all([
       accountCalculations.importActiveAccounts(),
       accountCalculations.importCreditors(),
       accountCalculations.importCreditorOverrides()
-    ];
+    ]);
 
     return new Promise((resolve, reject) =>
-      Promise.all(init).then(() => {
-        console.log(accountCalculations._rawAccounts[0]);
-        console.log(accountCalculations._creditors[0]);
-        console.log(accountCalculations._creditorOverrides[0]);
+      init.then(() => {
+        let rawAccounts = accountCalculations._rawAccounts.filter(rawAccount =>
+          !!rawAccount.programname);
 
-        resolve();
+        calculationsHelper.calculateAllRows(accountCalculations, 'Account', rawAccounts, 'create')
+          .then (() => resolve('Account Calculations Success! :)'))
+          .catch(() => resolve('Account Calculations Error! :('))
       })
-        // accountCalculations.calculateAllRows()
-        //     .then (() => resolve('Account Calculations Success! :)'))
-        //     .catch(() => resolve('Account Calculations Error! :(')))
     );
   },
 
-  initColumns: () => {
-    accountCalculations._cachedColumns = {};
 
-    Object.keys(accountCalculations.columns).forEach(columnName => {
-      let oldFunc = accountCalculations.columns[columnName];
-      let newFunc = (account,b,c,d,e,f,g) => {
-        return new Promise(resolve => {
-          // console.log(Object.keys(accountCalculations._cachedColumns));
-          if (Object.keys(accountCalculations._cachedColumns).includes(columnName)) {
-            resolve(accountCalculations._cachedColumns[columnName]);
-          }else{
-            oldFunc(account,b,c,d,e,f,g).then(result => {
-              accountCalculations._cachedColumns[columnName] = result;
-              resolve(result);
-            });
-          }
-        });
-      };
 
-      accountCalculations.columns[columnName] = newFunc;
-    });
-  },
+  // initCache: () => {
+  //   accountCalculations._cachedColumns = {};
+  //
+  //   Object.keys(accountCalculations.columns).forEach(columnName => {
+  //     let oldFunc = accountCalculations.columns[columnName];
+  //     let newFunc = (account,b,c,d,e,f,g) => {
+  //       return new Promise(resolve => {
+  //         // console.log(Object.keys(accountCalculations._cachedColumns));
+  //         if (Object.keys(accountCalculations._cachedColumns).includes(columnName)) {
+  //           resolve(accountCalculations._cachedColumns[columnName]);
+  //         }else{
+  //           oldFunc(account,b,c,d,e,f,g).then(result => {
+  //             accountCalculations._cachedColumns[columnName] = result;
+  //             resolve(result);
+  //           });
+  //         }
+  //       });
+  //     };
+  //
+  //     accountCalculations.columns[columnName] = newFunc;
+  //   });
+  // },
 
   // initColumns: () => {
   //   accountCalculations._cachedColumns = {};
@@ -74,93 +75,56 @@ const accountCalculations = {
   //   });
   // },
 
-  /// Main Loop
   // calculateAllRows: () => {
-  //   console.log('aaa111');
   //   return new Promise(resolve => {
+  //     let rawAccounts = accountCalculations._rawAccounts.filter(rawAccount => !!rawAccount.programname);
+  //     let rowIndex = 0;
+  //     let calcRowIndex = () => {
+  //       console.log('index', rowIndex, rawAccounts.length);
+  //       if (rowIndex === rawAccounts.length) {
+  //         console.log('bulk insert');
+  //         models.Account.bulkCreate(accountCalculations._newAccounts).then(() => resolve());
+  //       }else{
+  //         accountCalculations.calculateRow(rawAccounts[rowIndex]).then(() => {
+  //           rowIndex++;
+  //           calcRowIndex();
+  //         });
+  //       }
+  //     };
+  //
+  //     accountCalculations._newAccounts = [];
   //     models.Account.destroy({truncate: true});
-  //     let promises = [];
-  //
-  //     accountCalculations._rawAccounts.filter(rawAccount =>
-  //       !!rawAccount.programname).forEach(rawAccount =>{
-  //         promises.push(accountCalculations.calculateRow(rawAccount));
-  //         console.log('aaaaa');
-  //       });
-  //
-  //     console.log('aaaaa');
-  //
-  //     // promises.reduce((promiseChain, currentTask) => {
-  //     //   return promiseChain.then(chainResults =>
-  //     //     // currentTask.then(currentResult =>
-  //     //     //   [ ...chainResults, currentResult ]
-  //     //     // )
-  //     //     currentTask.then(() => console.log('Another Account is done! :)'))
-  //     //   );
-  //     // }, Promise.resolve([])).then(arrayOfResults => {
-  //     //   resolve();
-  //     //   // Do something with all results
-  //     // });
-  //     Promise.all(promises).then(() => resolve());
+  //     calcRowIndex();
   //   });
   // },
 
-  calculateAllRows: () => {
-    return new Promise(resolve => {
-      let rawAccounts = accountCalculations._rawAccounts.filter(rawAccount => !!rawAccount.programname);
-      let rowIndex = 0;
-      let calcRowIndex = () => {
-        // console.clear();
-        console.log('index', rowIndex, rawAccounts.length);
-        if (rowIndex === rawAccounts.length) {
-          console.log('bulk insert');
-          models.Account.bulkCreate(accountCalculations._newAccounts)
-            .then(() => resolve());
-          return;
-        }
-        accountCalculations.calculateRow(rawAccounts[rowIndex]).then(() => {
-          rowIndex++;
-          calcRowIndex();
-        });
-      };
-
-      accountCalculations._newAccounts = [];
-      models.Account.destroy({truncate: true});
-      calcRowIndex();
-    });
-  },
-
-
-  // calculateChunkOfRows(chunk) {
+  // calculateRow: (rawAccount) => {
+  //   let results = {};
+  //   let promises = Object.keys(accountCalculations.columns).map(column =>
+  //     accountCalculations.setCalculationValue(rawAccount, column, results));
   //
-  // }
+  //   accountCalculations._cachedColumns = {};
+  //
+  //   return new Promise(resolve => {
+  //     Promise.all(promises).then(() => {
+  //       accountCalculations._newAccounts.push(results);
+  //       // models.Account.create(results).then(() => {
+  //       //   console.log('Account - "' + rawAccount.account_number + '"', 'Created with new calculated results');
+  //         // console.log(results);
+  //         resolve();
+  //       // })
+  //     });
+  //   });
+  // },
 
-  calculateRow: (rawAccount) => {
-    let results = {};
-    let promises = Object.keys(accountCalculations.columns).map(column =>
-      accountCalculations.setCalculationValue(rawAccount, column, results));
-
-    accountCalculations._cachedColumns = {};
-
-    return new Promise(resolve => {
-      Promise.all(promises).then(() => {
-        accountCalculations._newAccounts.push(results);
-        // models.Account.create(results).then(() => {
-        //   console.log('Account - "' + rawAccount.account_number + '"', 'Created with new calculated results');
-          // console.log(results);
-          resolve();
-        // })
-      });
-    });
-  },
-
-  setCalculationValue:  (rawAccount, columnName, results) => {
-    accountCalculations.columns[columnName](rawAccount).then(result =>
-      results[columnName] = result)
-  },
+  // setCalculationValue:  (rawAccount, columnName, results) => {
+  //   accountCalculations.columns[columnName](rawAccount).then(result =>
+  //     results[columnName] = result)
+  // },
 
   /// Internal Service Functions --------------------------------------------------------------------------------------
 
-  importActiveAccounts: () => {
+  importActiveAccounts:     () => {
     return new Promise(resolve =>
       models.ImportedActiveAccount.findAll().then(results => {
         accountCalculations._rawAccounts = results;
@@ -168,7 +132,7 @@ const accountCalculations = {
       }));
   },
 
-  importCreditors: () => {
+  importCreditors:          () => {
     return new Promise(resolve =>
       models.Creditor.findAll().then(results => {
         accountCalculations._creditors = results;
@@ -176,7 +140,7 @@ const accountCalculations = {
       }));
   },
 
-  importCreditorOverrides: () => {
+  importCreditorOverrides:  () => {
     return new Promise(resolve =>
       models.CreditorOverride.findAll().then(results => {
         accountCalculations._creditorOverrides = results;
@@ -184,13 +148,13 @@ const accountCalculations = {
       }));
   },
 
-  rawDataColumnImport:    (rawAccount, rawDataColumnName, fallbackValue) => {
+  rawDataColumnImport:      (rawAccount, rawDataColumnName, fallbackValue) => {
     return new Promise((resolve) => {
       resolve(rawAccount[rawDataColumnName] || fallbackValue);
     });
   },
 
-  endOfMonthPct:          (rawAccount, columnName) => {
+  endOfMonthPct:            (rawAccount, columnName) => {
     return new Promise(resolve => {
       let result;
 
@@ -206,7 +170,7 @@ const accountCalculations = {
     });
   },
 
-  fundBalancePaymentPct:          (rawAccount, columnIndex) => {
+  fundBalancePaymentPct:    (rawAccount, columnIndex) => {
     return new Promise(resolve => {
       let result;
       let endOfMonthPctColumnName = (columnIndex === 1 ? 'endOfCurrentMonth' : 'monthOut' + (columnIndex - 1));
@@ -235,37 +199,37 @@ const accountCalculations = {
   columns: {
 
     /// Pre Charge-off Columns
-    accountNumber:              (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'account_number'),
-    programName:                (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'programname'),
-    tradelineName:              (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'tradelinename'),
-    creditor:                   (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'creditor'),
-    enrolledState:              (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'enrolledstate'),
-    avgMonthlyPayment:          (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'avg_monthly_payment'),
-    accountDelinquency:         (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'account_deliquency'),
-    currentFund:                (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'fund_in_cft'),
-    m0Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm0_bal'),
-    m1Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm1_bal'),
-    m2Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm2_bal'),
-    m3Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm3_bal'),
-    m4Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm4_bal'),
-    m5Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm5_bal'),
-    m6Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm6_bal'),
-    m7Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm7_bal'),
-    m8Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm8_bal'),
-    m9Bal:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm9_bal'),
-    m10Bal:                     (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm10_bal'),
-    m11Bal:                     (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm11_bal'),
-    m12Bal:                     (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm12_bal'),
-    maxTerm:                    (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'max_term'),
-    maxTermFundAccumulation:    (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'max_term_fund_accumulation'),
-    enrolledDebt:               (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'enrolled_debt'),
-    verifiedBalance:            (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'verifiedbalance'),
-    originalBalance:            (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'originalbalance'),
-    currentBalance:             (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'currentbalance'),
-    currentStage:               (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'currentstage'),
-    tradelineLastWorkedOn:      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'tradeline_last_negotiated'),
+    accountNumber:                          (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'account_number'),
+    programName:                            (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'programname'),
+    tradelineName:                          (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'tradelinename'),
+    creditor:                               (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'creditor'),
+    enrolledState:                          (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'enrolledstate'),
+    avgMonthlyPayment:                      (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'avg_monthly_payment'),
+    accountDelinquency:                     (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'account_deliquency'),
+    currentFund:                            (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'fund_in_cft'),
+    m0Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm0_bal'),
+    m1Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm1_bal'),
+    m2Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm2_bal'),
+    m3Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm3_bal'),
+    m4Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm4_bal'),
+    m5Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm5_bal'),
+    m6Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm6_bal'),
+    m7Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm7_bal'),
+    m8Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm8_bal'),
+    m9Bal:                                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm9_bal'),
+    m10Bal:                                 (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm10_bal'),
+    m11Bal:                                 (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm11_bal'),
+    m12Bal:                                 (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'm12_bal'),
+    maxTerm:                                (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'max_term'),
+    maxTermFundAccumulation:                (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'max_term_fund_accumulation'),
+    enrolledDebt:                           (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'enrolled_debt'),
+    verifiedBalance:                        (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'verifiedbalance'),
+    originalBalance:                        (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'originalbalance'),
+    currentBalance:                         (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'currentbalance'),
+    currentStage:                           (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'currentstage'),
+    tradelineLastWorkedOn:                  (rawAccount) => accountCalculations.rawDataColumnImport(rawAccount, 'tradeline_last_negotiated'),
 
-    calc_accountDelinquency:    (rawAccount) => {
+    calc_accountDelinquency:                (rawAccount) => {
       let creditorFactors = [{
         creditors: ['Bank of America', 'Citibank', 'Best Buy', 'Sears', 'Macys', 'Home Depot', 'Costco', 'Capital One', 'Credit One Bank-Collections', 'Synchrony Bank', 'Walmart', 'Sams Club', 'Amazon/Synchrony', 'Discover', 'Wells Fargo', 'Gap', 'Belk', 'Toys R US', 'Old Navy', 'American Eagle', 'Banana republic', 'Chevron', 'Stein Mart', 'TJ Maxx', 'Care Credit', 'HHGregg', 'Guitar Center', 'Lowes', 'CABELAS', 'Compass Bank', 'Commerce Bank', 'American Express', 'Credit First National Bank'],
         factor: -30,
@@ -310,7 +274,7 @@ const accountCalculations = {
         resolve(result);
       });
     },
-    calc_currentBalance:        (rawAccount) => {
+    calc_currentBalance:                    (rawAccount) => {
       return new Promise(resolve => {
         let result;
 
@@ -329,7 +293,7 @@ const accountCalculations = {
     },
 
     /// ﻿Overrides check
-    rangesFlag:                 (rawAccount) => {
+    rangesFlag:                             (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let maxBalance = Math.max(rawAccount.originalbalance, rawAccount.currentbalance);
@@ -355,7 +319,7 @@ const accountCalculations = {
         resolve(result);
       });
     },
-    multipleProductsFlag:       (rawAccount) => {
+    multipleProductsFlag:                   (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let relevantCreditors = ['US BANK', 'Wells Fargo', 'DISCOVER'];
@@ -373,25 +337,24 @@ const accountCalculations = {
         resolve(result);
       });
     },
-    // creditorCheck1: DataTypes.STRING,
 
     /// ﻿Fund Accumulation
-    endOfCurrentMonth:          (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm0_bal'),
-    monthOut1:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm1_bal'),
-    monthOut2:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm2_bal'),
-    monthOut3:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm3_bal'),
-    monthOut4:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm4_bal'),
-    monthOut5:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm5_bal'),
-    monthOut6:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm6_bal'),
-    monthOut7:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm7_bal'),
-    monthOut8:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm8_bal'),
-    monthOut9:                  (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm9_bal'),
-    monthOut10:                 (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm10_bal'),
-    monthOut11:                 (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm11_bal'),
-    monthOut12:                 (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm12_bal'),
-    maxTermOut:                 (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'max_term_fund_accumulation'),
+    endOfCurrentMonth:                      (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm0_bal'),
+    monthOut1:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm1_bal'),
+    monthOut2:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm2_bal'),
+    monthOut3:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm3_bal'),
+    monthOut4:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm4_bal'),
+    monthOut5:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm5_bal'),
+    monthOut6:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm6_bal'),
+    monthOut7:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm7_bal'),
+    monthOut8:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm8_bal'),
+    monthOut9:                              (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm9_bal'),
+    monthOut10:                             (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm10_bal'),
+    monthOut11:                             (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm11_bal'),
+    monthOut12:                             (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'm12_bal'),
+    maxTermOut:                             (rawAccount) => accountCalculations.endOfMonthPct(rawAccount, 'max_term_fund_accumulation'),
 
-    minOfFunds:                 (rawAccount) => {
+    minOfFunds:                             (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let promises = [
@@ -422,7 +385,7 @@ const accountCalculations = {
         });
       });
     },
-    lessThen5PctSettlementFlag: (rawAccount) => {
+    lessThen5PctSettlementFlag:             (rawAccount) => {
       return new Promise(resolve => {
         let result;
 
@@ -438,7 +401,7 @@ const accountCalculations = {
       });
     }, // NOTE: ﻿Merilytics: Flag to exclude the payments having less than 5% of the settlement
 
-    notSettlePreChargeOffFlag:  (rawAccount) => {
+    notSettlePreChargeOffFlag:              (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let promises = [
@@ -451,7 +414,7 @@ const accountCalculations = {
           let calc_accountDelinquency = results[0];
           let rangesFlag = results[1];
           let multipleProductsFlag = results[2];
-          let accountCreditorTermConcat = rawAccount.creditor + rangesFlag + multipleProductsFlag;
+          let accountCreditorTermConcat = rawAccount.creditor + (rangesFlag + multipleProductsFlag);
           let concatRelevantCreditors = ['US BANK0', 'Wells Fargo0', 'DISCOVER0'];
           let relevantCreditors = ['Capital One'];
 
@@ -469,7 +432,7 @@ const accountCalculations = {
       });
     }, // NOTE: ﻿Merilytics: Flag to exclude the creditors who don't settle pre charge off
 
-    creditorScore:              (rawAccount) => {
+    creditorScore:                          (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let creditor = accountCalculations._creditors.filter(cr => cr.name === rawAccount.creditor)[0];
@@ -483,7 +446,7 @@ const accountCalculations = {
         resolve(result);
       });
     },
-    delinquencyFlag:            (rawAccount) => {
+    delinquencyFlag:                        (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let promises = [
@@ -511,7 +474,7 @@ const accountCalculations = {
     }, // NOTE: ﻿﻿Merilytics: Flag to exclude accounts with less than 100 days of delinquency and having creditor score less than 7
 
     /// ﻿Eligibility for settlement
-    isEligible:                 (rawAccount) => {
+    isEligible:                             (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let relevantCreditors = ['US BANK', 'American Express', 'Elan Financial', 'Kroger'];
@@ -593,7 +556,7 @@ const accountCalculations = {
         });
       });
     },  // NOTE: ﻿Merilytics: Eligibilty based on fund availability at the end of calculated term or max allowable term
-    minPaymentPct:                  (rawAccount) => {
+    minPaymentPct:                          (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let promises = [
@@ -623,7 +586,7 @@ const accountCalculations = {
         });
       });
     }, // NOTE: ﻿Merilytics: % Minimum payment to be paid
-    calculatedTerm:                 (rawAccount) => {
+    calculatedTerm:                         (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let promises = [
@@ -668,20 +631,20 @@ const accountCalculations = {
     }, // NOTE: ﻿Merilytics: Calculating the projected settlement term based on fund availability
 
     /// ﻿Check for minimum payment every month of term
-    fundBalancePayment1: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 1), // NOTE: ﻿Merilytics: Balance fund  %  (end of month) after making 1st payment
-    fundBalancePayment2: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 2), // NOTE: ﻿Merilytics: Balance fund  %  (1 month out) after making 2 payments
-    fundBalancePayment3: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 3), // NOTE: ﻿Merilytics: Balance fund  %  (2 month out) after making 3 payments
-    fundBalancePayment4: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 4), // NOTE: ﻿Merilytics: Balance fund  %  (3 month out) after making 4 payments
-    fundBalancePayment5: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 5), // NOTE: ﻿Merilytics: Balance fund  %  (4 month out) after making 5 payments
-    fundBalancePayment6: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 6), // NOTE: ﻿Merilytics: Balance fund  %  (5 month out) after making 6 payments
-    fundBalancePayment7: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 7), // NOTE: ﻿Merilytics: Balance fund  %  (6 month out) after making 7 payments
-    fundBalancePayment8: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 8), // NOTE: ﻿Merilytics: Balance fund  %  (7 month out) after making 8 payments
-    fundBalancePayment9: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 9), // NOTE: ﻿Merilytics: Balance fund  %  (8 month out) after making 9 payments
-    fundBalancePayment10: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 10), // NOTE: ﻿Merilytics: Balance fund  %  (9 month out) after making 10 payments
-    fundBalancePayment11: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 11), // NOTE: ﻿Merilytics: Balance fund  %  (10 month out) after making 11 payments
-    fundBalancePayment12: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 12), // NOTE: ﻿Merilytics: Balance fund  %  (11 month out) after making 12 payments
-    fundBalancePayment13: (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 13), // NOTE: ﻿Merilytics: Balance fund  %  (12 month out) after making 13 payments
-    minCheck:        (rawAccount) => {
+    fundBalancePayment1:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 1), // NOTE: ﻿Merilytics: Balance fund  %  (end of month) after making 1st payment
+    fundBalancePayment2:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 2), // NOTE: ﻿Merilytics: Balance fund  %  (1 month out) after making 2 payments
+    fundBalancePayment3:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 3), // NOTE: ﻿Merilytics: Balance fund  %  (2 month out) after making 3 payments
+    fundBalancePayment4:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 4), // NOTE: ﻿Merilytics: Balance fund  %  (3 month out) after making 4 payments
+    fundBalancePayment5:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 5), // NOTE: ﻿Merilytics: Balance fund  %  (4 month out) after making 5 payments
+    fundBalancePayment6:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 6), // NOTE: ﻿Merilytics: Balance fund  %  (5 month out) after making 6 payments
+    fundBalancePayment7:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 7), // NOTE: ﻿Merilytics: Balance fund  %  (6 month out) after making 7 payments
+    fundBalancePayment8:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 8), // NOTE: ﻿Merilytics: Balance fund  %  (7 month out) after making 8 payments
+    fundBalancePayment9:                    (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 9), // NOTE: ﻿Merilytics: Balance fund  %  (8 month out) after making 9 payments
+    fundBalancePayment10:                   (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 10), // NOTE: ﻿Merilytics: Balance fund  %  (9 month out) after making 10 payments
+    fundBalancePayment11:                   (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 11), // NOTE: ﻿Merilytics: Balance fund  %  (10 month out) after making 11 payments
+    fundBalancePayment12:                   (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 12), // NOTE: ﻿Merilytics: Balance fund  %  (11 month out) after making 12 payments
+    fundBalancePayment13:                   (rawAccount) => accountCalculations.fundBalancePaymentPct(rawAccount, 13), // NOTE: ﻿Merilytics: Balance fund  %  (12 month out) after making 13 payments
+    minCheck:                               (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let promises = [
@@ -721,7 +684,7 @@ const accountCalculations = {
         });
       });
     }, // NOTE: ﻿Merilytics: If the minimum check <0, then a term payment will be NSF
-    termConsidered:        (rawAccount) => {
+    termConsidered:                         (rawAccount) => {
       return new Promise(resolve => {
         let result;
 
@@ -736,7 +699,7 @@ const accountCalculations = {
         });
       });
     },
-    settlementAmountAsPctOfVerifiedDebt:        (rawAccount) => {
+    settlementAmountAsPctOfVerifiedDebt:    (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let originalBalance = rawAccount.originalbalance;
@@ -753,7 +716,7 @@ const accountCalculations = {
         });
       });
     },
-    feePct:        (rawAccount) => {
+    feePct:                                 (rawAccount) => {
       return new Promise(resolve => {
         let result;
 
@@ -772,7 +735,7 @@ const accountCalculations = {
         });
       });
     },
-    feeAmount:        (rawAccount) => {
+    feeAmount:                              (rawAccount) => {
       return new Promise(resolve => {
         let result;
         let originalBalance = rawAccount.originalbalance;

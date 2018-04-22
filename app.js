@@ -7,7 +7,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const splunkBunyan = require('splunk-bunyan-logger');
 
+const serveStatic = require('serve-static');
+
 const api = require('./routes/api');
+// const ui = require('./routes/ui');
 
 const app = express();
 
@@ -34,6 +37,8 @@ app.use(cookieParser());
 
 // api
 app.use('/api', api);
+app.use('/', express.static('ui/dist'));
+app.use('/assets', express.static('ui/dist/assets'));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

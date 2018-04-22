@@ -44,7 +44,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result =>{
           expect(result).to.be(null);
         });
@@ -84,7 +84,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(0);
@@ -125,7 +125,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(-8);
@@ -166,7 +166,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(89);
@@ -207,7 +207,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(119);
@@ -248,7 +248,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(149);
@@ -289,7 +289,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(179);
@@ -330,7 +330,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_accountDelinquency(rawAccount)
+      this.accountCalculationsLogic.columns.calc_accountDelinquency(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(29);
@@ -374,7 +374,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_currentBalance(rawAccount)
+      this.accountCalculationsLogic.columns.calc_currentBalance(rawAccount)
         .then(result =>{
           expect(result).to.be(null);
         });
@@ -414,7 +414,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_currentBalance(rawAccount)
+      this.accountCalculationsLogic.columns.calc_currentBalance(rawAccount)
         .then(result =>{
             expect(result).to.be.a('number');
             expect(result).to.be(1746);
@@ -455,7 +455,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.calc_currentBalance(rawAccount)
+      this.accountCalculationsLogic.columns.calc_currentBalance(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(850);
@@ -499,7 +499,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be(null);
         });
@@ -539,7 +539,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(2);
@@ -580,7 +580,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(3);
@@ -621,7 +621,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(4);
@@ -662,7 +662,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(5);
@@ -703,7 +703,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(6);
@@ -744,13 +744,11 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(7);
         });
-
-
     });
 
     it('test column multipleProductsFlag', () => {
@@ -789,7 +787,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be(null);
         });
@@ -828,7 +826,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(1);
@@ -868,10 +866,250 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.rangesFlag(rawAccount)
+      this.accountCalculationsLogic.columns.rangesFlag(rawAccount)
         .then(result =>{
           expect(result).to.be.a('number');
           expect(result).to.be(0);
+        });
+
+    });
+
+    it('test generic function endOfMonthPct', () => {
+      let rawAccount = {};
+
+      /// m0_bal is 1350
+      /// currentbalance is null
+      /// originalbalance is 1746
+      /// [CALCULATED] calc_currentBalance is 1746
+      rawAccount = {
+        id: 36543,
+        programname: 'P-2445',
+        tradelinename: 'TL-00040351',
+        creditor: 'Capital One',
+        enrolledstate: 'IN',
+        avg_monthly_payment: '675.1800',
+        account_deliquency: '59',
+        fund_in_cft: '675.1800',
+        m0_bal: '1350.3600',
+        m1_bal: '2025.5400',
+        m2_bal: '2700.7200',
+        m3_bal: '3375.9000',
+        m4_bal: '4051.0800',
+        m5_bal: '4726.2600',
+        m6_bal: '5401.4400',
+        m7_bal: '6076.6200',
+        m8_bal: '6751.8000',
+        m9_bal: '7426.9800',
+        m10_bal: '8102.1600',
+        m11_bal: '8777.3400',
+        m12_bal: '9452.5200',
+        max_term: 0,
+        max_term_fund_accumulation: '1350.3600',
+        enrolled_debt: '35447.0000',
+        verifiedbalance: null,
+        originalbalance: 1746,
+        currentbalance: null,
+        currentstage: 'New',
+        tradeline_last_negotiated: null,
+        account_number: '8192-4156-3180-24'
+      };
+      this.accountCalculationsLogic.columns.endOfCurrentMonth(rawAccount, 'm0_bal')
+        .then(result => {
+          expect(result).to.be.a('number');
+          expect(result).to.be(0.7734020618556701);
+        });
+
+      /// m0_bal is 1350
+      /// currentbalance is null
+      /// originalbalance is 1746
+      /// [CALCULATED] calc_currentBalance is 850
+      rawAccount = {
+        id: 36543,
+        programname: 'P-2445',
+        tradelinename: 'TL-00040351',
+        creditor: 'Capital One',
+        enrolledstate: 'IN',
+        avg_monthly_payment: '675.1800',
+        account_deliquency: '59',
+        fund_in_cft: '675.1800',
+        m0_bal: '1350.3600',
+        m1_bal: '2025.5400',
+        m2_bal: '2700.7200',
+        m3_bal: '3375.9000',
+        m4_bal: '4051.0800',
+        m5_bal: '4726.2600',
+        m6_bal: '5401.4400',
+        m7_bal: '6076.6200',
+        m8_bal: '6751.8000',
+        m9_bal: '7426.9800',
+        m10_bal: '8102.1600',
+        m11_bal: '8777.3400',
+        m12_bal: '9452.5200',
+        max_term: 0,
+        max_term_fund_accumulation: '1350.3600',
+        enrolled_debt: '35447.0000',
+        verifiedbalance: null,
+        originalbalance: 1746,
+        currentbalance: 850,
+        currentstage: 'New',
+        tradeline_last_negotiated: null,
+        account_number: '8192-4156-3180-24'
+      };
+      this.accountCalculationsLogic.columns.endOfCurrentMonth(rawAccount, 'm0_bal')
+        .then(result => {
+          expect(result).to.be.a('number');
+          expect(result).to.be(1.5886588235294117);
+        });
+
+      /// m0_bal is 1350
+      /// currentbalance is null
+      /// originalbalance is 0
+      /// [CALCULATED] calc_currentBalance is 0 (will cause a division by 0 exception)
+      rawAccount = {
+        id: 36543,
+        programname: 'P-2445',
+        tradelinename: 'TL-00040351',
+        creditor: 'Capital One',
+        enrolledstate: 'IN',
+        avg_monthly_payment: '675.1800',
+        account_deliquency: '59',
+        fund_in_cft: '675.1800',
+        m0_bal: '1350.3600',
+        m1_bal: '2025.5400',
+        m2_bal: '2700.7200',
+        m3_bal: '3375.9000',
+        m4_bal: '4051.0800',
+        m5_bal: '4726.2600',
+        m6_bal: '5401.4400',
+        m7_bal: '6076.6200',
+        m8_bal: '6751.8000',
+        m9_bal: '7426.9800',
+        m10_bal: '8102.1600',
+        m11_bal: '8777.3400',
+        m12_bal: '9452.5200',
+        max_term: 0,
+        max_term_fund_accumulation: '1350.3600',
+        enrolled_debt: '35447.0000',
+        verifiedbalance: null,
+        originalbalance: 0,
+        currentbalance: null,
+        currentstage: 'New',
+        tradeline_last_negotiated: null,
+        account_number: '8192-4156-3180-24'
+      };
+      this.accountCalculationsLogic.columns.endOfCurrentMonth(rawAccount, 'm0_bal')
+        .then(result => {
+          expect(result).to.be(null);
+        });
+
+    }); // note: this is a generic function that represents ﻿Fund Accumulation columns (endOfCurrentMonth, monthOut1, etc...)
+
+    it('test generic function creditorReprocess.reprocessColumnWithOverride', () => {
+      let rawAccount = {};
+
+      /// creditor is 'Lowes' (has creditor override)
+      /// [CALCULATED] calc_accountDelinquency is null
+      /// [CALCULATED] rangesFlag is null
+      /// [CALCULATED] multipleProductsFlag is 1746
+      /// originalbalance is 1746
+      /// [CALCULATED] calc_currentBalance is 1746
+
+      rawAccount = {
+        id: 36543,
+        programname: 'P-2445',
+        tradelinename: 'TL-00040351',
+        creditor: 'Capital One',
+        enrolledstate: 'IN',
+        avg_monthly_payment: '675.1800',
+        account_deliquency: '59',
+        fund_in_cft: '675.1800',
+        m0_bal: '1350.3600',
+        m1_bal: '2025.5400',
+        m2_bal: '2700.7200',
+        m3_bal: '3375.9000',
+        m4_bal: '4051.0800',
+        m5_bal: '4726.2600',
+        m6_bal: '5401.4400',
+        m7_bal: '6076.6200',
+        m8_bal: '6751.8000',
+        m9_bal: '7426.9800',
+        m10_bal: '8102.1600',
+        m11_bal: '8777.3400',
+        m12_bal: '9452.5200',
+        max_term: 0,
+        max_term_fund_accumulation: '1350.3600',
+        enrolled_debt: '35447.0000',
+        verifiedbalance: null,
+        originalbalance: 1746,
+        currentbalance: null,
+        currentstage: 'New',
+        tradeline_last_negotiated: null,
+        account_number: '8192-4156-3180-24'
+      };
+      this.accountCalculationsLogic.creditorReprocess.reprocessColumnWithOverride(rawAccount, 'AvgPctSettlement', 'PctSettlementRate', 0.6)
+        .then(result => {
+          expect(result).to.be.a('number');
+          expect(result).to.be(0.7734020618556701);
+        });
+
+    }); // note: this is a generic function that represents creditorReprocess columns (avgPctSettlement, settlementTerm, minPayment)
+
+    it('test column minOfFunds', () => {
+      let rawAccount = {};
+
+      /// currentbalance is null
+      /// originalbalance is 1746
+      /// [CALCULATED] calc_currentBalance is 1746
+      /// [CALCULATED] monthOut2 is 1.5468041237113401
+      /// [CALCULATED] monthOut3 is 1.9335051546391753
+      /// [CALCULATED] monthOut4 is 2.3202061855670104
+      /// [CALCULATED] monthOut5 is 2.7069072164948453
+      /// [CALCULATED] monthOut6 is 3.0936082474226803
+      /// [CALCULATED] monthOut7 is 3.4803092783505156
+      /// [CALCULATED] monthOut8 is 3.8670103092783505
+      /// [CALCULATED] monthOut9 is 4.253711340206185
+      /// [CALCULATED] monthOut10 is 4.640412371134021
+      /// [CALCULATED] monthOut11 is 5.027113402061856
+      /// [CALCULATED] monthOut12 is 5.413814432989691
+
+
+      /// [CALCULATED] creditorReprocess.avgPctSettlement is 5.413814432989691
+      rawAccount = {
+        id: 36543,
+        programname: 'P-2445',
+        tradelinename: 'TL-00040351',
+        creditor: 'Capital One',
+        enrolledstate: 'IN',
+        avg_monthly_payment: '675.1800',
+        account_deliquency: '59',
+        fund_in_cft: '675.1800',
+        m0_bal: '1350.3600',
+        m1_bal: '2025.5400',
+        m2_bal: '2700.7200',
+        m3_bal: '3375.9000',
+        m4_bal: '4051.0800',
+        m5_bal: '4726.2600',
+        m6_bal: '5401.4400',
+        m7_bal: '6076.6200',
+        m8_bal: '6751.8000',
+        m9_bal: '7426.9800',
+        m10_bal: '8102.1600',
+        m11_bal: '8777.3400',
+        m12_bal: '9452.5200',
+        max_term: 0,
+        max_term_fund_accumulation: '1350.3600',
+        enrolled_debt: '35447.0000',
+        verifiedbalance: null,
+        originalbalance: 1746,
+        currentbalance: null,
+        currentstage: 'New',
+        tradeline_last_negotiated: null,
+        account_number: '8192-4156-3180-24'
+      };
+      this.accountCalculationsLogic.columns.minOfFunds(rawAccount)
+        .then(result => {
+          expect(result).to.be.a('number');
+          expect(result).to.be(0.7731958762886598);
         });
 
     });
@@ -913,7 +1151,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.notSettlePreChargeOffFlag(rawAccount)
+      this.accountCalculationsLogic.columns.notSettlePreChargeOffFlag(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(0);
@@ -955,7 +1193,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.notSettlePreChargeOffFlag(rawAccount)
+      this.accountCalculationsLogic.columns.notSettlePreChargeOffFlag(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(1);
@@ -997,7 +1235,7 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.notSettlePreChargeOffFlag(rawAccount)
+      this.accountCalculationsLogic.columns.notSettlePreChargeOffFlag(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(0);
@@ -1039,13 +1277,11 @@ describe('calculations', () => {
         tradeline_last_negotiated: null,
         account_number: '8192-4156-3180-24'
       };
-      this.accountCalculationsLogic.notSettlePreChargeOffFlag(rawAccount)
+      this.accountCalculationsLogic.columns.notSettlePreChargeOffFlag(rawAccount)
         .then(result => {
           expect(result).to.be.a('number');
           expect(result).to.be(1);
         });
-
-
 
     });
 

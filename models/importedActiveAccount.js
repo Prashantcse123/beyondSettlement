@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     m10_bal: DataTypes.STRING,
     m11_bal: DataTypes.STRING,
     m12_bal: DataTypes.STRING,
-    max_term: DataTypes.INTEGER,
+    max_term: DataTypes.STRING,
     max_term_fund_accumulation: DataTypes.STRING,
     enrolled_debt: DataTypes.STRING,
     verifiedbalance: DataTypes.FLOAT,

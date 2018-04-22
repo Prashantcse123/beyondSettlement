@@ -5,12 +5,11 @@ const dataImportLogic = require('../../../logic/sourceData/dataImport');
 const router = express.Router();
 
 router.get('/get', (req, res) => {
-  dataImportLogic.importData().then((data) => {
-    res.status(200).json(data);
-  })
+  dataImportLogic.importData();
+  res.status(200).json('Success!');
 });
 
-router.get('/get', (req, res) => {
+router.get('/test', (req, res) => {
   res.status(200).json('Test Success! :)');
 });
 
