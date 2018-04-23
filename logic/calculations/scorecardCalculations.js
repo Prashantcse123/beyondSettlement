@@ -475,6 +475,7 @@ const scorecardCalculations = {
         Promise.all(promises).then(results => {
           console.log(results);
           results.forEach(r => result += r);
+            console.log(result);
           resolve(result);
         });
       });

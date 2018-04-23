@@ -25,6 +25,28 @@ const accountCalculations = {
     );
   },
 
+    testColumn: (columnName, id) => {
+        let init = Promise.all([
+            accountCalculations.importActiveAccounts(),
+            accountCalculations.importCreditors(),
+            accountCalculations.importCreditorOverrides()
+        ]);
+
+        return new Promise((resolve, reject) =>
+            init.then(() => {
+                let rawAccounts = accountCalculations._rawAccounts.filter(rawAccount =>
+                    !!rawAccount.programname);
+
+                let rawAccount = (id ? rawAccounts.filter(r => r.id.toString() === id.toString())[0] || rawAccounts[0] : rawAccounts[0]);
+
+                console.log('aaa',id,rawAccounts[0].id, rawAccount);
+
+                accountCalculations.columns[columnName](rawAccount)
+                    .then ((result) => resolve(result))
+            })
+        );
+
+    },
 
 
   // initCache: () => {
@@ -126,7 +148,7 @@ const accountCalculations = {
 
   importActiveAccounts:     () => {
     return new Promise(resolve =>
-      models.ImportedActiveAccount.findAll().then(results => {
+      models.ImportedActiveAccount.findAll({raw: true}).then(results => {
         accountCalculations._rawAccounts = results;
         resolve();
       }));
@@ -150,7 +172,7 @@ const accountCalculations = {
 
   rawDataColumnImport:      (rawAccount, rawDataColumnName, fallbackValue) => {
     return new Promise((resolve) => {
-      resolve(rawAccount[rawDataColumnName] || fallbackValue);
+      resolve(rawAccount[rawDataColumnName] || fallbackValue || null);
     });
   },
 

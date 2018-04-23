@@ -3,25 +3,25 @@ const models = require('../../models/index');
 const calculationsHelper = {
 
     initCache: (calculationsUnit) => {
-        calculationsUnit._cachedColumns = {};
-
-        Object.keys(calculationsUnit.columns).forEach(columnName => {
-            let oldFunc = calculationsUnit.columns[columnName];
-            let newFunc = (account, b, c, d, e, f, g) => {
-                return new Promise(resolve => {
-                    if (Object.keys(calculationsUnit._cachedColumns).includes(columnName)) {
-                        resolve(calculationsUnit._cachedColumns[columnName]);
-                    }else{
-                        oldFunc(account, b, c, d, e, f, g).then(result => {
-                            calculationsUnit._cachedColumns[columnName] = result;
-                            resolve(result);
-                        });
-                    }
-                });
-            };
-
-            calculationsUnit.columns[columnName] = newFunc;
-        });
+        // calculationsUnit._cachedColumns = {};
+        //
+        // Object.keys(calculationsUnit.columns).forEach(columnName => {
+        //     let oldFunc = calculationsUnit.columns[columnName];
+        //     let newFunc = (account, b, c, d, e, f, g) => {
+        //         return new Promise(resolve => {
+        //             if (Object.keys(calculationsUnit._cachedColumns).includes(columnName)) {
+        //                 resolve(calculationsUnit._cachedColumns[columnName]);
+        //             }else{
+        //                 oldFunc(account, b, c, d, e, f, g).then(result => {
+        //                     calculationsUnit._cachedColumns[columnName] = result;
+        //                     resolve(result);
+        //                 });
+        //             }
+        //         });
+        //     };
+        //
+        //     calculationsUnit.columns[columnName] = newFunc;
+        // });
         //
         // Object.keys(calculationsUnit.creditorReprocess).forEach(columnName => {
         //     let oldFunc = calculationsUnit.creditorReprocess[columnName];
@@ -65,8 +65,11 @@ const calculationsHelper = {
                     // }
                 } else {
                     calculationsUnit._cachedColumns = {};
+                    calculationsUnit._rowResults = {};
                     calculationsHelper.calculateRow(calculationsUnit, rows[rowIndex]).then((results) => {
                         if (method === 'create') {
+                            // console.log('aaa', results);
+                            // console.log('bbb', calculationsUnit.columns);
                             model.create(results).then(() => calcRowIndex(rowIndex + 1));
                         } else if (method === 'update') {
                             rows[rowIndex].update(results).then(() => calcRowIndex(rowIndex + 1));
@@ -85,21 +88,31 @@ const calculationsHelper = {
     },
 
     calculateRow: (calculationsUnit, row) => {
-        let results = {};
         let promises = Object.keys(calculationsUnit.columns).map(column =>
-            calculationsHelper.setCalculationValue(calculationsUnit, row, column, results));
+            calculationsHelper.setCalculationValue(calculationsUnit, row, column));
 
         return new Promise(resolve => {
-            Promise.all(promises).then(() => {
-                calculationsUnit._newRows.push(results);
-                resolve(results);
+            Promise.all(promises).then((resultsColumns) => {
+                let resultObj = {};
+                resultsColumns.forEach(rc => resultObj[Object.keys(rc)[0]] = rc[Object.keys(rc)[0]]);
+                // calculationsUnit._newRows.push(calculationsHelper._rowResults);
+                resolve(resultObj);
+                // console.log('rr', calculationsUnit._rowResults[row.id])
             });
         });
     },
 
-    setCalculationValue: (calculationsUnit, row, columnName, results) => {
-        calculationsUnit.columns[columnName](row).then(result =>
-            results[columnName] = result)
+    setCalculationValue: (calculationsUnit, row, columnName) => {
+        return new Promise(resolve =>
+        calculationsUnit.columns[columnName](row)
+            .then (result => {
+                // console.log('mi', columnName, result);
+                // if (!calculationsUnit._rowResults[row.id]) calculationsUnit._rowResults[row.id] = {};
+                // calculationsUnit._rowResults[row.id][columnName] = result;
+                // console.log('rr', calculationsUnit._rowResults[row.id])
+                resolve({[columnName]: result})
+            })
+            .catch(err => console.log('ERROR:', columnName, err)));
     },
 
     updateProgress: (task, value) => {
