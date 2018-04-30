@@ -31,7 +31,17 @@ router.get('/all/set', (req, res) => {
 });
 
 router.get('/scorecard', (req, res) => {
-    models.Scorecard.findAll().then(rows => {
+    let options = {};
+
+    if (req.query.sortBy) {
+        options = {
+            order: [[req.query.sortBy, req.query.sortOrder.toUpperCase()]]
+        }
+    }
+
+    console.log(options);
+
+    models.Scorecard.findAll(options).then(rows => {
         let page = parseInt(req.query.page || 1);
         let pageSize = parseInt(req.query.page_size || 10);
         let start = pageSize * page - pageSize;
