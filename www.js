@@ -9,13 +9,6 @@ const port = process.env.PORT || 3000;
 console.log({ message: `starting project in ${process.env.NODE_ENV} environment, port ${port}` });
 debug({ message: `starting project in ${process.env.NODE_ENV} environment, port ${port}` });
 
-/*
- * General 404
- */
-app.use((req, res) => {
-  res.status(404).send({ url: `${req.originalUrl}  not found` });
-});
-
 models.sequelize.sync().then(() => {
   /**
    * Listen on provided port, on all network interfaces.

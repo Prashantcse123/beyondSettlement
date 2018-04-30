@@ -26,17 +26,17 @@ export default class BaseStore {
 
     setStorage(data) {
         Object.keys(data).forEach(key =>
-            localStorage.setItem('SCOPIO-' + key, data[key]));
+            localStorage.setItem('BEYOND-' + key, data[key]));
     }
 
     getStorage(key) {
-        return localStorage.getItem('SCOPIO-' + key);
+        return localStorage.getItem('BEYOND-' + key);
     }
 
     updateFromStorage() {
         Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('SCOPIO-')) {
-                key = key.replace('SCOPIO-', '');
+            if (key.startsWith('BEYOND-')) {
+                key = key.replace('BEYOND-', '');
                 this.set({[key]: this.getStorage(key)});
             }
         })
