@@ -41,51 +41,32 @@ export default class Scorecard extends Component {
         document.title = 'Beyond - Scorecard';
     }
 
-    static get columnWidths() {
-        return [
-            '30px',
-            '120px',
-            '150px',
-            'auto',
-            '100px',
-            '100px',
-            '100px',
-            '50px'
-        ];
-    }
-
-    renderRowDate(scorecardRow) {
-        return <span>{Moment.utc(scorecardRow.created_at).local().format('DD/MM/YYYY HH:mm')}</span>;
-    }
-
-    // get allScans() {
-    //     const { column, order } = this.state.sortedColumn;
-    //     const { scorecard } = this.props.store;
+    // static get columnWidths() {
+    //     return [
+    //         '30px',
+    //         '120px',
+    //         '150px',
+    //         'auto',
+    //         '100px',
+    //         '100px',
+    //         '100px',
+    //         '50px'
+    //     ];
+    // }
     //
-    //     return scorecard.allRows
-    //         .map(scan =>
-    //             Object.assign({}, scan, {
-    //                 index: scan.id,
-    //                 created: this.renderRowDate(scan),
-    //                 // img: this.renderScanRowImage(scan),
-    //                 // tools: this.renderScanRowTools(scan),
-    //                 analyses: scan.analyses.join('  |  '),
-    //                 species: (scan.species || '').capitalize()
-    //
-    //             }))
-    //         .sortBy(column, order);
+    // renderRowDate(scorecardRow) {
+    //     return <span>{Moment.utc(scorecardRow.created_at).local().format('DD/MM/YYYY HH:mm')}</span>;
     // }
 
-    // onRowSelection(selectedScorecardRows) {
-    //     this.setState({selectedScorecardRows});
-    // }
 
     onRowClick(scorecard) {
         this.setState({openedRow: scorecard});
     }
 
     onColumnSort(column, order) {
-        this.setState({sortedColumn: {column, order}});
+        //this.setState({sortedColumn: {column, order}});
+        const { scorecard } = this.props.store;
+        scorecard.setSort({column, order});
     }
 
     onFilterChange(value) {
@@ -174,7 +155,7 @@ export default class Scorecard extends Component {
                     page={scorecard.page}
                     count={scorecard.count}
                     rowSize={scorecard.rowSize}
-                    data={scorecard.allRows.map(a => a).sortBy(column, order)}
+                    data={scorecard.allRows.map(a => a)}
                     columns={[{
                         key: 'id',
                         label: '#',

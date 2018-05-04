@@ -3,28 +3,7 @@ const calculationsHelper = require('./calculationsHelper');
 
 const scorecardCalculations = {
 
-  /// External Interface
-  // setData: () => {
-  //   let init = [
-  //     scorecardCalculations.importAccounts(),
-  //     scorecardCalculations.importCreditors(),
-  //     scorecardCalculations.importStates(),
-  //     scorecardCalculations.importMonthlyProgramPaymentRanges(),
-  //     scorecardCalculations.importAccountDelinquencyRanges(),
-  //     scorecardCalculations.importAvgAcceptedSettlementRanges(),
-  //     scorecardCalculations.importSettlementTermRanges(),
-  //     scorecardCalculations.importAccountStatusValues(),
-  //     scorecardCalculations.importEnrollDebtRanges(),
-  //     scorecardCalculations.importWeightageFactors(),
-  //   ];
-  //
-  //   return new Promise((resolve, reject) =>
-  //     Promise.all(init).then(() =>
-  //       scorecardCalculations.calculateAllRows()
-  //         .then (() => resolve('Scorecard Calculations Success! :)'))
-  //         .catch(() => resolve('Scorecard Calculations Error! :(')))
-  //   );
-  // },
+  /// External Interface ----------------------------------------------------------------------------------------------
 
   setData: () => {
     calculationsHelper.initCache(scorecardCalculations);
@@ -52,66 +31,6 @@ const scorecardCalculations = {
       })
     );
   },
-
-  /// Main Loop
-  // calculateAllRows: () => {
-  //   return new Promise(resolve => {
-  //     let promises = [];
-  //
-  //     models.Scorecard.destroy({truncate: true});
-  //
-  //     scorecardCalculations._accounts.forEach(rawScorecard =>
-  //         promises.push(scorecardCalculations.calculateRow(rawScorecard)));
-  //
-  //     Promise.all(promises).then(() => resolve());
-  //   });
-  // },
-
-  // calculateAllRows: () => {
-  //   console.log('aaa');
-  //   return new Promise(resolve => {
-  //     scorecardCalculations._newRecords = [];
-  //     models.Scorecard.destroy({truncate: true});
-  //
-  //     let accounts = scorecardCalculations._accounts;
-  //     let rowIndex = 0;
-  //     let calcRowIndex = () => {
-  //       console.log('index', rowIndex);
-  //       if (rowIndex === accounts.length) {
-  //         models.Scorecard.bulkCreate(scorecardCalculations._newRecords)
-  //           .then(() => resolve());
-  //         return;
-  //       }
-  //       scorecardCalculations.calculateRow(accounts[rowIndex]).then(() => {
-  //         rowIndex++;
-  //         calcRowIndex();
-  //       });
-  //     };
-  //
-  //     calcRowIndex();
-  //   });
-  // },
-  //
-  // calculateRow: (rawScorecard) => {
-  //   let results = {};
-  //   let promises = Object.keys(scorecardCalculations.columns).map(column =>
-  //     scorecardCalculations.setCalculationValue(rawScorecard, column, results));
-  //
-  //   return new Promise(resolve => {
-  //     Promise.all(promises).then(() => {
-  //       // models.Scorecard.create(results).then(() => {
-  //         // console.log('Scorecard - "' + rawScorecard.scorecardNumber + '"', 'Created with new calculated results');
-  //       scorecardCalculations._newRecords.push(results);
-  //         resolve();
-  //       // })
-  //     });
-  //   });
-  // },
-  //
-  // setCalculationValue:  (rawScorecard, columnName, results) => {
-  //   scorecardCalculations.columns[columnName](rawScorecard).then(result =>
-  //     results[columnName] = result)
-  // },
 
   /// Internal Service Functions --------------------------------------------------------------------------------------
 
@@ -223,13 +142,13 @@ const scorecardCalculations = {
   columns: {
 
     /// Metadata
-    tradeLineName:                            (account) => scorecardCalculations.accountColumnImport(account, 'tradelineName'),
-    programName:                              (account) => scorecardCalculations.accountColumnImport(account, 'programName'),
-    creditor:                                 (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),
-    accountNumber:                            (account) => scorecardCalculations.accountColumnImport(account, 'accountNumber'),
+    tradeLineName:                                  (account) => scorecardCalculations.accountColumnImport(account, 'tradelineName'),
+    programName:                                    (account) => scorecardCalculations.accountColumnImport(account, 'programName'),
+    creditor:                                       (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),
+    accountNumber:                                  (account) => scorecardCalculations.accountColumnImport(account, 'accountNumber'),
 
     /// Metrics
-    metrics_creditorScore:                            (account) => {
+    metrics_creditorScore:                          (account) => {
       return new Promise(resolve => {
         let result;
         let promises = [
@@ -266,10 +185,10 @@ const scorecardCalculations = {
         });
       });
     },
-    metrics_stateOfResidency:                            (account) => scorecardCalculations.accountColumnImport(account, 'enrolledState'),
-    metrics_monthlyPayment:                            (account) => scorecardCalculations.accountColumnImport(account, 'avgMonthlyPayment'),
-    metrics_accountDelinquency:                            (account) => scorecardCalculations.accountColumnImport(account, 'calc_accountDelinquency'),
-    metrics_pctAvgSettlement:                            (account) => {
+    metrics_stateOfResidency:                       (account) => scorecardCalculations.accountColumnImport(account, 'enrolledState'),
+    metrics_monthlyPayment:                         (account) => scorecardCalculations.accountColumnImport(account, 'avgMonthlyPayment'),
+    metrics_accountDelinquency:                     (account) => scorecardCalculations.accountColumnImport(account, 'calc_accountDelinquency'),
+    metrics_pctAvgSettlement:                       (account) => {
       return new Promise(resolve => {
         let result;
         let creditor = scorecardCalculations._creditors.filter(cr =>
@@ -288,7 +207,7 @@ const scorecardCalculations = {
         resolve(result);
       });
     },
-    metrics_settlementTerm:                            (account) => {
+    metrics_settlementTerm:                         (account) => {
       return new Promise(resolve => {
         let result;
         let creditor = scorecardCalculations._creditors.filter(cr =>
@@ -307,20 +226,20 @@ const scorecardCalculations = {
         resolve(result);
       });
     },
-    metrics_fundAccumulation_endOfCurrentMonth: (account) => scorecardCalculations.accountColumnImport(account, 'currentFund'),
-    metrics_fundAccumulationPct_endOfCurrentMonth: (account) => scorecardCalculations.accountColumnImport(account, 'endOfCurrentMonth'),
+    metrics_fundAccumulation_endOfCurrentMonth:     (account) => scorecardCalculations.accountColumnImport(account, 'currentFund'),
+    metrics_fundAccumulationPct_endOfCurrentMonth:  (account) => scorecardCalculations.accountColumnImport(account, 'endOfCurrentMonth'),
     metrics_fundAccumulationPct_1_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut1'),
-    metrics_fundAccumulationPct_2_monthOut: (account) => scorecardCalculations.accountColumnImport(account, 'monthOut2'),
-    metrics_fundAccumulationPct_3_monthOut: (account) => scorecardCalculations.accountColumnImport(account, 'monthOut3'),
-    metrics_fundAccumulationPct_4_monthOut: (account) => scorecardCalculations.accountColumnImport(account, 'monthOut4'),
-    metrics_fundAccumulationPct_5_monthOut: (account) => scorecardCalculations.accountColumnImport(account, 'monthOut5'),
-    metrics_fundAccumulationPct_6_monthOut: (account) => scorecardCalculations.accountColumnImport(account, 'monthOut6'),
-    metrics_accountStatus: (account) => scorecardCalculations.accountColumnImport(account, 'currentStage'),
-    metrics_enrolledDebt: (account) => scorecardCalculations.accountColumnImport(account, 'enrolledDebt'),
+    metrics_fundAccumulationPct_2_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut2'),
+    metrics_fundAccumulationPct_3_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut3'),
+    metrics_fundAccumulationPct_4_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut4'),
+    metrics_fundAccumulationPct_5_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut5'),
+    metrics_fundAccumulationPct_6_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut6'),
+    metrics_accountStatus:                          (account) => scorecardCalculations.accountColumnImport(account, 'currentStage'),
+    metrics_enrolledDebt:                           (account) => scorecardCalculations.accountColumnImport(account, 'enrolledDebt'),
 
     /// Assigned Points
-    points_creditorScore: (account) => scorecardCalculations.columns.metrics_creditorScore(account),
-    points_stateOfResidency:                            (account) => {
+    points_creditorScore:                           (account) => scorecardCalculations.columns.metrics_creditorScore(account),
+    points_stateOfResidency:                        (account) => {
       return new Promise(resolve => {
         let result;
 
@@ -338,7 +257,7 @@ const scorecardCalculations = {
         });
       });
     },
-    points_monthlyPayment:                            (account) => {
+    points_monthlyPayment:                          (account) => {
       return new Promise(resolve => {
         let result;
 
@@ -356,7 +275,7 @@ const scorecardCalculations = {
         });
       });
     },
-    points_accountDelinquency:                            (account) => {
+    points_accountDelinquency:                      (account) => {
       return new Promise(resolve => {
         let result;
 
@@ -374,7 +293,7 @@ const scorecardCalculations = {
         });
       });
     },
-    points_pctAvgSettlement:                            (account) => {
+    points_pctAvgSettlement:                        (account) => {
       return new Promise(resolve => {
         let result;
 
@@ -392,7 +311,7 @@ const scorecardCalculations = {
         });
       });
     },
-    points_settlementTerm:                            (account) => {
+    points_settlementTerm:                          (account) => {
       return new Promise(resolve => {
         let result;
 
@@ -410,7 +329,7 @@ const scorecardCalculations = {
         });
       });
     },
-    points_accountStatus:                            (account) => {
+    points_accountStatus:                           (account) => {
       return new Promise(resolve => {
         let result;
 
@@ -448,17 +367,17 @@ const scorecardCalculations = {
     },
 
     /// ﻿Weighted Score
-    weight_creditorScore: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_creditorScore', 'Creditor score'),
-    weight_stateOfResidency: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_stateOfResidency', 'State of residency'),
-    weight_monthlyPayment: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_monthlyPayment', 'Monthly payment'),
-    weight_accountDelinquency: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountDelinquency', 'Account delinquency'),
-    weight_pctAvgSettlement: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_pctAvgSettlement', '% Avg settlement'),
-    weight_settlementTerm: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_settlementTerm', 'Settlement term'),
-    weight_accountStatus: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountStatus', 'Enrolled debt'),
-    weight_enrolledDebt: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_enrolledDebt', 'Account status'),
+    weight_creditorScore:                           (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_creditorScore', 'Creditor score'),
+    weight_stateOfResidency:                        (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_stateOfResidency', 'State of residency'),
+    weight_monthlyPayment:                          (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_monthlyPayment', 'Monthly payment'),
+    weight_accountDelinquency:                      (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountDelinquency', 'Account delinquency'),
+    weight_pctAvgSettlement:                        (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_pctAvgSettlement', '% Avg settlement'),
+    weight_settlementTerm:                          (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_settlementTerm', 'Settlement term'),
+    weight_accountStatus:                           (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountStatus', 'Enrolled debt'),
+    weight_enrolledDebt:                            (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_enrolledDebt', 'Account status'),
 
     /// Summary
-    totalScore:                            (account) => {
+    totalScore:                                     (account) => {
       return new Promise(resolve => {
         let result = 0;
         let promises = [
@@ -473,9 +392,7 @@ const scorecardCalculations = {
         ];
 
         Promise.all(promises).then(results => {
-          console.log(results);
           results.forEach(r => result += r);
-            console.log(result);
           resolve(result);
         });
       });

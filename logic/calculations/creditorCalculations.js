@@ -3,7 +3,8 @@ const calculationsHelper = require('./calculationsHelper');
 
 const creditorCalculations = {
 
-  /// External Interface
+  /// External Interface ----------------------------------------------------------------------------------------------
+
   setData: () => {
     calculationsHelper.initCache(creditorCalculations);
 
@@ -23,37 +24,8 @@ const creditorCalculations = {
     );
   },
 
-  /// Main Loop
-  // calculateAllRows: () => {
-  //   return new Promise(resolve => {
-  //       models.Creditor.findAll().then(creditors => {
-  //         let promises = [];
-  //
-  //         creditors.forEach(creditor =>
-  //           promises.push(creditorCalculations.calculateRow(creditor)));
-  //         Promise.all(promises).then(() => resolve());
-  //       });
-  //     });
-  //   },
-  //
-  // calculateRow: (creditor) => {
-  //   let results = {};
-  //   let promises = Object.keys(creditorCalculations.columns).map(column =>
-  //     creditorCalculations.setCalculationValue(creditor, column, results));
-  //
-  //   return new Promise(resolve => {
-  //     Promise.all(promises).then(() =>{
-  //       creditor.update(results).then(() => {
-  //         console.log('Creditor - "' + creditor.name + '"', 'Updated with new calculated results');
-  //         resolve();
-  //       })});
-  //   });
-  // },
+  /// Internal Service Functions --------------------------------------------------------------------------------------
 
-  /// Internal Service Functions
-  // setCalculationValue:  (creditor, columnName, results) => {
-  //   creditorCalculations.columns[columnName](creditor).then(result => results[columnName] = result)
-  // },
   importCreditors:         () => {
     return new Promise(resolve =>
       models.Creditor.findAll().then(results => {

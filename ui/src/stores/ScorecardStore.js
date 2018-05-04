@@ -5,6 +5,7 @@ export default class ScorecardStore extends BaseStore {
     @observable loading;
 
     @observable allRows = [];
+    @observable sort;
     @observable filter;
     @observable rowSize;
     @observable page;
@@ -28,11 +29,20 @@ export default class ScorecardStore extends BaseStore {
             params.page = this.page;
         }
 
+        if (this.sort) {
+            params.sortBy = this.sort.column;
+            params.sortOrder = this.sort.order;
+        }
+
+        Beyond.App.TopMessage.show('Please wait...');
+
         let {data} = await this.service.sendRequest({
             method: 'GET',
             url: 'beyond/calculations/scorecard',
             data: {params}
         });
+
+        Beyond.App.TopMessage.hide();
 
         this.setRowsData(data);
     }
@@ -44,6 +54,12 @@ export default class ScorecardStore extends BaseStore {
         this.count = data.total_count;
         this.page = data.page;
         this.pageCount = data.page_count;
+    }
+
+    @action
+    setSort(value) {
+        this.sort = value;
+        this.fetchAllRows();
     }
 
     @action

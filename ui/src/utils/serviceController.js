@@ -27,10 +27,10 @@ export default class ServiceController {
     }
 
     refreshAuthorizationToken() {
-        let auth = localStorage.getItem('SCOPIO-authHeader');
+        let auth = localStorage.getItem('BEYOND-authHeader');
 
         if (auth) {
-            // axios.defaults.headers.common['Authorization'] = 'Bearer ' + auth;
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + auth;
         }
     }
 
