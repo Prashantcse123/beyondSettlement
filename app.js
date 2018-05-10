@@ -18,12 +18,13 @@ const config = {
   token: process.env.SPLUNK_TOKEN,
   url: process.env.SPLUNK_URL,
   apiToken: process.env.API_TOKEN,
+  apiToken2: process.env.API_TOKEN2,
 };
 
 
 /// catch 403 and forward to error handler
 app.use((req, res, next) => {
-    if (!req.headers.authorization || req.headers.authorization !== 'Bearer ' + config.apiToken) {
+    if (!req.headers.authorization || req.headers.authorization !== 'Bearer ' + config.apiToken || req.headers.authorization !== 'Bearer ' + config.apiToken2) {
         return res.status(403).json({ error: 'No credentials sent!' });
     }
     next();
