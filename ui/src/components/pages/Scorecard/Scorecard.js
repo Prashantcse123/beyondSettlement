@@ -18,7 +18,8 @@ export default class Scorecard extends Component {
         super(props);
         this.state = {
             sortedColumn: {column: 'id', order: 'desc'},
-            openedRow: false
+            openedRow: false,
+            userSelectedRows: undefined
         };
     }
 
@@ -100,14 +101,40 @@ export default class Scorecard extends Component {
         }
 
         console.log({id: (selected || unselected).id, isDone: (!!selected)});
-        scorecard.updateRow({id: (selected || unselected).id, isDone: (!!selected)});
+        scorecard.updateRow({id: (selected || unselected).id, isDone: (!!selected)}).then(() => {
+            if (selected) {
+                this._allSelected.push(selected);
+            }else{
+                this._allSelected.remove(unselected);
+            }
+            this.setState({userSelectedRows: undefined});
+        });
+    }
 
-        if (selected) {
-            this._allSelected.push(selected);
-        }else{
-            this._allSelected.remove(unselected);
-        }
-        this.forceUpdate();
+    renderConfirmDialog() {
+        const { userSelectedRows } = this.state;
+
+        return (
+            <Dialog
+                title="Mark Row Completed"
+                actions={[
+                    <FlatButton
+                        label="No"
+                        onClick={() => this.setState({userSelectedRows: undefined})}
+                    />,
+                    <FlatButton
+                        label="Yes"
+                        onClick={() => this.onRowSelection(userSelectedRows)}
+                    />,
+                ]}
+                modal={false}
+                open={!!userSelectedRows}
+                onRequestClose={() => this.setState({userSelectedRows: undefined})}
+                autoScrollBodyContent
+            >
+                Are you sure?
+            </Dialog>
+        );
     }
 
     renderOpenedDialog() {
@@ -171,7 +198,7 @@ export default class Scorecard extends Component {
                     tableBodyStyle={{marginBottom: '50px'}}
                     initialSort={{column: 'index', order: 'asc'}}
                     selectedRows={this._allSelected}
-                    onRowSelection={(indexes, selectedRows) => this.onRowSelection(selectedRows)}
+                    onRowSelection={(indexes, userSelectedRows) => {this.setState({userSelectedRows})}}
                     onFilterValueChange={(value) => this.onFilterChange(value)}
                     onSortOrderChange={(column, order) => this.onColumnSort(column, order)}
                     onRowSizeChange={(i, value) => this.onRowSizeChange(value)}
@@ -214,6 +241,7 @@ export default class Scorecard extends Component {
                     }]}
                 />
                 {this.renderOpenedDialog()}
+                {this.renderConfirmDialog()}
             </div>
 		);
 	}
