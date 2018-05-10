@@ -37,9 +37,13 @@ router.get('/scorecard', (req, res) => {
         options = {
             order: [[req.query.sortBy, req.query.sortOrder.toUpperCase()]]
         }
+    }else{
+        options = {
+            order: [['id', 'ASC']]
+        }
     }
 
-    console.log(options);
+    // console.log(options);
 
     models.Scorecard.findAll(options).then(rows => {
         let page = parseInt(req.query.page || 1);
@@ -61,6 +65,16 @@ router.get('/scorecard', (req, res) => {
     });
 });
 
+
+router.put('/update_scorecard', (req, res) => {
+    console.log(req.body);
+
+    models.Scorecard.findAll({where: {id: req.body.id}}).then(rows => {
+        let row = rows[0];
+        // console.log(row);
+        row.update({isDone: req.body.isDone}).then(() => res.status(200).json('cool!'));
+    });
+});
 
 router.get('/progress', (req, res) => {
   let type = 'Progress';

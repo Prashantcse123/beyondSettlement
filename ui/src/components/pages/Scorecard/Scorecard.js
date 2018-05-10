@@ -30,8 +30,11 @@ export default class Scorecard extends Component {
         const { scorecard } = this.props.store;
         // let scorecardRowId = this.props.match.params.id;
 
-        scorecard.setFilter(undefined);
-        scorecard.fetchAllRows();
+        // scorecard.setFilter(undefined);
+        scorecard.fetchAllRows().then(() => {
+            this._allSelected = scorecard.allRows.map(a => a).filter(a => a.isDone);
+            this.forceUpdate();
+        });
 
         // if (scorecardRowId) {
         //     scorecard.fetchScan(scorecardRowId).then(() =>
@@ -85,6 +88,28 @@ export default class Scorecard extends Component {
         scorecard.setPage(page);
     }
 
+    onRowSelection(userSelected) {
+        const { scorecard } = this.props.store;
+
+        // let allSelected = scorecard.allRows.map(a => a).filter(a => a.isDone);
+        let selected = userSelected.filter(a => !this._allSelected.includes(a))[0];
+        let unselected;
+
+        if (!selected) {
+            unselected = this._allSelected.filter(a => !userSelected.includes(a))[0];
+        }
+
+        console.log({id: (selected || unselected).id, isDone: (!!selected)});
+        scorecard.updateRow({id: (selected || unselected).id, isDone: (!!selected)});
+
+        if (selected) {
+            this._allSelected.push(selected);
+        }else{
+            this._allSelected.remove(unselected);
+        }
+        this.forceUpdate();
+    }
+
     renderOpenedDialog() {
         const { openedRow } = this.state;
 
@@ -134,10 +159,10 @@ export default class Scorecard extends Component {
 			<div className="scorecard-page">
                 <DataTable
                     height="100%"
-                    selectable={false}
-                    multiSelectable={false}
+                    selectable
+                    multiSelectable
                     enableSelectAll={false}
-                    showCheckboxes={false}
+                    showCheckboxes
                     showRowHover
                     showHeaderToolbar
                     showHeaderToolbarFilterIcon={false}
@@ -145,8 +170,8 @@ export default class Scorecard extends Component {
                     footerToolbarStyle={{position: 'fixed', bottom: 0, width: '100%'}}
                     tableBodyStyle={{marginBottom: '50px'}}
                     initialSort={{column: 'index', order: 'asc'}}
-                    // selectedRows={selectedScans.map(a => a)}
-                    // onRowSelection={(indexes, selectedScans) => this.onRowSelection(selectedScans)}
+                    selectedRows={this._allSelected}
+                    onRowSelection={(indexes, selectedRows) => this.onRowSelection(selectedRows)}
                     onFilterValueChange={(value) => this.onFilterChange(value)}
                     onSortOrderChange={(column, order) => this.onColumnSort(column, order)}
                     onRowSizeChange={(i, value) => this.onRowSizeChange(value)}

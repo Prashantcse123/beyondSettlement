@@ -32,6 +32,9 @@ export default class ScorecardStore extends BaseStore {
         if (this.sort) {
             params.sortBy = this.sort.column;
             params.sortOrder = this.sort.order;
+        }else{
+            params.sortBy = 'id';
+            params.sortOrder = 'asc';
         }
 
         Beyond.App.TopMessage.show('Please wait...');
@@ -45,6 +48,23 @@ export default class ScorecardStore extends BaseStore {
         Beyond.App.TopMessage.hide();
 
         this.setRowsData(data);
+    }
+
+    async updateRow(data) {
+        // Beyond.App.TopMessage.show('Please wait...');
+
+        await this.service.sendRequest({
+            method: 'PUT',
+            url: 'beyond/calculations/update_scorecard',
+            data
+        });
+
+        let row = this.allRows.filter(a => a.id === data.id)[0];
+
+        row.isDone = true;
+        this.set({allRows: this.allRows});
+
+        // Beyond.App.TopMessage.hide();
     }
 
     @action
