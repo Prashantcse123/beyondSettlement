@@ -63,7 +63,8 @@ export default class Scorecard extends Component {
     // }
 
 
-    onRowClick(scorecard) {
+    onRowClick(e, scorecard) {
+        e.stopPropagation();
         this.setState({openedRow: scorecard});
     }
 
@@ -178,6 +179,12 @@ export default class Scorecard extends Component {
         );
     }
 
+    renderRows() {
+        const { scorecard } = this.props.store;
+
+        return scorecard.allRows.map(a => Object.assign({}, a, {details: (<FlatButton label="..." onClick={(e) => this.onRowClick(e, a)} />)}));
+    }
+
 	render() {
         const { scorecard } = this.props.store;
         const { column, order } = this.state.sortedColumn;
@@ -207,7 +214,7 @@ export default class Scorecard extends Component {
                     page={scorecard.page}
                     count={scorecard.count}
                     rowSize={scorecard.rowSize}
-                    data={scorecard.allRows.map(a => a)}
+                    data={this.renderRows()}
                     columns={[{
                         key: 'id',
                         label: '#',
@@ -238,6 +245,12 @@ export default class Scorecard extends Component {
                         label: 'Score',
                         sortable: true,
                         // style: {width: Scorecard.columnWidths[2]}
+                    }, {
+                        key: 'details',
+                        label: 'Details',
+                        sortable: false,
+                        alignRight: false,
+                        style: {width: '100px', textAlign: 'center'}
                     }]}
                 />
                 {this.renderOpenedDialog()}
