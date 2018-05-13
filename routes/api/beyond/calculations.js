@@ -96,7 +96,7 @@ router.get('/status', (req, res) => {
     models.Progress.findAll({where: {type}}).then(rows => {
         let row = rows[0];
 
-        if (row && row.value > 0 && row.value < 1) {
+        if (row && row.value > 0 && row.value < 1 && row.value <= 99.99) {
             res.status(200).json({
                 // abortable: true,
                 busy: true,
