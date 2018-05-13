@@ -31,12 +31,21 @@ router.get('/all/set', (req, res) => {
 });
 
 router.get('/scorecard', (req, res) => {
-    models.Scorecard.findAll({
-        // order by total score descending
-        order: [
-            ['totalScore', 'DESC'],
-        ],
-    }).then(rows => {
+    let options = {};
+
+    if (req.query.sortBy) {
+        options = {
+            order: [[req.query.sortBy, req.query.sortOrder.toUpperCase()]]
+        }
+    }else{
+        options = {
+            order: [['id', 'ASC']]
+        }
+    }
+
+    // console.log(options);
+
+    models.Scorecard.findAll(options).then(rows => {
         let page = parseInt(req.query.page || 1);
         let pageSize = parseInt(req.query.page_size || 10);
         let start = pageSize * page - pageSize;
@@ -56,6 +65,16 @@ router.get('/scorecard', (req, res) => {
     });
 });
 
+
+router.put('/update_scorecard', (req, res) => {
+    console.log(req.body);
+
+    models.Scorecard.findAll({where: {id: req.body.id}}).then(rows => {
+        let row = rows[0];
+        // console.log(row);
+        row.update({isDone: req.body.isDone}).then(() => res.status(200).json('cool!'));
+    });
+});
 
 router.get('/progress', (req, res) => {
   let type = 'Progress';
@@ -77,7 +96,7 @@ router.get('/status', (req, res) => {
     models.Progress.findAll({where: {type}}).then(rows => {
         let row = rows[0];
 
-        if (row && row.value > 0 && row.value < 1) {
+        if (row && row.value > 0 && row.value < 1 && row.value <= 99.99) {
             res.status(200).json({
                 // abortable: true,
                 busy: true,

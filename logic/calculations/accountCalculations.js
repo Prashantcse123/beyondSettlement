@@ -3,7 +3,7 @@ const calculationsHelper = require('./calculationsHelper');
 
 const accountCalculations = {
 
-  /// External Interface
+  /// External Interface ----------------------------------------------------------------------------------------------
   setData: () => {
     calculationsHelper.initCache(accountCalculations);
 
@@ -25,7 +25,7 @@ const accountCalculations = {
     );
   },
 
-    testColumn: (columnName, id) => {
+  testColumn: (columnName, id) => {
         let init = Promise.all([
             accountCalculations.importActiveAccounts(),
             accountCalculations.importCreditors(),
@@ -47,102 +47,6 @@ const accountCalculations = {
         );
 
     },
-
-
-  // initCache: () => {
-  //   accountCalculations._cachedColumns = {};
-  //
-  //   Object.keys(accountCalculations.columns).forEach(columnName => {
-  //     let oldFunc = accountCalculations.columns[columnName];
-  //     let newFunc = (account,b,c,d,e,f,g) => {
-  //       return new Promise(resolve => {
-  //         // console.log(Object.keys(accountCalculations._cachedColumns));
-  //         if (Object.keys(accountCalculations._cachedColumns).includes(columnName)) {
-  //           resolve(accountCalculations._cachedColumns[columnName]);
-  //         }else{
-  //           oldFunc(account,b,c,d,e,f,g).then(result => {
-  //             accountCalculations._cachedColumns[columnName] = result;
-  //             resolve(result);
-  //           });
-  //         }
-  //       });
-  //     };
-  //
-  //     accountCalculations.columns[columnName] = newFunc;
-  //   });
-  // },
-
-  // initColumns: () => {
-  //   accountCalculations._cachedColumns = {};
-  //
-  //   Object.keys(accountCalculations.columns).forEach(columnName => {
-  //     let oldFunc = accountCalculations.columns[columnName];
-  //     let newFunc = (account,b,c,d,e,f,g) => {
-  //       let cachedColumnName = account.account_number + columnName;
-  //
-  //       return new Promise(resolve => {
-  //         console.log(Object.keys(accountCalculations._cachedColumns));
-  //         if (Object.keys(accountCalculations._cachedColumns).includes(cachedColumnName)) {
-  //           resolve(accountCalculations._cachedColumns[cachedColumnName]);
-  //         }else{
-  //           oldFunc(account,b,c,d,e,f,g).then(result => {
-  //             accountCalculations._cachedColumns[cachedColumnName] = result;
-  //             resolve(result);
-  //           });
-  //         }
-  //       });
-  //     };
-  //
-  //     accountCalculations.columns[columnName] = newFunc;
-  //   });
-  // },
-
-  // calculateAllRows: () => {
-  //   return new Promise(resolve => {
-  //     let rawAccounts = accountCalculations._rawAccounts.filter(rawAccount => !!rawAccount.programname);
-  //     let rowIndex = 0;
-  //     let calcRowIndex = () => {
-  //       console.log('index', rowIndex, rawAccounts.length);
-  //       if (rowIndex === rawAccounts.length) {
-  //         console.log('bulk insert');
-  //         models.Account.bulkCreate(accountCalculations._newAccounts).then(() => resolve());
-  //       }else{
-  //         accountCalculations.calculateRow(rawAccounts[rowIndex]).then(() => {
-  //           rowIndex++;
-  //           calcRowIndex();
-  //         });
-  //       }
-  //     };
-  //
-  //     accountCalculations._newAccounts = [];
-  //     models.Account.destroy({truncate: true});
-  //     calcRowIndex();
-  //   });
-  // },
-
-  // calculateRow: (rawAccount) => {
-  //   let results = {};
-  //   let promises = Object.keys(accountCalculations.columns).map(column =>
-  //     accountCalculations.setCalculationValue(rawAccount, column, results));
-  //
-  //   accountCalculations._cachedColumns = {};
-  //
-  //   return new Promise(resolve => {
-  //     Promise.all(promises).then(() => {
-  //       accountCalculations._newAccounts.push(results);
-  //       // models.Account.create(results).then(() => {
-  //       //   console.log('Account - "' + rawAccount.account_number + '"', 'Created with new calculated results');
-  //         // console.log(results);
-  //         resolve();
-  //       // })
-  //     });
-  //   });
-  // },
-
-  // setCalculationValue:  (rawAccount, columnName, results) => {
-  //   accountCalculations.columns[columnName](rawAccount).then(result =>
-  //     results[columnName] = result)
-  // },
 
   /// Internal Service Functions --------------------------------------------------------------------------------------
 

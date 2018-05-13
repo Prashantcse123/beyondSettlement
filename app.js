@@ -17,8 +17,18 @@ const app = express();
 const config = {
   token: process.env.SPLUNK_TOKEN,
   url: process.env.SPLUNK_URL,
+  apiToken: process.env.API_TOKEN,
+  apiToken2: process.env.API_TOKEN2,
 };
 
+
+/// catch 403 and forward to error handler
+app.use((req, res, next) => {
+    if (!req.headers.authorization || req.headers.authorization !== 'Bearer ' + config.apiToken || req.headers.authorization !== 'Bearer ' + config.apiToken2) {
+        return res.status(403).json({ error: 'No credentials sent!' });
+    }
+    next();
+});
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -35,20 +45,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// api
+/// api
 app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
 
-// catch 404 and forward to error handler
+/// catch 404 and forward to error handler
 app.use((req, res, next) => {
+    console.log('ttt');
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// error handler
-// no stacktraces leaked to user unless in development environment
+/// error handler
+/// no stacktraces leaked to user unless in development environment
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({

@@ -66,7 +66,7 @@ function isRowSelected(index, selectedRows, tableData) {
     if (selectedRows.length > 0) {
         if (isNaN(selectedRows[0])) {
             return selectedRows.map(a =>
-                a.index).includes(tableData[index].index);
+                a.id).includes(tableData[index].id);
 
         }else{
             return selectedRows.includes(index);
@@ -524,6 +524,7 @@ class DataTables extends Component {
                   style={Object.assign({}, styles.tableRow, tableRowStyle)}
                   key={index}
                   selected={isRowSelected(index, this.props.selectedRows, this.props.data)}
+                  className={(isRowSelected(index, this.props.selectedRows, this.props.data) ? 'row-selected' : '')}
                 >
                   {columns.map((column, index) => {
                     return (

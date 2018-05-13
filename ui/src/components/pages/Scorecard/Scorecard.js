@@ -18,7 +18,8 @@ export default class Scorecard extends Component {
         super(props);
         this.state = {
             sortedColumn: {column: 'id', order: 'desc'},
-            openedRow: false
+            openedRow: false,
+            userSelectedRows: undefined
         };
     }
 
@@ -30,8 +31,11 @@ export default class Scorecard extends Component {
         const { scorecard } = this.props.store;
         // let scorecardRowId = this.props.match.params.id;
 
-        scorecard.setFilter(undefined);
-        scorecard.fetchAllRows();
+        // scorecard.setFilter(undefined);
+        scorecard.fetchAllRows().then(() => {
+            this._allSelected = scorecard.allRows.map(a => a).filter(a => a.isDone);
+            this.forceUpdate();
+        });
 
         // if (scorecardRowId) {
         //     scorecard.fetchScan(scorecardRowId).then(() =>
@@ -41,51 +45,33 @@ export default class Scorecard extends Component {
         document.title = 'Beyond - Scorecard';
     }
 
-    static get columnWidths() {
-        return [
-            '30px',
-            '120px',
-            '150px',
-            'auto',
-            '100px',
-            '100px',
-            '100px',
-            '50px'
-        ];
-    }
-
-    renderRowDate(scorecardRow) {
-        return <span>{Moment.utc(scorecardRow.created_at).local().format('DD/MM/YYYY HH:mm')}</span>;
-    }
-
-    // get allScans() {
-    //     const { column, order } = this.state.sortedColumn;
-    //     const { scorecard } = this.props.store;
+    // static get columnWidths() {
+    //     return [
+    //         '30px',
+    //         '120px',
+    //         '150px',
+    //         'auto',
+    //         '100px',
+    //         '100px',
+    //         '100px',
+    //         '50px'
+    //     ];
+    // }
     //
-    //     return scorecard.allRows
-    //         .map(scan =>
-    //             Object.assign({}, scan, {
-    //                 index: scan.id,
-    //                 created: this.renderRowDate(scan),
-    //                 // img: this.renderScanRowImage(scan),
-    //                 // tools: this.renderScanRowTools(scan),
-    //                 analyses: scan.analyses.join('  |  '),
-    //                 species: (scan.species || '').capitalize()
-    //
-    //             }))
-    //         .sortBy(column, order);
+    // renderRowDate(scorecardRow) {
+    //     return <span>{Moment.utc(scorecardRow.created_at).local().format('DD/MM/YYYY HH:mm')}</span>;
     // }
 
-    // onRowSelection(selectedScorecardRows) {
-    //     this.setState({selectedScorecardRows});
-    // }
 
-    onRowClick(scorecard) {
+    onRowClick(e, scorecard) {
+        e.stopPropagation();
         this.setState({openedRow: scorecard});
     }
 
     onColumnSort(column, order) {
-        this.setState({sortedColumn: {column, order}});
+        //this.setState({sortedColumn: {column, order}});
+        const { scorecard } = this.props.store;
+        scorecard.setSort({column, order});
     }
 
     onFilterChange(value) {
@@ -102,6 +88,54 @@ export default class Scorecard extends Component {
         const { scorecard } = this.props.store;
         // this.setState({selectedScorecardRows: []});
         scorecard.setPage(page);
+    }
+
+    onRowSelection(userSelected) {
+        const { scorecard } = this.props.store;
+
+        // let allSelected = scorecard.allRows.map(a => a).filter(a => a.isDone);
+        let selected = userSelected.filter(a => !this._allSelected.includes(a))[0];
+        let unselected;
+
+        if (!selected) {
+            unselected = this._allSelected.filter(a => !userSelected.includes(a))[0];
+        }
+
+        console.log({id: (selected || unselected).id, isDone: (!!selected)});
+        scorecard.updateRow({id: (selected || unselected).id, isDone: (!!selected)}).then(() => {
+            if (selected) {
+                this._allSelected.push(selected);
+            }else{
+                this._allSelected.remove(unselected);
+            }
+            this.setState({userSelectedRows: undefined});
+        });
+    }
+
+    renderConfirmDialog() {
+        const { userSelectedRows } = this.state;
+
+        return (
+            <Dialog
+                title="Mark Row Completed"
+                actions={[
+                    <FlatButton
+                        label="No"
+                        onClick={() => this.setState({userSelectedRows: undefined})}
+                    />,
+                    <FlatButton
+                        label="Yes"
+                        onClick={() => this.onRowSelection(userSelectedRows)}
+                    />,
+                ]}
+                modal={false}
+                open={!!userSelectedRows}
+                onRequestClose={() => this.setState({userSelectedRows: undefined})}
+                autoScrollBodyContent
+            >
+                Are you sure?
+            </Dialog>
+        );
     }
 
     renderOpenedDialog() {
@@ -145,6 +179,12 @@ export default class Scorecard extends Component {
         );
     }
 
+    renderRows() {
+        const { scorecard } = this.props.store;
+
+        return scorecard.allRows.map(a => Object.assign({}, a, {details: (<FlatButton label="..." onClick={(e) => this.onRowClick(e, a)} />)}));
+    }
+
 	render() {
         const { scorecard } = this.props.store;
         const { column, order } = this.state.sortedColumn;
@@ -153,10 +193,10 @@ export default class Scorecard extends Component {
 			<div className="scorecard-page">
                 <DataTable
                     height="100%"
-                    selectable={false}
-                    multiSelectable={false}
+                    selectable
+                    multiSelectable
                     enableSelectAll={false}
-                    showCheckboxes={false}
+                    showCheckboxes
                     showRowHover
                     showHeaderToolbar
                     showHeaderToolbarFilterIcon={false}
@@ -164,8 +204,8 @@ export default class Scorecard extends Component {
                     footerToolbarStyle={{position: 'fixed', bottom: 0, width: '100%'}}
                     tableBodyStyle={{marginBottom: '50px'}}
                     initialSort={{column: 'index', order: 'asc'}}
-                    // selectedRows={selectedScans.map(a => a)}
-                    // onRowSelection={(indexes, selectedScans) => this.onRowSelection(selectedScans)}
+                    selectedRows={this._allSelected}
+                    onRowSelection={(indexes, userSelectedRows) => {this.setState({userSelectedRows})}}
                     onFilterValueChange={(value) => this.onFilterChange(value)}
                     onSortOrderChange={(column, order) => this.onColumnSort(column, order)}
                     onRowSizeChange={(i, value) => this.onRowSizeChange(value)}
@@ -174,7 +214,7 @@ export default class Scorecard extends Component {
                     page={scorecard.page}
                     count={scorecard.count}
                     rowSize={scorecard.rowSize}
-                    data={scorecard.allRows.map(a => a).sortBy(column, order)}
+                    data={this.renderRows()}
                     columns={[{
                         key: 'id',
                         label: '#',
@@ -205,9 +245,16 @@ export default class Scorecard extends Component {
                         label: 'Score',
                         sortable: true,
                         // style: {width: Scorecard.columnWidths[2]}
+                    }, {
+                        key: 'details',
+                        label: 'Details',
+                        sortable: false,
+                        alignRight: false,
+                        style: {width: '100px', textAlign: 'center'}
                     }]}
                 />
                 {this.renderOpenedDialog()}
+                {this.renderConfirmDialog()}
             </div>
 		);
 	}

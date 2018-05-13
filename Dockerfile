@@ -1,20 +1,22 @@
-FROM node:6-alpine
+FROM node:6
 
-RUN apk add -U python
-
-# Install git
-RUN apk add --no-cache git
+RUN apt-get update && apt-get install -y git autoconf python
 
 ENV NPM_CONFIG_LOGLEVEL warn
-
-# Cache npm install
-WORKDIR /tmp
-ADD package.json /tmp/package.json
-RUN npm install --save
-RUN mkdir -p /usr/src/app && cp -a node_modules /usr/src/app/
 
 WORKDIR /usr/src/app/
 
 ADD . /usr/src/app
 
-CMD ["npm", "run", "start:dev"]
+# Install packages
+RUN npm config set loglevel warn \
+    && npm install \
+    && cd ui \
+    && npm install \
+    && npm run build 
+
+# Expose ports
+EXPOSE 3000
+
+# Actual script to start can be overridden from `docker run`
+CMD ["npm", "start"]

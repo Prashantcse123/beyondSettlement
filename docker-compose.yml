@@ -1,21 +1,10 @@
 version: '3.2'
 
 services:
-  db:
-    image: postgres:9.6-alpine
-    environment:
-      POSTGRES_PASSWORD: docker
-      POSTGRES_USER: docker
-    ports:
-      - "127.0.0.1:5432:5432"
-
   app:
-    build:
-      context: .
-    volumes:
-      - ./:/usr/src/app
-      - /usr/src/app/node_modules
-    links:
-      - db
+    build: .
+    restart: always
+    environment:
+      - NODE_ENV=staging
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
