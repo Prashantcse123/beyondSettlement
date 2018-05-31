@@ -32,6 +32,7 @@
     "require-sql": "^1.0.0",
     "sequelize": "^3.23.6",
     "sequelize-cli": "^3.1.0",
+    "serve-static": "^1.13.2",
     "serverless-http": "^1.5.3",
     "splunk-bunyan-logger": "^0.9.3"
   },

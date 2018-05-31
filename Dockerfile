@@ -9,8 +9,7 @@ WORKDIR /usr/src/app/
 ADD . /usr/src/app
 
 # Install packages
-RUN npm config set loglevel warn \
-    && npm install \
+RUN npm install \
     && cd ui \
     && npm install \
     && npm run build 
