@@ -42,7 +42,7 @@ export default class SystemProgress extends Component {
     }
 
 	get preparing() {
-	    return this.task === 'scan' && this.busy && this.progress === 0;
+	    return this.busy && this.progress === 0;
     }
 
 	get done() {
@@ -95,10 +95,6 @@ export default class SystemProgress extends Component {
             titleText = target.capitalize() + ' Aborted!';
         }else if (this.done) {
             titleText = target.capitalize() + ' Done!';
-        }else if (this.task === 'scan_preprocess') {
-            titleText = 'Detecting optimal scan area';
-        }else if (this.preparing) {
-            titleText = 'Preparing for scan...';
         }else if (this.busy) {
             titleText = target + ' in progress...';
         }

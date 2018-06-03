@@ -37,11 +37,6 @@ export default class Scorecard extends Component {
             this.forceUpdate();
         });
 
-        // if (scorecardRowId) {
-        //     scorecard.fetchScan(scorecardRowId).then(() =>
-        //         scorecard({openedScorecardRow: scorecard.fetchedScorecardRow}));
-        // }
-
         document.title = 'Beyond - Scorecard';
     }
 
@@ -94,7 +89,8 @@ export default class Scorecard extends Component {
         const { scorecard } = this.props.store;
 
         // let allSelected = scorecard.allRows.map(a => a).filter(a => a.isDone);
-        let selected = userSelected.filter(a => !this._allSelected.includes(a))[0];
+        let selected = userSelected.filter(a =>
+            !this._allSelected.map(b => b.id).includes(a.id))[0];
         let unselected;
 
         if (!selected) {
@@ -205,7 +201,9 @@ export default class Scorecard extends Component {
                     tableBodyStyle={{marginBottom: '50px'}}
                     initialSort={{column: 'index', order: 'asc'}}
                     selectedRows={this._allSelected}
-                    onRowSelection={(indexes, userSelectedRows) => {this.setState({userSelectedRows})}}
+                    onRowSelection={(indexes, userSelectedRows) => {
+                        this.setState({userSelectedRows});
+                    }}
                     onFilterValueChange={(value) => this.onFilterChange(value)}
                     onSortOrderChange={(column, order) => this.onColumnSort(column, order)}
                     onRowSizeChange={(i, value) => this.onRowSizeChange(value)}

@@ -2,8 +2,9 @@ import BaseStore from './baseStore'
 import { observable, action, computed } from "mobx";
 
 export default class AppState extends BaseStore {
-    // @observable authenticated;
-    // @observable authenticating;
+    @observable authenticated;
+    @observable authenticating;
+    @observable currentUser;
     // @observable items;
     // @observable item;
 
@@ -19,6 +20,10 @@ export default class AppState extends BaseStore {
     @observable systemTaskAborted = false;
     @observable systemTaskFailed = false;
 
+    constructor() {
+        super();
+        this.refreshAuthenticatedState();
+    }
 
     static get PollingTimeout() {
         return 8000;
@@ -29,8 +34,6 @@ export default class AppState extends BaseStore {
 
         if (!this._to) {
             time = 0;
-        // }else if (error) {
-        //     time = AppState.PollingTimeout * 4;
         }else if (busy) {
             time = AppState.PollingTimeout / 4;
         }
@@ -65,6 +68,30 @@ export default class AppState extends BaseStore {
     //
     //     this.set({systemTaskAborted: true});
     // }
+
+    async login(credentials) {
+        this.set({authenticating: true});
+
+        try {
+            let {data} = await this.service.sendRequest({
+                method: 'POST',
+                url: 'beyond/login',
+                data: credentials // {username: 'admin', password: 'admin1029'}
+            });
+            this.service.setAuthorizationToken(data.token);
+            this.refreshAuthenticatedState();
+            this.set({authenticating: false});
+        }catch(ex){
+            this.refreshAuthenticatedState();
+            this.set({authenticating: false});
+            throw ex;
+        }
+    }
+
+    logout() {
+        this.service.removeAuthorizationToken();
+        this.set({authenticated: false});
+    }
 
     async fetchSystemStatus() {
         let {data} = await this.service.sendRequest({
@@ -124,14 +151,15 @@ export default class AppState extends BaseStore {
     }
 
     @action
-    authenticate() {
-        return new Promise((resolve, reject) => {
-            this.authenticating = true;
-            setTimeout(() => {
-                this.authenticated = !this.authenticated;
-                this.authenticating = false;
-                resolve(this.authenticated);
-            }, 0);
-        });
+    refreshAuthenticatedState() {
+        let currentUser = this.service.getUsernameFromToken();
+
+        if (currentUser) {
+            this.currentUser = currentUser;
+            this.authenticated = true;
+        }else{
+            this.currentUser = undefined;
+            this.authenticated = false;
+        }
     }
 }

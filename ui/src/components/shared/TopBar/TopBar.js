@@ -22,73 +22,21 @@ export default class TopBar extends Component {
 		super(props);
 		this.state = {
             aborting: false,
-            abortScanDialog: false,
             restarting: false,
             restartDialog: false,
             showSettings: false
 		};
 	}
 
-	onAbortClick() {
-        const { appState } = this.props.store;
-
-        this.setState({aborting: true});
-
-        appState.abortSystemTask()
-			.then(() =>
-				this.setState({
-					aborting: false,
-					abortScanDialog: false
-				}))
-			.catch((ex) => {
-                this.setState({aborting: false});
-                Beyond.App.TopMessage.show('Abort Error');
-			});
-    }
-
-	renderAbortScanDialog() {
-        return (
-			<Dialog
-				title="Are you sure?"
-				actions={[
-					<FlatButton
-						label="Cancel"
-						onClick={() => this.setState({abortScanDialog: false})}
-						keyboardFocused
-					/>,
-					<FlatButton
-						label={this.state.aborting ? 'Aborting...' : 'Abort'}
-						secondary
-						onClick={(e) => this.onAbortClick(e)}
-                        disabled={this.state.aborting}
-					/>
-                ]}
-				modal={true}
-				open={this.state.abortScanDialog === true}
-				onRequestClose={() => this.setState({abortScanDialog: false})}
-			>
-				You are about to abort this scan.
-			</Dialog>
-        );
-    }
-
     renderSystemProgressPopover() {
         const { appState } = this.props.store;
         const { systemProgressOpen } = appState;
 
-        let viewButtonTarget = appState.lastProcessedScanId;
-
-        if (appState.lastProcessedAnalysisType) {
-        	viewButtonTarget += '/analyses/' + appState.lastProcessedAnalysisType;
-        }
-
 		return (
 			<Popover className="system-progress-popover" open={systemProgressOpen} useLayerForClickAway={false}>
 				<SystemProgress
-                    key={systemProgressOpen + appState.lastProcessedScanId}
+                    key={systemProgressOpen}
                     abortHidden={true}
-					onView ={() => this.props.history.push('/view_scan/' + viewButtonTarget)}
-					onAbort={() => this.setState({abortScanDialog: true})}
 					onClose={() => appState.set({systemProgressOpen: false})}
 				/>
 			</Popover>
@@ -102,23 +50,42 @@ export default class TopBar extends Component {
 					onRestart	={() => this.setState({restartDialog: true})}
 					onShutdown	={() => this.setState({shutdownDialog: true})}
 					onClose		={() => this.setState({showSettings: undefined})}
-                    onAutoScale ={() => this.onAutoScaleClick()}
 				/>
 			</Popover>
         );
 	}
 
+	renderUser() {
+        const { store } = this.props;
+        const { appState } = store;
+        const { currentUser } = appState;
+
+        if (currentUser && !location.href.includes('login')) {
+            return (
+                <span className="app-username">
+                    | {currentUser} (<a href="/#/login?logout=true">logout</a>)
+                </span>
+            );
+        }
+    }
+
 	render() {
+        const { store } = this.props;
+        const { appState } = store;
+        const { currentUser } = appState;
+
         return (
 			<div className="top-bar" hidden={this.props.hidden}>
                 <AppBar
-                    title={<span className="app-header">Beyond</span>}
+                    title={<span className="app-header">Beyond {this.renderUser()}</span>}
                     onLeftIconButtonTouchTap={() => this.props.onMenuHandleClick()}
+                    iconElementLeft={location.hash.includes('login') ? <div/> : undefined}
 					iconElementRight={
 						<div>
                             <IconButton
                                 data-tooltip="Settings"
                                 onClick={() => this.setState({showSettings: true})}
+                                hidden={currentUser !== 'admin'}
                             >
                                 <SettingsIcon />
                             </IconButton>

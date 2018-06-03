@@ -44,9 +44,8 @@ export default class ErrorPage extends Component {
         }else{
             return (
                 <RaisedButton
-                    label="Go to scans page"
-                    onClick={() => this.props.history.push('/scans')}
-                    icon={<ScannerIcon/>}
+                    label="Go to Scorecard page"
+                    onClick={() => this.props.history.push('/scorecard')}
                 />
             );
         }

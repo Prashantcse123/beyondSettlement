@@ -1,0 +1,15 @@
+.login-page {
+    text-align: center;
+    .login-container {
+        display: inline-block;
+        width: 260px;
+        margin-top: 100px;
+        padding: 20px;
+        background: white;
+        box-shadow: 0 0 20px lightgray;
+        border-radius: 6px;
+        .login-field {
+            display: block !important;
+        }
+    }
+}
