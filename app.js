@@ -9,6 +9,8 @@ const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
 
 const api = require('./routes/api');
+// const ui = require('./routes/ui');
+const isReachable = require('is-reachable');
 
 const app = express();
 
@@ -80,6 +82,40 @@ if (process.env.NODE_ENV === 'production') {
     streams: [splunkStream],
   }));
 }
+
+app.get('/status', function(req, res) {
+
+//   var failed = 0;
+//   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
+//                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
+
+// const asyncForEach = async (array, callback) => {
+//   for (let index = 0; index < array.length; index++) {
+//     await callback(array[index], index, array)
+//   }
+// }
+
+// const start = async () => {
+//   await asyncForEach(checks, async (item) => {
+//     await isReachable(item).then(reachable => {
+//       console.log(item + ": " + reachable);
+//       if (!reachable) {
+//         failed++;
+//         console.log(item + ": " + reachable);
+//       }
+//     });
+//   })
+//   if (failed > 0) {
+//     res.status(500).json("false");
+//   } else {
+    res.status(200).json("true");
+  //}
+}
+
+//start()
+
+//}
+)
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
