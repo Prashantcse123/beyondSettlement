@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 
 const api = require('./routes/api');
 // const ui = require('./routes/ui');
-const isReachable = require('is-reachable');
+// const isReachable = require('is-reachable');
 
 const app = express();
 
@@ -33,7 +33,7 @@ app.use((req, res, next) => {
     /*
      * Check if authorization header is set
      */
-    if (req.originalUrl === '/api/beyond/login') {
+    if (!req.originalUrl.startsWith('/api') || req.originalUrl === '/api/beyond/login') {
         next();
         return;
     }
