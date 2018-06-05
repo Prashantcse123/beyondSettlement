@@ -34,6 +34,10 @@ export default class Login extends Component {
             .catch(() => this.setState({username: undefined, password: undefined}));
     }
 
+    onKeyUp(e) {
+        if (e.keyCode === 13) { this.onLoginClick() }
+    }
+
     componentDidMount() {
         if (location.hash.includes('logout=true')) {
 
@@ -62,14 +66,16 @@ export default class Login extends Component {
                     <TextField
                         className="login-field"
                         floatingLabelText="User Name"
-                        value={username}
+                        value={username || ''}
                         onChange={(e) => this.setState({username: e.target.value})}
+                        onKeyUp={(e) => this.onKeyUp(e)}
                     />
                     <TextField
                         className="login-field"
                         floatingLabelText="Password"
-                        value={password}
+                        value={password || ''}
                         onChange={(e) => this.setState({password: e.target.value})}
+                        onKeyUp={(e) => this.onKeyUp(e)}
                         type="password"
                     />
                     <br/><br/>
