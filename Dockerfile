@@ -19,5 +19,11 @@ RUN cd ui \
     && npm install \
     && npm run build 
 
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod u+x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+
 # Actual script to start can be overridden from `docker run`
 CMD ["npm", "start"]
