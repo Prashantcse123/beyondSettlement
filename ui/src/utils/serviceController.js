@@ -18,7 +18,7 @@ export default class ServiceController {
 
     validateRequest(requestData) {
         if (!requestData.method) {
-            throw 'requestData.method is required';
+            throw 'requestData.metehod is required';
         }
 
         if (!requestData.url) {
@@ -26,11 +26,33 @@ export default class ServiceController {
         }
     }
 
+    setAuthorizationToken(token) {
+        localStorage.setItem('BEYOND-authHeader', token);
+        this.refreshAuthorizationToken();
+    }
+
+    removeAuthorizationToken() {
+        localStorage.removeItem('BEYOND-authHeader');
+        this.refreshAuthorizationToken();
+    }
+
     refreshAuthorizationToken() {
         let auth = localStorage.getItem('BEYOND-authHeader');
 
         if (auth) {
-            axios.defaults.headers.common['Authorization'] = 'Bearer ' + auth;
+            axios.defaults.headers.common['Authorization'] = auth;
+        }
+    }
+
+    getUsernameFromToken() {
+        let auth = localStorage.getItem('BEYOND-authHeader');
+
+        if (auth) {
+            auth = auth.split('.')[1];
+            auth = atob(auth);
+            auth = JSON.parse(auth);
+
+            return auth.username;
         }
     }
 
@@ -48,10 +70,11 @@ export default class ServiceController {
             let catchExceptionStatusCodes = requestData.catchExceptionStatusCodes || [];
             let statusCode = ex.response.status;
 
-            // if (statusCode === 401) {
-            //     location.replace('/login');
-            //     return;
-            // }
+            if (statusCode === 401) {
+                Beyond.App.TopMessage.show('Unauthorized');
+                location.replace('/#/login');
+                return;
+            }
 
             if (exceptionMessage !== false && !catchExceptionStatusCodes.includes(statusCode)) {
                 this.triggerExceptionEvent(ex);

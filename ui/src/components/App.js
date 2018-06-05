@@ -25,6 +25,7 @@ import Snackbar from 'material-ui/Snackbar';
 import SettingsIcon from 'material-ui/svg-icons/action/settings-applications';
 
 import ScorecardPage from './pages/Scorecard/Scorecard';
+import LoginPage from './pages/Login/Login';
 
 @withRouter
 @inject("store")
@@ -46,13 +47,6 @@ export default class App extends Component {
             infoBarMessageDuration: undefined
 		};
 	}
-
-    authenticate(e) {
-        const { appState } = this.props.store;
-
-        if (e) e.preventDefault();
-        appState.authenticate();
-    }
 
     showTopMessage(infoBarMessage, options) {
 		options = options || {};
@@ -140,15 +134,21 @@ export default class App extends Component {
 		Beyond.App.ServiceController.setExceptionEventHandler((ex) =>
             Beyond.App.TopMessage.show(ex.message));
 
-        const { appState } = this.props.store;
-
-        appState.startSystemStatusMonitor();
-
 		this.attachFullScreenEvent();
 
         new TooltipService().startService();
 		// this.authenticate();
 	}
+
+	componentDidUpdate() {
+        const { appState } = this.props.store;
+
+        if (location.hash.includes('login')) {
+            appState.stopSystemStatusMonitor();
+        }else{
+            appState.startSystemStatusMonitor();
+        }
+    }
 
 	componentWillUnmount() {
         const { appState } = this.props.store;
@@ -168,6 +168,11 @@ export default class App extends Component {
             <div className="app-content">
                 <Route exact path="/" component={Home}/>
                 <Route exact path="/not_found" component={NotFound}/>
+                <Route
+                    exact
+                    path="/login"
+                    component={LoginPage}
+                />
                 <Route
                     exact
                     path="/scorecard"
