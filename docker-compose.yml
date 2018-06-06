@@ -6,12 +6,13 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
-    environment:
-      - NODE_ENV=staging
     ports:
       - "3000:3000"
     links:
       - db:db
+    volumes:
+      - ./:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
 
   db:
     image: postgres:9.6-alpine
@@ -21,3 +22,6 @@ services:
       POSTGRES_USER: docker
     ports:
       - "5432:5432"
+
+volumes:
+  node_modules:
