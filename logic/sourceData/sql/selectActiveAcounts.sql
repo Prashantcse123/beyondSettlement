@@ -221,7 +221,9 @@ select programname,tradelinename,creditor, State_Of_Residency as enrolledstate,
               case when accepted_pay = 'evenpays' then accepted_pay
                    else concat(concat('$',accepted_pay), ' min pay')
                    end) as Creditor_Terms, 
-        Data_Points,  debt_type,
+        Data_Points,  debt_type, */
+       Max_Term,Max_Term_Fund_Accumulation,Enrolled_Debt, NULL as VerifiedBalance, OriginalBalance, CurrentBalance, 
+       Account_Status as currentstage, Tradeline_Last_Negotiated, Account_Number, 
        case when  tradelinename_fa is null then 'not eligible(fa)' -- These tradelines have negative funds in their terms if we settle them
             when  UPPER(creditor) in ('CITIBANK', 'SEARS', 'MACYS', 'BEST BUY', 'COSTCO', 'HOME DEPOT', 'TRACTOR SUPPLY', 
                                      'GOOD YEAR', 'BLOOMINGDALES', 'EXXON', 'SHELL', 'BROOKS BROTHERS')
@@ -237,8 +239,7 @@ select programname,tradelinename,creditor, State_Of_Residency as enrolledstate,
                   then 'not eligible'
             when count(case when eligible_terms=true then 1 else null end)=max(term) then 'eligible'
        else 'not eligible' 
-       end as Eligibility ,*/  
-       Max_Term,Max_Term_Fund_Accumulation,Enrolled_Debt, NULL as VerifiedBalance, OriginalBalance, CurrentBalance, Account_Status as currentstage, Tradeline_Last_Negotiated, Account_Number/* credit_score,  Type */
+       end as Eligibility /* credit_score,  Type */
        
 from (
         Select stl.TradelineName, stl.ProgramName, stl.programid, stl.State_Of_Residency, stl.Enrolled_Debt, 
@@ -371,8 +372,7 @@ where stl.programid not in (Select programid from stl
 group by programname,tradelinename,creditor, delinquency, Balance, estimated_OfferAmt_TE, estimated_OfferAmt, fund_in_CFT, 
          m0_bal, m1_bal, m2_bal, m3_bal, m4_bal, m5_bal, m6_bal, m7_bal, m8_bal, m9_bal, m10_bal, m11_bal, m12_bal , /*term_end_bal,*/ Account_Status, Tradeline_Last_Negotiated, lpoa_sent__c,
          accepted_ratio,accepted_terms,accepted_pay,  Data_Points, Account_Number, tradelinename_fa, credit_score,
-         debt_type, nu_dse__Last_Payment_Date__c, CreatedDate,  State_Of_Residency,  avg_monthly_payment, Max_Term, Max_Term_Fund_Accumulation, Enrolled_Debt, VerifiedBalance, OriginalBalance, CurrentBalance, Type, Account_Number
+         debt_type, nu_dse__Last_Payment_Date__c, CreatedDate,  State_Of_Residency,  avg_monthly_payment, Max_Term, Max_Term_Fund_Accumulation, Enrolled_Debt, VerifiedBalance, OriginalBalance, 
+         CurrentBalance, Type, Account_Number
          
 ;
-
-
