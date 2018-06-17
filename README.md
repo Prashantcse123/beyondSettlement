@@ -28,6 +28,14 @@ node_modules/.bin/sequelize db:migrate
 yarn start
 ```
 
+## Connect to the DB in development
+
+Recommended to use PSequel or PGAdmin
+
+Connecting details in config.js
+
+The port exposed to the local machine is 5434 (docker-compose)
+
 ## Running Tests
 
 We have added some [Mocha](https://mochajs.org) based test. You can run them by `yarn test`
