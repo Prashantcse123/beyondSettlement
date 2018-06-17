@@ -5,15 +5,18 @@
 
 ### Install 
 ```
-docker-compose build
+docker-compose buld
 ```
 
 ### Run
 ```
 docker-compose run --rm app node_modules/.bin/sequelize db:create
-docker-compose run --rm app node_modules/.bin/sequelize db:migrate
-docker-compose run --rm app node_modules/.bin/sequelize db:seed:all 
-docker-compose up app
+docker-compose up -d
+```
+
+### Get the logs
+```
+docker-compose logs -f 
 ```
 
 
