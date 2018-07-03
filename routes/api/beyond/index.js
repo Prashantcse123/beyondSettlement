@@ -23,7 +23,7 @@ router.post('/login', (req, res) => {
     let error = {message: 'Wrong username or password!'};
 
     if(req.body.username && req.body.password) {
-        models.User.findAll({where: {username}}).then(rows => {
+        models.User.findAll({where: {username: {$iLike: username.toLowerCase()}}}).then(rows => {
             let row = rows[0];
 
             if (row && validPassword(password, row.password)) {
