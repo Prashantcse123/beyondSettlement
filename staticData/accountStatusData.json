@@ -4,6 +4,14 @@
    "points": 5
  },
  {
+   "name": "Making payments",
+   "points": 5
+ },
+ {
+   "name": "Other",
+   "points": 5
+ },
+ {
    "name": "Zero pays-cancelled",
    "points": 10
  },

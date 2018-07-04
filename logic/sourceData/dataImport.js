@@ -131,16 +131,16 @@ const dataImport = {
         console.log('** Importing Data from RedShift...');
 
         let promises = [
-            new Promise((resolve, reject) =>
-                dataImport.getAllCreditorVariables()
-                    .then((varData) => {
-                        models.ImportedCreditorVariable.destroy({truncate: true});
-                        models.ImportedCreditorVariable.bulkCreate(varData).then(() => resolve());
-                        // varData.forEach(d => {
-                        //     models.ImportedCreditorVariable.create(d);
-                        //     resolve();
-                        // });
-                    })),
+            // new Promise((resolve, reject) =>
+            //     dataImport.getAllCreditorVariables()
+            //         .then((varData) => {
+            //             models.ImportedCreditorVariable.destroy({truncate: true});
+            //             models.ImportedCreditorVariable.bulkCreate(varData).then(() => resolve());
+            //             // varData.forEach(d => {
+            //             //     models.ImportedCreditorVariable.create(d);
+            //             //     resolve();
+            //             // });
+            //         })),
             new Promise((resolve, reject) =>
                 dataImport.getAllActiveAccounts()
                     .then((varData) => {

@@ -74,7 +74,8 @@ const calculationsHelper = {
                         } else if (method === 'update') {
                             rows[rowIndex].update(results).then(() => calcRowIndex(rowIndex + 1));
                         }
-                        calculationsHelper.updateProgress(modelName + ' calculations', (rowIndex + 1) / rows.length);
+                        // calculationsHelper.updateProgress(modelName + ' calculations (' + (rowIndex + 2) + '/' + rows.length + ')', (rowIndex + 2) / rows.length);
+                        calculationsHelper.updateProgress(modelName + ' calculations', (rowIndex + 2) / rows.length);
                     });
                 }
             };

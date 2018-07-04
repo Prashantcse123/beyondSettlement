@@ -1,30 +1,30 @@
 const models = require('../../../models');
 const express = require('express');
-const creditorCalculationsLogic = require('../../../logic/calculations/creditorCalculations');
-const accountCalculationsLogic = require('../../../logic/calculations/accountCalculations');
+const creditorCalculationsLogic = require('../../../logic/calculations/old/creditorCalculations');
+const accountCalculationsLogic = require('../../../logic/calculations/old/accountCalculations');
 const scorecardCalculationsLogic = require('../../../logic/calculations/scorecardCalculations');
 
 const router = express.Router();
 
-router.get('/creditor/set', (req, res) => {
-  creditorCalculationsLogic.setData().then((data) => {});
-  res.status(200).json(data);
-});
-
-router.get('/account/set', (req, res) => {
-  accountCalculationsLogic.setData().then((data) => {});
-  res.status(200).json(data);
-});
+// router.get('/creditor/set', (req, res) => {
+//   creditorCalculationsLogic.setData().then((data) => {});
+//   res.status(200).json(data);
+// });
+//
+// router.get('/account/set', (req, res) => {
+//   accountCalculationsLogic.setData().then((data) => {});
+//   res.status(200).json(data);
+// });
 
 router.get('/scorecard/set', (req, res) => {
   scorecardCalculationsLogic.setData().then((data) => {});
-  res.status(200).json(data);
+  res.status(200).json('Calculation started....');
 });
 
 router.get('/all/set', (req, res) => {
   Promise.resolve()
-    .then(() => creditorCalculationsLogic.setData())
-    .then(() => accountCalculationsLogic.setData())
+    // .then(() => creditorCalculationsLogic.setData())
+    // .then(() => accountCalculationsLogic.setData())
     .then(() => scorecardCalculationsLogic.setData());
 
   res.status(200).json('Success!');
