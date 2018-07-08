@@ -1,0 +1,57 @@
+[
+    {
+        "rangeFrom": 1,
+        "rangeTo": 100,
+        "points": 1
+    },
+    {
+        "rangeFrom": 101,
+        "rangeTo": 200,
+        "points": 2
+    },
+    {
+        "rangeFrom": 201,
+        "rangeTo": 300,
+        "points": 3
+    },
+    {
+        "rangeFrom": 301,
+        "rangeTo": 400,
+        "points": 4
+    },
+    {
+        "rangeFrom": 401,
+        "rangeTo": 500,
+        "points": 5
+    },
+    {
+        "rangeFrom": 501,
+        "rangeTo": 750,
+        "points": 6
+    },
+    {
+        "rangeFrom": 751,
+        "rangeTo": 1000,
+        "points": 10
+    },
+    {
+        "rangeFrom": 1001,
+        "rangeTo": 1500,
+        "points": 12
+    },
+    {
+        "rangeFrom": 1501,
+        "rangeTo": 2000,
+        "points": 15
+    },
+    {
+        "rangeFrom": 2001,
+        "rangeTo": 5000,
+        "points": 20
+    },
+    {
+        "rangeFrom": 5001,
+        "rangeTo": 100000,
+        "points": 25
+    }
+]

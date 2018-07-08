@@ -1,7 +1,7 @@
 const expect = require('expect.js');
 
 describe('calculations', () => {
-  before(() => this.accountCalculationsLogic = require('../../../logic/calculations/accountCalculations'));
+  before(() => this.accountCalculationsLogic = require('../../../logic/calculations/old/accountCalculations'));
 
   describe('account', () => {
     // before(() => this.accountCalculationsLogic.importActiveAccounts());

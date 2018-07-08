@@ -1,54 +1,210 @@
 [
-  {"code": "RI", "points": 0},
-  {"code": "AE", "points": 0},
-  {"code": "CT", "points": 0},
-  {"code": "DE", "points": 0},
-  {"code": "IL", "points": 0},
-  {"code": "IA", "points": 0},
-  {"code": "KS", "points": 0},
-  {"code": "KY", "points": 0},
-  {"code": "MN", "points": 0},
-  {"code": "NV", "points": 0},
-  {"code": "NH", "points": 0},
-  {"code": "ND", "points": 0},
-  {"code": "OR", "points": 0},
-  {"code": "UT", "points": 0},
-  {"code": "WA", "points": 0},
-  {"code": "WV", "points": 0},
-  {"code": "WI", "points": 0},
-  {"code": "NM", "points": 1},
-  {"code": "OK", "points": 2},
-  {"code": "SC", "points": 3},
-  {"code": "PA", "points": 4},
-  {"code": "AK", "points": 5},
-  {"code": "MD", "points": 6},
-  {"code": "TX", "points": 7},
-  {"code": "FL", "points": 8},
-  {"code": "SD", "points": 9},
-  {"code": "AR", "points": 10},
-  {"code": "HI", "points": 11},
-  {"code": "CA", "points": 11},
-  {"code": "AZ", "points": 12},
-  {"code": "NY", "points": 13},
-  {"code": "AL", "points": 14},
-  {"code": "MS", "points": 15},
-  {"code": "MA", "points": 15},
-  {"code": "DC", "points": 16},
-  {"code": "IN", "points": 17},
-  {"code": "TN", "points": 17},
-  {"code": "WY", "points": 17},
-  {"code": "ID", "points": 17},
-  {"code": "LA", "points": 18},
-  {"code": "VA", "points": 18},
-  {"code": "OH", "points": 19},
-  {"code": "NE", "points": 19},
-  {"code": "MT", "points": 19},
-  {"code": "MO", "points": 20},
-  {"code": "MI", "points": 21},
-  {"code": "NC", "points": 22},
-  {"code": "NJ", "points": 22},
-  {"code": "CO", "points": 22},
-  {"code": "GA", "points": 22},
-  {"code": "VT", "points": 22},
-  {"code": "ME", "points": 22}
+    {
+        "code": "RI",
+        "points": 0
+    },
+    {
+        "code": "AE",
+        "points": 0
+    },
+    {
+        "code": "CT",
+        "points": 0
+    },
+    {
+        "code": "DE",
+        "points": 0
+    },
+    {
+        "code": "IL",
+        "points": 0
+    },
+    {
+        "code": "IA",
+        "points": 0
+    },
+    {
+        "code": "KS",
+        "points": 0
+    },
+    {
+        "code": "KY",
+        "points": 0
+    },
+    {
+        "code": "MN",
+        "points": 0
+    },
+    {
+        "code": "NV",
+        "points": 0
+    },
+    {
+        "code": "NH",
+        "points": 0
+    },
+    {
+        "code": "ND",
+        "points": 0
+    },
+    {
+        "code": "OR",
+        "points": 0
+    },
+    {
+        "code": "UT",
+        "points": 0
+    },
+    {
+        "code": "WA",
+        "points": 0
+    },
+    {
+        "code": "WV",
+        "points": 0
+    },
+    {
+        "code": "WI",
+        "points": 0
+    },
+    {
+        "code": "NM",
+        "points": 1
+    },
+    {
+        "code": "OK",
+        "points": 2
+    },
+    {
+        "code": "SC",
+        "points": 3
+    },
+    {
+        "code": "PA",
+        "points": 4
+    },
+    {
+        "code": "AK",
+        "points": 5
+    },
+    {
+        "code": "MD",
+        "points": 6
+    },
+    {
+        "code": "TX",
+        "points": 7
+    },
+    {
+        "code": "SD",
+        "points": 9
+    },
+    {
+        "code": "AR",
+        "points": 10
+    },
+    {
+        "code": "HI",
+        "points": 11
+    },
+    {
+        "code": "AZ",
+        "points": 12
+    },
+    {
+        "code": "AL",
+        "points": 14
+    },
+    {
+        "code": "MS",
+        "points": 15
+    },
+    {
+        "code": "DC",
+        "points": 16
+    },
+    {
+        "code": "IN",
+        "points": 17
+    },
+    {
+        "code": "TN",
+        "points": 17
+    },
+    {
+        "code": "WY",
+        "points": 17
+    },
+    {
+        "code": "ID",
+        "points": 17
+    },
+    {
+        "code": "LA",
+        "points": 18
+    },
+    {
+        "code": "VA",
+        "points": 18
+    },
+    {
+        "code": "OH",
+        "points": 19
+    },
+    {
+        "code": "NE",
+        "points": 19
+    },
+    {
+        "code": "MT",
+        "points": 19
+    },
+    {
+        "code": "MA",
+        "points": 20
+    },
+    {
+        "code": "CA",
+        "points": 20
+    },
+    {
+        "code": "MO",
+        "points": 20
+    },
+    {
+        "code": "NY",
+        "points": 20
+    },
+    {
+        "code": "FL",
+        "points": 20
+    },
+    {
+        "code": "MI",
+        "points": 21
+    },
+    {
+        "code": "NC",
+        "points": 22
+    },
+    {
+        "code": "NJ",
+        "points": 22
+    },
+    {
+        "code": "CO",
+        "points": 22
+    },
+    {
+        "code": "GA",
+        "points": 22
+    },
+    {
+        "code": "VT",
+        "points": 22
+    },
+    {
+        "code": "ME",
+        "points": 22
+    }
 ]
