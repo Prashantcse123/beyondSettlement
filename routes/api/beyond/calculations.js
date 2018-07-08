@@ -1,7 +1,5 @@
 const models = require('../../../models');
 const express = require('express');
-const creditorCalculationsLogic = require('../../../logic/calculations/old/creditorCalculations');
-const accountCalculationsLogic = require('../../../logic/calculations/old/accountCalculations');
 const scorecardCalculationsLogic = require('../../../logic/calculations/scorecardCalculations');
 
 const router = express.Router();
@@ -111,14 +109,6 @@ router.get('/status', (req, res) => {
 
 router.get('/test', (req, res) => {
   res.status(200).json('Test Success! :)');
-});
-
-router.get('/test_account_column', (req, res) => {
-    let columnName = req.query.column;
-    let id = req.query.id;
-
-    accountCalculationsLogic.testColumn(columnName, id).then((result) =>
-        res.status(200).json({result: result}));
 });
 
 module.exports = router;
