@@ -5,7 +5,7 @@
 
 ### Install 
 ```
-docker-compose buld
+docker-compose build
 ```
 
 ### Run

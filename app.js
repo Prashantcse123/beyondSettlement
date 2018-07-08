@@ -75,13 +75,13 @@ app.use((req, res, next) => {
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-if (process.env.NODE_ENV === 'production') {
-  const splunkStream = splunkBunyan.createStream(config);
-  app.use(require('express-bunyan-logger')({
-    name: 'logger',
-    streams: [splunkStream],
-  }));
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const splunkStream = splunkBunyan.createStream(config);
+//   app.use(require('express-bunyan-logger')({
+//     name: 'logger',
+//     streams: [splunkStream],
+//   }));
+// }
 
 app.get('/status', function(req, res) {
 

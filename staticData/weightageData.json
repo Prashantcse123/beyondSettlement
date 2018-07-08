@@ -1,56 +1,56 @@
 [
  {
    "criteria": "Creditor score",
-   "weightage": 26,
-   "maxPoints": 10,
-   "minPoints": 1,
-   "maxScore": 260,
-   "minScore": 26,
+   "weightage": 19,
+   "maxPoints": 25,
+   "minPoints": 10,
+   "maxScore": 475,
+   "minScore": 190,
    "remarks": ""
  },
  {
    "criteria": "State of residency",
-   "weightage": 21,
+   "weightage": 14,
    "maxPoints": 22,
    "minPoints": 1,
-   "maxScore": 462,
-   "minScore": 21,
+   "maxScore": 308,
+   "minScore": 42,
    "remarks": ""
  },
  {
    "criteria": "Monthly payment",
-   "weightage": 5,
+   "weightage": 1,
    "maxPoints": 25,
    "minPoints": 1,
-   "maxScore": 125,
-   "minScore": 5,
+   "maxScore": 25,
+   "minScore": 1,
    "remarks": ""
  },
  {
    "criteria": "Account delinquency",
-   "weightage": 19,
-   "maxPoints": 20,
-   "minPoints": 0,
-   "maxScore": 380,
-   "minScore": 0,
+   "weightage": 14,
+   "maxPoints": 25,
+   "minPoints": 8,
+   "maxScore": 350,
+   "minScore": 42,
    "remarks": ""
  },
  {
    "criteria": "% Avg settlement",
-   "weightage": 5,
+   "weightage": 1,
    "maxPoints": 20,
    "minPoints": 1,
-   "maxScore": 100,
-   "minScore": 5,
+   "maxScore": 20,
+   "minScore": 1,
    "remarks": ""
  },
  {
    "criteria": "Settlement term",
-   "weightage": 5,
+   "weightage": 8,
    "maxPoints": 10,
    "minPoints": 3,
-   "maxScore": 50,
-   "minScore": 15,
+   "maxScore": 80,
+   "minScore": 24,
    "remarks": "Max # of months allowable by creditor"
  },
  {
@@ -69,6 +69,24 @@
    "minPoints": 5,
    "maxScore": 280,
    "minScore": 70,
+   "remarks": ""
+ },
+ {
+   "criteria": "First Month Fee Funding Pct",
+   "weightage": 12,
+   "maxPoints": 50,
+   "minPoints": 2,
+   "maxScore": 600,
+   "minScore": 24,
+   "remarks": ""
+ },
+ {
+   "criteria": "Fee Estimate",
+   "weightage": 12,
+   "maxPoints": 25,
+   "minPoints": 1,
+   "maxScore": 300,
+   "minScore": 12,
    "remarks": ""
  }
 ]

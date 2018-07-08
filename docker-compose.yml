@@ -10,9 +10,11 @@ services:
       - "3000:3000"
     links:
       - db:db
-    volumes:
-      - ./:/usr/src/app
-      - node_modules:/usr/src/app/node_modules
+    depends_on:
+      - db
+    #volumes:
+      #- ./:/usr/src/app
+      #- node_modules:/usr/src/app/node_modules
 
   db:
     image: postgres:9.6-alpine

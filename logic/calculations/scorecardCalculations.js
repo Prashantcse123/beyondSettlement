@@ -3,403 +3,373 @@ const calculationsHelper = require('./calculationsHelper');
 
 const scorecardCalculations = {
 
-  /// External Interface ----------------------------------------------------------------------------------------------
+    /// External Interface ----------------------------------------------------------------------------------------------
 
-  setData: () => {
-    calculationsHelper.initCache(scorecardCalculations);
+    setData: () => {
+        calculationsHelper.initCache(scorecardCalculations);
 
-    let init = Promise.all([
-      scorecardCalculations.importAccounts(),
-      scorecardCalculations.importCreditors(),
-      scorecardCalculations.importStates(),
-      scorecardCalculations.importMonthlyProgramPaymentRanges(),
-      scorecardCalculations.importAccountDelinquencyRanges(),
-      scorecardCalculations.importAvgAcceptedSettlementRanges(),
-      scorecardCalculations.importSettlementTermRanges(),
-      scorecardCalculations.importAccountStatusValues(),
-      scorecardCalculations.importEnrollDebtRanges(),
-      scorecardCalculations.importWeightageFactors(),
-    ]);
+        let init = Promise.all([
+            scorecardCalculations.importActiveAccounts(),
+            scorecardCalculations.importStates(),
+            scorecardCalculations.importMonthlyProgramPaymentRanges(),
+            scorecardCalculations.importAccountDelinquencyRanges(),
+            scorecardCalculations.importAvgAcceptedSettlementRanges(),
+            scorecardCalculations.importSettlementTermRanges(),
+            scorecardCalculations.importAccountStatusValues(),
+            scorecardCalculations.importEnrollDebtRanges(),
+            scorecardCalculations.importFeeEstimateRanges(),
+            scorecardCalculations.importFirstMonthFeeFundPctRanges(),
+            scorecardCalculations.importWeightageFactors(),
+        ]);
 
-    return new Promise((resolve, reject) =>
-      init.then(() => {
-        let accounts = scorecardCalculations._accounts;
+        return new Promise((resolve, reject) =>
+            init.then(() => {
+                let accounts = scorecardCalculations._accounts;
 
-        calculationsHelper.calculateAllRows(scorecardCalculations, 'Scorecard', accounts, 'create')
-          .then (() => resolve('Scorecard Calculations Success! :)'))
-          .catch(() => resolve('Scorecard Calculations Error! :('))
-      })
-    );
-  },
+                calculationsHelper.calculateAllRows(scorecardCalculations, 'Scorecard', accounts, 'create')
+                    .then(() => resolve('Scorecard Calculations Success! :)'))
+                    .catch(() => resolve('Scorecard Calculations Error! :('))
+            })
+        );
+    },
 
-  /// Internal Service Functions --------------------------------------------------------------------------------------
+    /// Internal Service Functions --------------------------------------------------------------------------------------
 
-  importAccounts: () => {
-    return new Promise(resolve =>
-      models.Account.findAll().then(results => {
-        scorecardCalculations._accounts = results;
-        resolve();
-      }));
-  },
+    importActiveAccounts: () => {
+        return new Promise(resolve =>
+            models.ImportedActiveAccount.findAll({raw: true}).then(results => {
+                scorecardCalculations._accounts = results;
+                resolve();
+            }));
+    },
 
-  importCreditors: () => {
-    return new Promise(resolve =>
-      models.Creditor.findAll().then(results => {
-        scorecardCalculations._creditors = results;
-        resolve();
-      }));
-  },
+    importStates: () => {
+        return new Promise(resolve =>
+            models.State.findAll().then(results => {
+                scorecardCalculations._states = results;
+                resolve();
+            }));
+    },
 
-  importStates: () => {
-    return new Promise(resolve =>
-      models.State.findAll().then(results => {
-        scorecardCalculations._states = results;
-        resolve();
-      }));
-  },
+    importMonthlyProgramPaymentRanges: () => {
+        return new Promise(resolve =>
+            models.MonthlyProgramPayment.findAll().then(results => {
+                scorecardCalculations._monthlyProgramPaymentRanges = results;
+                resolve();
+            }));
+    },
 
-  importMonthlyProgramPaymentRanges: () => {
-    return new Promise(resolve =>
-      models.MonthlyProgramPayment.findAll().then(results => {
-        scorecardCalculations._monthlyProgramPaymentRanges = results;
-        resolve();
-      }));
-  },
+    importAccountDelinquencyRanges: () => {
+        return new Promise(resolve =>
+            models.AccountDelinquency.findAll().then(results => {
+                scorecardCalculations._accountDelinquencyRanges = results;
+                resolve();
+            }));
+    },
 
-  importAccountDelinquencyRanges: () => {
-    return new Promise(resolve =>
-      models.AccountDelinquency.findAll().then(results => {
-        scorecardCalculations._accountDelinquencyRanges = results;
-        resolve();
-      }));
-  },
+    importAvgAcceptedSettlementRanges: () => {
+        return new Promise(resolve =>
+            models.AvgAcceptedSettlementPointsRange.findAll().then(results => {
+                scorecardCalculations._avgAcceptedSettlementRanges = results;
+                resolve();
+            }));
+    },
 
-  importAvgAcceptedSettlementRanges: () => {
-    return new Promise(resolve =>
-      models.AvgAcceptedSettlement.findAll().then(results => {
-        scorecardCalculations._avgAcceptedSettlementRangesRanges = results;
-        resolve();
-      }));
-  },
+    importSettlementTermRanges: () => {
+        return new Promise(resolve =>
+            models.SettlementTerm.findAll().then(results => {
+                scorecardCalculations._settlementTermRanges = results;
+                resolve();
+            }));
+    },
 
-  importSettlementTermRanges: () => {
-    return new Promise(resolve =>
-      models.SettlementTerm.findAll().then(results => {
-        scorecardCalculations._settlementTermRanges = results;
-        resolve();
-      }));
-  },
+    importAccountStatusValues: () => {
+        return new Promise(resolve =>
+            models.AccountStatus.findAll().then(results => {
+                scorecardCalculations._accountStatusValues = results;
+                resolve();
+            }));
+    },
 
-  importAccountStatusValues: () => {
-    return new Promise(resolve =>
-      models.AccountStatus.findAll().then(results => {
-        scorecardCalculations._accountStatusValues = results;
-        resolve();
-      }));
-  },
+    importEnrollDebtRanges: () => {
+        return new Promise(resolve =>
+            models.EnrollDebt.findAll().then(results => {
+                scorecardCalculations._enrollDebtRanges = results;
+                resolve();
+            }));
+    },
 
-  importEnrollDebtRanges: () => {
-    return new Promise(resolve =>
-      models.EnrollDebt.findAll().then(results => {
-        scorecardCalculations._enrollDebtRanges = results;
-        resolve();
-      }));
-  },
+    importFeeEstimateRanges: () => {
+        return new Promise(resolve =>
+            models.FeeEstimate.findAll().then(results => {
+                scorecardCalculations._feeEstimateRanges = results;
+                resolve();
+            }));
+    },
 
-  importWeightageFactors: () => {
-    return new Promise(resolve =>
-      models.Weightage.findAll().then(results => {
-        scorecardCalculations._weightageFactors = results;
-        resolve();
-      }));
-  },
+    importFirstMonthFeeFundPctRanges: () => {
+        return new Promise(resolve =>
+            models.FirstMonthFeeFundPct.findAll().then(results => {
+                scorecardCalculations._firstMonthFeeFundPctRanges = results;
+                resolve();
+            }));
+    },
 
-  accountColumnImport:    (account, accountColumnName, fallbackValue) => {
-    return new Promise((resolve) => {
-      resolve(account[accountColumnName] || fallbackValue);
-    });
-  },
+    importWeightageFactors: () => {
+        return new Promise(resolve =>
+            models.Weightage.findAll().then(results => {
+                scorecardCalculations._weightageFactors = results;
+                resolve();
+            }));
+    },
 
-  calculateWeightageColumn: (account, columnName, columnLabel) => {
-    return new Promise(resolve => {
-      let result;
+    accountColumnImport: (account, accountColumnName, fallbackValue) => {
+        return new Promise((resolve) => {
+            resolve(account[accountColumnName] || fallbackValue);
+        });
+    },
 
-      scorecardCalculations.columns[columnName](account).then(columnValue => {
-        let weightageFactor = scorecardCalculations._weightageFactors.filter(wf =>
-          wf.criteria === columnLabel)[0];
+    calculateWeightageColumn: (account, columnName, columnLabel) => {
+        return new Promise(resolve => {
+            let result;
 
-        try{
-          result = weightageFactor.weightage * columnValue;
-        }catch(ex) {
-          result = 0;
-        }
+            scorecardCalculations.columns[columnName](account).then(columnValue => {
+                let weightageFactor = scorecardCalculations._weightageFactors.filter(wf =>
+                    wf.criteria === columnLabel)[0];
 
-        resolve(result);
-      });
-    });
-  },
-
-  columns: {
-
-    /// Metadata
-    tradeLineName:                                  (account) => scorecardCalculations.accountColumnImport(account, 'tradelineName'),
-    programName:                                    (account) => scorecardCalculations.accountColumnImport(account, 'programName'),
-    creditor:                                       (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),
-    accountNumber:                                  (account) => scorecardCalculations.accountColumnImport(account, 'accountNumber'),
-
-    /// Metrics
-    metrics_creditorScore:                          (account) => {
-      return new Promise(resolve => {
-        let result;
-        let promises = [
-          scorecardCalculations.columns.tradeLineName(account),
-          scorecardCalculations.columns.creditor(account),
-          scorecardCalculations.columns.accountNumber(account)
-        ];
-
-        Promise.all(promises).then(results => {
-          let tradeLineName = results[0];
-          let creditorName = results[1];
-          let accountNumber = results[2];
-          let creditor = scorecardCalculations._creditors.filter(cr => cr.name === creditorName)[0];
-
-          try{
-            if (creditorName === 'Pay pal' && accountNumber.startsWith('5049')) {
-              result = 7;
-            }else{
-              if (!tradeLineName) {
-                result = null;
-              }else{
-                if (!creditor || !creditor.score) {
-                  result = 5;
-                }else{
-                  result = creditor.score;
+                try {
+                    result = weightageFactor.weightage * columnValue;
+                } catch (ex) {
+                    result = 0;
                 }
-              }
-            }
-          }catch(ex) {
-            result = null;
-          }
 
-          resolve(result);
+                resolve(result);
+            });
         });
-      });
-    },
-    metrics_stateOfResidency:                       (account) => scorecardCalculations.accountColumnImport(account, 'enrolledState'),
-    metrics_monthlyPayment:                         (account) => scorecardCalculations.accountColumnImport(account, 'avgMonthlyPayment'),
-    metrics_accountDelinquency:                     (account) => scorecardCalculations.accountColumnImport(account, 'calc_accountDelinquency'),
-    metrics_pctAvgSettlement:                       (account) => {
-      return new Promise(resolve => {
-        let result;
-        let creditor = scorecardCalculations._creditors.filter(cr =>
-          cr.name === account.creditor)[0];
-
-        try{
-            if (!creditor || !creditor.preAvgPctSettlement) {
-              result = 0.6;
-            }else{
-              result = creditor.preAvgPctSettlement;
-            }
-        }catch(ex) {
-          result = null;
-        }
-
-        resolve(result);
-      });
-    },
-    metrics_settlementTerm:                         (account) => {
-      return new Promise(resolve => {
-        let result;
-        let creditor = scorecardCalculations._creditors.filter(cr =>
-          cr.name === account.creditor)[0];
-
-        try{
-          if (!creditor || !creditor.preSettlementTerm) {
-            result = 6;
-          }else{
-            result = creditor.preSettlementTerm;
-          }
-        }catch(ex) {
-          result = null;
-        }
-
-        resolve(result);
-      });
-    },
-    metrics_fundAccumulation_endOfCurrentMonth:     (account) => scorecardCalculations.accountColumnImport(account, 'currentFund'),
-    metrics_fundAccumulationPct_endOfCurrentMonth:  (account) => scorecardCalculations.accountColumnImport(account, 'endOfCurrentMonth'),
-    metrics_fundAccumulationPct_1_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut1'),
-    metrics_fundAccumulationPct_2_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut2'),
-    metrics_fundAccumulationPct_3_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut3'),
-    metrics_fundAccumulationPct_4_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut4'),
-    metrics_fundAccumulationPct_5_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut5'),
-    metrics_fundAccumulationPct_6_monthOut:         (account) => scorecardCalculations.accountColumnImport(account, 'monthOut6'),
-    metrics_accountStatus:                          (account) => scorecardCalculations.accountColumnImport(account, 'currentStage'),
-    metrics_enrolledDebt:                           (account) => scorecardCalculations.accountColumnImport(account, 'enrolledDebt'),
-
-    /// Assigned Points
-    points_creditorScore:                           (account) => scorecardCalculations.columns.metrics_creditorScore(account),
-    points_stateOfResidency:                        (account) => {
-      return new Promise(resolve => {
-        let result;
-
-        scorecardCalculations.columns.metrics_stateOfResidency(account).then(metrics_stateOfResidency => {
-          let state = scorecardCalculations._states.filter(st =>
-            st.code === metrics_stateOfResidency)[0];
-
-          try{
-            result = state.points;
-          }catch(ex) {
-            result = null;
-          }
-
-          resolve(result);
-        });
-      });
-    },
-    points_monthlyPayment:                          (account) => {
-      return new Promise(resolve => {
-        let result;
-
-        scorecardCalculations.columns.metrics_monthlyPayment(account).then(metrics_monthlyPayment => {
-          let range = scorecardCalculations._monthlyProgramPaymentRanges.filter(a =>
-            metrics_monthlyPayment > a.rangeFrom && metrics_monthlyPayment <= a.rangeTo)[0];
-
-          try{
-            result = range.points;
-          }catch(ex) {
-            result = null;
-          }
-
-          resolve(result);
-        });
-      });
-    },
-    points_accountDelinquency:                      (account) => {
-      return new Promise(resolve => {
-        let result;
-
-        scorecardCalculations.columns.metrics_accountDelinquency(account).then(metrics_accountDelinquency => {
-          let range = scorecardCalculations._accountDelinquencyRanges.filter(a =>
-            metrics_accountDelinquency > a.rangeFrom && metrics_accountDelinquency <= a.rangeTo)[0];
-
-          try{
-            result = range.points;
-          }catch(ex) {
-            result = null;
-          }
-
-          resolve(result);
-        });
-      });
-    },
-    points_pctAvgSettlement:                        (account) => {
-      return new Promise(resolve => {
-        let result;
-
-        scorecardCalculations.columns.metrics_pctAvgSettlement(account).then(metrics_pctAvgSettlement => {
-          let range = scorecardCalculations._avgAcceptedSettlementRangesRanges.filter(a =>
-            metrics_pctAvgSettlement > a.rangeFrom && metrics_pctAvgSettlement <= a.rangeTo)[0];
-
-          try{
-            result = range.points;
-          }catch(ex) {
-            result = null;
-          }
-
-          resolve(result);
-        });
-      });
-    },
-    points_settlementTerm:                          (account) => {
-      return new Promise(resolve => {
-        let result;
-
-        scorecardCalculations.columns.metrics_settlementTerm(account).then(metrics_settlementTerm => {
-          let range = scorecardCalculations._settlementTermRanges.filter(a =>
-            metrics_settlementTerm > a.rangeFrom && metrics_settlementTerm <= a.rangeTo)[0];
-
-          try{
-            result = range.points;
-          }catch(ex) {
-            result = null;
-          }
-
-          resolve(result);
-        });
-      });
-    },
-    points_accountStatus:                           (account) => {
-      return new Promise(resolve => {
-        let result;
-
-        scorecardCalculations.columns.metrics_accountStatus(account).then(metrics_accountStatus => {
-          let accountStatus = scorecardCalculations._accountStatusValues.filter(a =>
-            a.name === metrics_accountStatus)[0];
-
-          try{
-            result = accountStatus.points;
-          }catch(ex) {
-            result = null;
-          }
-
-          resolve(result);
-        });
-      });
-    },
-    points_enrolledDebt:                            (account) => {
-      return new Promise(resolve => {
-        let result;
-
-        scorecardCalculations.columns.metrics_enrolledDebt(account).then(metrics_enrolledDebt => {
-          let range = scorecardCalculations._enrollDebtRanges.filter(a =>
-            metrics_enrolledDebt > a.rangeFrom && metrics_enrolledDebt <= a.rangeTo)[0];
-
-          try{
-            result = range.points;
-          }catch(ex) {
-            result = null;
-          }
-
-          resolve(result);
-        });
-      });
     },
 
-    /// ﻿Weighted Score
-    weight_creditorScore:                           (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_creditorScore', 'Creditor score'),
-    weight_stateOfResidency:                        (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_stateOfResidency', 'State of residency'),
-    weight_monthlyPayment:                          (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_monthlyPayment', 'Monthly payment'),
-    weight_accountDelinquency:                      (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountDelinquency', 'Account delinquency'),
-    weight_pctAvgSettlement:                        (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_pctAvgSettlement', '% Avg settlement'),
-    weight_settlementTerm:                          (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_settlementTerm', 'Settlement term'),
-    weight_accountStatus:                           (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountStatus', 'Enrolled debt'),
-    weight_enrolledDebt:                            (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_enrolledDebt', 'Account status'),
+    columns: {
 
-    /// Summary
-    totalScore:                                     (account) => {
-      return new Promise(resolve => {
-        let result = 0;
-        let promises = [
-          scorecardCalculations.columns.weight_creditorScore(account),
-          scorecardCalculations.columns.weight_stateOfResidency(account),
-          scorecardCalculations.columns.weight_monthlyPayment(account),
-          scorecardCalculations.columns.weight_accountDelinquency(account),
-          scorecardCalculations.columns.weight_pctAvgSettlement(account),
-          scorecardCalculations.columns.weight_settlementTerm(account),
-          scorecardCalculations.columns.weight_accountStatus(account),
-          scorecardCalculations.columns.weight_enrolledDebt(account)
-        ];
+        /// Metadata
+        tradeLineName: (account) => scorecardCalculations.accountColumnImport(account, 'tradelinename'),
+        programName: (account) => scorecardCalculations.accountColumnImport(account, 'programname'),
+        creditor: (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),
 
-        Promise.all(promises).then(results => {
-          results.forEach(r => result += r);
-          resolve(result);
-        });
-      });
-    },
-    // rank: DataTypes.INTEGER,
+        /// Metrics
+        metrics_creditorScore: (account) => scorecardCalculations.accountColumnImport(account, 'credit_score'),
+        metrics_stateOfResidency: (account) => scorecardCalculations.accountColumnImport(account, 'state_of_residency'),
+        metrics_monthlyPayment: (account) => scorecardCalculations.accountColumnImport(account, 'avg_monthly_payment'),
+        metrics_accountDelinquency: (account) => scorecardCalculations.accountColumnImport(account, 'account_delinquency'),
+        metrics_pctAvgSettlement: (account) => scorecardCalculations.accountColumnImport(account, 'accepted_ratio'),
+        metrics_settlementTerm: (account) => scorecardCalculations.accountColumnImport(account, 'accepted_terms'),
+        metrics_accountStatus: (account) => scorecardCalculations.accountColumnImport(account, 'account_status'),
+        metrics_enrolledDebt: (account) => scorecardCalculations.accountColumnImport(account, 'enrolled_debt'),
+        metrics_firstMonthFeeFundPct: (account) => scorecardCalculations.accountColumnImport(account, 'fee_funded_pct'),
+        metrics_feeEstimate: (account) => scorecardCalculations.accountColumnImport(account, 'fee'),
 
-  }
+        /// Assigned Points
+        points_creditorScore: (account) => scorecardCalculations.columns.metrics_creditorScore(account),
+        points_stateOfResidency: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_stateOfResidency(account).then(metrics_stateOfResidency => {
+                    let state = scorecardCalculations._states.filter(st =>
+                        st.code === metrics_stateOfResidency)[0];
+
+                    try {
+                        result = state.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_monthlyPayment: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_monthlyPayment(account).then(metrics_monthlyPayment => {
+                    try {
+                        let range = scorecardCalculations._monthlyProgramPaymentRanges.filter(a =>
+                            metrics_monthlyPayment >= a.rangeFrom && metrics_monthlyPayment <= a.rangeTo)[0];
+
+                        result = range.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_accountDelinquency: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_accountDelinquency(account).then(metrics_accountDelinquency => {
+                    try {
+                        let range = scorecardCalculations._accountDelinquencyRanges.filter(a =>
+                            metrics_accountDelinquency >= a.rangeFrom && metrics_accountDelinquency <= a.rangeTo)[0];
+
+                        result = range.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_pctAvgSettlement: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_pctAvgSettlement(account).then(metrics_pctAvgSettlement => {
+                    try {
+                        let range = scorecardCalculations._avgAcceptedSettlementRanges.filter(a =>
+                            metrics_pctAvgSettlement >= a.rangeFrom && metrics_pctAvgSettlement <= a.rangeTo)[0];
+
+                        result = range.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_settlementTerm: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_settlementTerm(account).then(metrics_settlementTerm => {
+                    try {
+                        let range = scorecardCalculations._settlementTermRanges.filter(a =>
+                            metrics_settlementTerm <= a.rangeFrom && metrics_settlementTerm >= a.rangeTo)[0];
+
+                        result = range.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_accountStatus: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_accountStatus(account).then(metrics_accountStatus => {
+                    try {
+                        let accountStatus = scorecardCalculations._accountStatusValues.filter(a =>
+                            a.name.toLowerCase() === (metrics_accountStatus || '').toLowerCase())[0];
+
+                        result = accountStatus.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_enrolledDebt: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_enrolledDebt(account).then(metrics_enrolledDebt => {
+                    try {
+                        let range = scorecardCalculations._enrollDebtRanges.filter(a =>
+                            metrics_enrolledDebt >= a.rangeFrom && metrics_enrolledDebt <= a.rangeTo)[0];
+
+                        result = range.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_firstMonthFeeFundPct: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_firstMonthFeeFundPct(account).then(metrics_firstMonthFeeFundPct => {
+                    try {
+                        let range = scorecardCalculations._firstMonthFeeFundPctRanges.filter(a =>
+                            metrics_firstMonthFeeFundPct >= a.rangeFrom && metrics_firstMonthFeeFundPct <= a.rangeTo)[0];
+
+                        result = range.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+        points_feeEstimate: (account) => {
+            return new Promise(resolve => {
+                let result;
+
+                scorecardCalculations.columns.metrics_feeEstimate(account).then(metrics_feeEstimate => {
+                    try {
+                        let range = scorecardCalculations._feeEstimateRanges.filter(a =>
+                            metrics_feeEstimate >= a.rangeFrom && metrics_feeEstimate <= a.rangeTo)[0];
+
+                        result = range.points;
+                    } catch (ex) {
+                        result = null;
+                    }
+
+                    resolve(result);
+                });
+            });
+        },
+
+        /// ﻿Weighted Score
+        weight_creditorScore: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_creditorScore', 'Creditor score'),
+        weight_stateOfResidency: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_stateOfResidency', 'State of residency'),
+        weight_monthlyPayment: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_monthlyPayment', 'Monthly payment'),
+        weight_accountDelinquency: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountDelinquency', 'Account delinquency'),
+        weight_pctAvgSettlement: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_pctAvgSettlement', '% Avg settlement'),
+        weight_settlementTerm: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_settlementTerm', 'Settlement term'),
+        weight_accountStatus: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_accountStatus', 'Account status'),
+        weight_enrolledDebt: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_enrolledDebt', 'Enrolled debt'),
+        weight_firstMonthFeeFundPct: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_firstMonthFeeFundPct', 'First Month Fee Funding Pct'),
+        weight_feeEstimate: (account) => scorecardCalculations.calculateWeightageColumn(account, 'points_feeEstimate', 'Fee Estimate'),
+
+        /// Summary
+        totalScore: (account) => {
+            return new Promise(resolve => {
+                let result = 0;
+                let promises = [
+                    scorecardCalculations.columns.weight_creditorScore(account),
+                    scorecardCalculations.columns.weight_stateOfResidency(account),
+                    scorecardCalculations.columns.weight_monthlyPayment(account),
+                    scorecardCalculations.columns.weight_accountDelinquency(account),
+                    scorecardCalculations.columns.weight_pctAvgSettlement(account),
+                    scorecardCalculations.columns.weight_firstMonthFeeFundPct(account),
+                    scorecardCalculations.columns.weight_feeEstimate(account),
+                    scorecardCalculations.columns.weight_settlementTerm(account),
+                    scorecardCalculations.columns.weight_accountStatus(account),
+                    scorecardCalculations.columns.weight_enrolledDebt(account)
+                ];
+
+                Promise.all(promises).then(results => {
+                    results.forEach(r => result += r);
+                    resolve(result);
+                });
+            });
+        },
+        // rank: DataTypes.INTEGER,
+
+    }
 };
 
 module.exports = scorecardCalculations;
