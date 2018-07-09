@@ -227,7 +227,7 @@ select programname,tradelinename,creditor,delinquency as Account_Delinquency,
             when  (UPPER(creditor) in ('CITIBANK','CITI CARDS','SEARS', 'MACYS', 'BEST BUY', 'COSTCO', 'HOME DEPOT', 'TRACTOR SUPPLY',
                                      'GOOD YEAR', 'BLOOMINGDALES', 'EXXON', 'SHELL', 'BROOKS BROTHERS')
                                      OR UPPER(creditor) like '%/CITI' OR UPPER(creditor) like '%/CITIBANK')
-                  --and (lpoasent <> true or lpoasent is null)
+                  and (lpoa_sent__c <> true or lpoa_sent__c is null)
                   then 'not eligible(lpoa)'
             when  (credit_score <= 6 and delinquency <= 99) then 'not eligible(cs_d)'
             when  (UPPER(creditor) in ('WELLS FARGO','DISCOVER','US BANK','CAPITAL ONE','CAP ONE')
