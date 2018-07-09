@@ -37,7 +37,7 @@ router.get('/scorecard', (req, res) => {
         }
     }else{
         options = {
-            order: [['id', 'ASC']]
+            order: [['totalScore', 'DESC']]
         }
     }
 

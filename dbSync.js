@@ -9,13 +9,10 @@ const port = process.env.PORT || 3000;
 console.log({ message: `Seeding ${process.env.NODE_ENV} environment, port ${port}` });
 debug({ message: `sSeeding ${process.env.NODE_ENV} environment, port ${port}` });
 
-models.sequelize.query('DROP TABLE IF EXISTS ImportedActiveAccounts')
-    .then(function(properties) {
-        models.sequelize.sync().then(() => {
-            /**
-             * Listen on provided port, on all network interfaces.
-             */
-            //finish, process will exit
-            console.log('dbSync finished');
-        });
-    });
+models.sequelize.sync().then(() => {
+    /**
+     * Listen on provided port, on all network interfaces.
+     */
+    //finish, process will exit
+    console.log('dbSync finished');
+});
