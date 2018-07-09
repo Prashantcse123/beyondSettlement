@@ -33,8 +33,8 @@ export default class ScorecardStore extends BaseStore {
             params.sortBy = this.sort.column;
             params.sortOrder = this.sort.order;
         }else{
-            params.sortBy = 'id';
-            params.sortOrder = 'asc';
+            params.sortBy = 'totalScore';
+            params.sortOrder = 'desc';
         }
 
         Beyond.App.TopMessage.show('Please wait...');
