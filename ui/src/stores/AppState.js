@@ -130,7 +130,7 @@ export default class AppState extends BaseStore {
     async startCalculations() {
         await this.service.sendRequest({
             method: 'GET',
-            url: 'beyond/calculations/all/set'
+            url: 'beyond/calculations/scorecard/set'
         });
 
         Beyond.App.TopMessage.show('Calculations Command Sent!');

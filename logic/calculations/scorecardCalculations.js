@@ -6,8 +6,6 @@ const scorecardCalculations = {
     /// External Interface ----------------------------------------------------------------------------------------------
 
     setData: () => {
-        calculationsHelper.initCache(scorecardCalculations);
-
         let init = Promise.all([
             scorecardCalculations.importActiveAccounts(),
             scorecardCalculations.importStates(),
@@ -26,7 +24,7 @@ const scorecardCalculations = {
             init.then(() => {
                 let accounts = scorecardCalculations._accounts;
 
-                calculationsHelper.calculateAllRows(scorecardCalculations, 'Scorecard', accounts, 'create')
+                calculationsHelper.calculateAllRows(scorecardCalculations, models.ScorecardRecord, accounts, 'create')
                     .then(() => resolve('Scorecard Calculations Success! :)'))
                     .catch(() => resolve('Scorecard Calculations Error! :('))
             })
@@ -45,7 +43,7 @@ const scorecardCalculations = {
 
     importStates: () => {
         return new Promise(resolve =>
-            models.State.findAll().then(results => {
+            models.StatePointsDef.findAll().then(results => {
                 scorecardCalculations._states = results;
                 resolve();
             }));
@@ -53,7 +51,7 @@ const scorecardCalculations = {
 
     importMonthlyProgramPaymentRanges: () => {
         return new Promise(resolve =>
-            models.MonthlyProgramPayment.findAll().then(results => {
+            models.MonthlyProgramPaymentPointsDef.findAll().then(results => {
                 scorecardCalculations._monthlyProgramPaymentRanges = results;
                 resolve();
             }));
@@ -61,7 +59,7 @@ const scorecardCalculations = {
 
     importAccountDelinquencyRanges: () => {
         return new Promise(resolve =>
-            models.AccountDelinquency.findAll().then(results => {
+            models.AccountDelinquencyPointsDef.findAll().then(results => {
                 scorecardCalculations._accountDelinquencyRanges = results;
                 resolve();
             }));
@@ -69,7 +67,7 @@ const scorecardCalculations = {
 
     importAvgAcceptedSettlementRanges: () => {
         return new Promise(resolve =>
-            models.AvgAcceptedSettlementPointsRange.findAll().then(results => {
+            models.AvgAcceptedSettlementPointsDef.findAll().then(results => {
                 scorecardCalculations._avgAcceptedSettlementRanges = results;
                 resolve();
             }));
@@ -77,7 +75,7 @@ const scorecardCalculations = {
 
     importSettlementTermRanges: () => {
         return new Promise(resolve =>
-            models.SettlementTerm.findAll().then(results => {
+            models.SettlementTermPointsDef.findAll().then(results => {
                 scorecardCalculations._settlementTermRanges = results;
                 resolve();
             }));
@@ -85,7 +83,7 @@ const scorecardCalculations = {
 
     importAccountStatusValues: () => {
         return new Promise(resolve =>
-            models.AccountStatus.findAll().then(results => {
+            models.AccountStatusPointsDef.findAll().then(results => {
                 scorecardCalculations._accountStatusValues = results;
                 resolve();
             }));
@@ -93,7 +91,7 @@ const scorecardCalculations = {
 
     importEnrollDebtRanges: () => {
         return new Promise(resolve =>
-            models.EnrollDebt.findAll().then(results => {
+            models.EnrollDebtPointsDef.findAll().then(results => {
                 scorecardCalculations._enrollDebtRanges = results;
                 resolve();
             }));
@@ -101,7 +99,7 @@ const scorecardCalculations = {
 
     importFeeEstimateRanges: () => {
         return new Promise(resolve =>
-            models.FeeEstimate.findAll().then(results => {
+            models.FeeEstimatePointsDef.findAll().then(results => {
                 scorecardCalculations._feeEstimateRanges = results;
                 resolve();
             }));
@@ -109,7 +107,7 @@ const scorecardCalculations = {
 
     importFirstMonthFeeFundPctRanges: () => {
         return new Promise(resolve =>
-            models.FirstMonthFeeFundPct.findAll().then(results => {
+            models.FirstMonthFeeFundPctPointsDef.findAll().then(results => {
                 scorecardCalculations._firstMonthFeeFundPctRanges = results;
                 resolve();
             }));
@@ -117,7 +115,7 @@ const scorecardCalculations = {
 
     importWeightageFactors: () => {
         return new Promise(resolve =>
-            models.Weightage.findAll().then(results => {
+            models.WeightDef.findAll().then(results => {
                 scorecardCalculations._weightageFactors = results;
                 resolve();
             }));
