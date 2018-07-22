@@ -223,11 +223,11 @@ select programname,tradelinename,creditor,delinquency as Account_Delinquency,
                    else ' ' --concat(concat('$',accepted_pay), ' min pay')
                    end) as Creditor_Terms,
        Data_Points,  debt_type,
-       case when  tradelinename_fa is null then 'not eligible(fa)' -- These tradelines have negative funds in their terms if we settle them
-            when  (UPPER(creditor) in ('CITIBANK','CITI CARDS','SEARS', 'MACYS', 'BEST BUY', 'COSTCO', 'HOME DEPOT', 'TRACTOR SUPPLY',
+          case when  tradelinename_fa is null and ((((m0_bal/NULLIF(Fee,0))*100) < 0) or (((m0_bal/NULLIF(Fee,0))*100) IS NULL)) then 'not eligible(fa)' -- These tradelines have negative funds in their terms if we settle them
+            when  (UPPER(creditor) in ('CITIBANK','CITI CARDS','SEARS', 'MACYS', 'BEST BUY', 'COSTCO', 'HOME DEPOT', 'TRACTOR SUPPLY', 
                                      'GOOD YEAR', 'BLOOMINGDALES', 'EXXON', 'SHELL', 'BROOKS BROTHERS')
                                      OR UPPER(creditor) like '%/CITI' OR UPPER(creditor) like '%/CITIBANK')
-                  --and (lpoasent <> true or lpoasent is null)
+                  and (lpoa_sent__c <> true or lpoa_sent__c is null)
                   then 'not eligible(lpoa)'
             when  (credit_score <= 6 and delinquency <= 99) then 'not eligible(cs_d)'
             when  (UPPER(creditor) in ('WELLS FARGO','DISCOVER','US BANK','CAPITAL ONE','CAP ONE')
