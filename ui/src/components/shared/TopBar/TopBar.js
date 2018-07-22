@@ -63,7 +63,7 @@ export default class TopBar extends Component {
         if (currentUser && !location.href.includes('login')) {
             return (
                 <span className="app-username">
-                    | {currentUser} (<a href="/#/login?logout=true">logout</a>)
+                    | {currentUser}
                 </span>
             );
         }
@@ -85,7 +85,8 @@ export default class TopBar extends Component {
                             <IconButton
                                 data-tooltip="Settings"
                                 onClick={() => this.setState({showSettings: true})}
-                                hidden={currentUser !== 'admin'}
+                                hidden={location.hash.toLowerCase().includes('login')}
+                                // hidden={currentUser !== 'admin'}
                             >
                                 <SettingsIcon />
                             </IconButton>

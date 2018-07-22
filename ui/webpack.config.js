@@ -119,6 +119,7 @@ module.exports = {
         new webpack.NamedModulesPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({ hash: false, template: "./index.hbs" }),
+        new HtmlWebpackPlugin({ hash: false, template: "./oauth.hbs", filename: 'oauth.html', chunks: [] }),
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /nb/),
     ]
 };
