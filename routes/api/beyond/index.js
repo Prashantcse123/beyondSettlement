@@ -96,7 +96,7 @@ router.get('/oauth/callback', function(req, res) {
         client_secret: consumerSecret,
         code: authorizationCode,
         // You can change loginUrl to connect to sandbox or prerelease env.
-        base_url: 'https://cs96.lightning.force.com'
+        base_url: baseUrl
     }, function(error, payload) {
         if (error) {
             res.status(401).send(error.toString());
@@ -153,13 +153,9 @@ router.get('/oauth/user_info', function(req, res) {
     let token = req.param('token');
 
     request(id + '?format=json&oauth_token=' + token, function(error, response, body) {
-        if (error) {
-            res.status(500).send(error.toString());
+        if (error || response.statusCode !== 200) {
+            res.status(500).send((error || body).toString());
         }else{
-            if (body === 'Bad_OAuth_Token') {
-                res.status(500).send(body);
-                return;
-            }
             res.status(200).json(JSON.parse(body));
         }
     });

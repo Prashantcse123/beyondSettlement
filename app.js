@@ -188,7 +188,7 @@ app.use(function (req, res, next) {
         let hostname = req.headers.host.split(':')[0] + ':' + (process.env.PORT || 3000);
 
         request(protocol + '://' + hostname + '/api/beyond/oauth/user_info?' + cookie, function(error, response, body) {
-            if (error) {
+            if (error || response.statusCode !== 200) {
                 console.log('error... ', error, protocol + '://' + hostname + '/api/beyond/oauth/user_info?' + cookie);
                 return res.status(401).json({
                     error: {
