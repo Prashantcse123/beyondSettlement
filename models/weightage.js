@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Weightage = sequelize.define('Weightage', {
+  const WeightDef = sequelize.define('WeightDef', {
     criteria: DataTypes.STRING,
     weightage: DataTypes.INTEGER,
     maxPoints: DataTypes.INTEGER,
@@ -9,5 +9,5 @@ module.exports = (sequelize, DataTypes) => {
     remarks: DataTypes.STRING,
   });
 
-  return Weightage;
+  return WeightDef;
 };

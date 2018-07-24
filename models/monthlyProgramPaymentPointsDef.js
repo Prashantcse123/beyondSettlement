@@ -1,9 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-  const EnrollDebt = sequelize.define('EnrollDebt', {
+  const MonthlyProgramPaymentPointsDef = sequelize.define('MonthlyProgramPaymentPointsDef', {
     rangeFrom: DataTypes.INTEGER,
     rangeTo: DataTypes.INTEGER,
     points: DataTypes.INTEGER,
   });
 
-  return EnrollDebt;
+  return MonthlyProgramPaymentPointsDef;
 };

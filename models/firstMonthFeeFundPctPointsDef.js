@@ -1,9 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-  const FirstMonthFeeFundPct = sequelize.define('FirstMonthFeeFundPct', {
+  const FirstMonthFeeFundPctPointsDef = sequelize.define('FirstMonthFeeFundPctPointsDef', {
     rangeFrom: DataTypes.FLOAT,
     rangeTo: DataTypes.FLOAT,
     points: DataTypes.INTEGER,
   });
 
-  return FirstMonthFeeFundPct;
+  return FirstMonthFeeFundPctPointsDef;
 };

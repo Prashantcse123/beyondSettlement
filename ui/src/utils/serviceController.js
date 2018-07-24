@@ -26,6 +26,10 @@ export default class ServiceController {
         }
     }
 
+    setAuthenticationStore(store) {
+        this._autheticationStore = store;
+    }
+
     setAuthorizationToken(token) {
         localStorage.setItem('BEYOND-authHeader', token);
         this.refreshAuthorizationToken();
@@ -71,8 +75,7 @@ export default class ServiceController {
             let statusCode = ex.response.status;
 
             if (statusCode === 401) {
-                Beyond.App.TopMessage.show('Unauthorized');
-                location.replace('/#/login');
+                this._autheticationStore.login();
                 return;
             }
 

@@ -1,9 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-  const AvgAcceptedSettlementPointsRange = sequelize.define('AvgAcceptedSettlementPointsRange', {
+  const FundAccumulationPctPointsDef = sequelize.define('FundAccumulationPctPointsDef', {
     rangeFrom: DataTypes.FLOAT,
     rangeTo: DataTypes.FLOAT,
     points: DataTypes.INTEGER,
   });
 
-  return AvgAcceptedSettlementPointsRange;
+  return FundAccumulationPctPointsDef;
 };

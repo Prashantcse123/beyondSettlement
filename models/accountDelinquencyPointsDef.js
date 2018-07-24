@@ -1,9 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-  const AccountDelinquency = sequelize.define('AccountDelinquency', {
+  const AccountDelinquencyPointsDef = sequelize.define('AccountDelinquencyPointsDef', {
     rangeFrom: DataTypes.INTEGER,
     rangeTo: DataTypes.INTEGER,
     points: DataTypes.INTEGER,
   });
 
-  return AccountDelinquency;
+  return AccountDelinquencyPointsDef;
 };

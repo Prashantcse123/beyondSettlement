@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
+const request = require("request");
 
 const api = require('./routes/api');
 // const ui = require('./routes/ui');
@@ -23,54 +24,105 @@ const config = {
 
 /// catch 403 and forward to error handler
 // app.use((req, res, next) => {
-//     // if (!req.headers.authorization || req.headers.authorization !== 'Bearer ' + config.apiToken || req.headers.authorization !== 'Bearer ' + config.apiToken2) {
-//     //     return res.status(403).json({ error: 'No credentials sent!' });
-//     // }
-//     next();
+//     /*
+//      * Check if authorization header is set
+//      */
+//     if (!req.originalUrl.startsWith('/api') || req.originalUrl === '/api/beyond/oauth/authenticate' || req.originalUrl === '/api/beyond/oauth/refresh') {
+//         next();
+//         return;
+//     }
+//
+//     if (req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')) {
+//         console.log('auth', req.headers['authorization']);
+//         try{
+//             /*
+//              * Try to decode & verify the JWT token
+//              * The token contains user's id ( it can contain more information )
+//              * and this is saved in req.user object
+//              */
+//             let header = req.headers['authorization'].split('|||');
+//             let token = header[0];
+//             let id = header[1];
+//             let protocol = req.protocol;
+//             let hostname = req.headers.host;
+//
+//             request(protocol + '://' + hostname + '/api/beyond/oauth/user_info?id=' + id + '&token=' + token, function(error, response, body) {
+//                 if (error) {
+//                     return res.status(401).json({
+//                         error: {
+//                             msg: 'Failed to authenticate token!'
+//                         }
+//                     });
+//                 }else{
+//                     next();
+//                 }
+//             });
+//         }catch(err){
+//             /*
+//              * If the authorization header is corrupted, it throws exception
+//              * So return 401 status code with JSON error message
+//              */
+//             return res.status(401).json({
+//                 error: {
+//                     msg: 'Failed to authenticate token!'
+//                 }
+//             });
+//         }
+//     }else{
+//         /*
+//          * If there is no autorization header, return 401 status code with JSON
+//          * error message
+//          */
+//         return res.status(401).json({
+//             error: {
+//                 msg: 'No token!'
+//             }
+//         });
+//     }
 // });
 
-app.use((req, res, next) => {
-    /*
-     * Check if authorization header is set
-     */
-    if (!req.originalUrl.startsWith('/api') || req.originalUrl === '/api/beyond/login') {
-        next();
-        return;
-    }
-
-    if (req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')) {
-        console.log(req.headers['authorization']);
-        try{
-            /*
-             * Try to decode & verify the JWT token
-             * The token contains user's id ( it can contain more information )
-             * and this is saved in req.user object
-             */
-            req.user = jwt.verify(req.headers['authorization'], config.jwt_secret);
-            next();
-        }catch(err){
-            /*
-             * If the authorization header is corrupted, it throws exception
-             * So return 401 status code with JSON error message
-             */
-            return res.status(401).json({
-                error: {
-                    msg: 'Failed to authenticate token!'
-                }
-            });
-        }
-    }else{
-        /*
-         * If there is no autorization header, return 401 status code with JSON
-         * error message
-         */
-        return res.status(401).json({
-            error: {
-                msg: 'No token!'
-            }
-        });
-    }
-});
+// app.use((req, res, next) => {
+//     /*
+//      * Check if authorization header is set
+//      */
+//     if (!req.originalUrl.startsWith('/api') || req.originalUrl === '/api/beyond/login') {
+//         next();
+//         return;
+//     }
+//
+//     if (req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')) {
+//         console.log(req.headers['authorization']);
+//         try{
+//             /*
+//              * Try to decode & verify the JWT token
+//              * The token contains user's id ( it can contain more information )
+//              * and this is saved in req.user object
+//              */
+//             req.user = jwt.verify(req.headers['authorization'], config.jwt_secret);
+//             next();
+//         }catch(err){
+//             /*
+//              * If the authorization header is corrupted, it throws exception
+//              * So return 401 status code with JSON error message
+//              */
+//             return res.status(401).json({
+//                 error: {
+//                     msg: 'Failed to authenticate token!'
+//                 }
+//             });
+//         }
+//     }else{
+//         /*
+//          * If there is no autorization header, return 401 status code with JSON
+//          * error message
+//          */
+//         return res.status(401).json({
+//             error: {
+//                 msg: 'No token!'
+//             }
+//         });
+//     }
+// });
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -115,11 +167,47 @@ app.get('/status', function(req, res) {
 //start()
 
 //}
-)
+);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
+
+app.use(function (req, res, next) {
+    if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
+        next();
+        return;
+    }
+
+    let cookie = req.cookies.PASSPORT;
+
+    if (cookie) {
+        console.log('Found cookie... ', cookie);
+
+        let protocol = req.protocol;
+        let hostname = req.headers.host.split(':')[0] + ':' + (process.env.PORT || 3000);
+
+        request(protocol + '://' + hostname + '/api/beyond/oauth/user_info?' + cookie, function(error, response, body) {
+            if (error || response.statusCode !== 200) {
+                console.log('error... ', error, protocol + '://' + hostname + '/api/beyond/oauth/user_info?' + cookie);
+                return res.status(401).json({
+                    error: {
+                        msg: 'Failed to authenticate token!'
+                    }
+                });
+            }else{
+                next();
+            }
+        });
+    }else{
+        console.log('No cookie');
+        return res.status(401).json({
+            error: {
+                msg: 'No authentication token provided!'
+            }
+        });
+    }
+});
 
 /// api
 app.use('/api', api);

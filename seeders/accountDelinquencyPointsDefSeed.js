@@ -1,4 +1,4 @@
-const staticData = require('../staticData/weightageData');
+const staticData = require('../staticData/accountDelinquencyPointsDefData');
 
 module.exports = {
   up: function (queryInterface, Sequelize) {
@@ -10,8 +10,8 @@ module.exports = {
       sd.updatedAt = date;
     });
 
-    queryInterface.bulkDelete('Weightages', null, {});
-    return queryInterface.bulkInsert('Weightages', staticData, {});
+    queryInterface.bulkDelete('AccountDelinquencyPointsDefs', null, {});
+    return queryInterface.bulkInsert('AccountDelinquencyPointsDefs', staticData, {});
   },
 
   down: function (queryInterface, Sequelize) {
