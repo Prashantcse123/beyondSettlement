@@ -23,6 +23,7 @@ export default class AppState extends BaseStore {
     constructor() {
         super();
         this.refreshAuthenticatedState();
+        this.service.setAuthenticationStore(this);
     }
 
     static get PollingTimeout() {
@@ -69,29 +70,56 @@ export default class AppState extends BaseStore {
     //     this.set({systemTaskAborted: true});
     // }
 
-    async login(credentials) {
+    // async login(credentials) {
+    //     this.set({authenticating: true});
+    //
+    //     try {
+    //         let {data} = await this.service.sendRequest({
+    //             method: 'POST',
+    //             url: 'beyond/login',
+    //             data: credentials // {username: 'admin', password: 'admin1029'}
+    //         });
+    //         this.service.setAuthorizationToken(data.token);
+    //         this.refreshAuthenticatedState();
+    //         this.set({authenticating: false});
+    //     }catch(ex){
+    //         this.refreshAuthenticatedState();
+    //         this.set({authenticating: false});
+    //         throw ex;
+    //     }
+    // }
+
+    async login() {
         this.set({authenticating: true});
 
         try {
             let {data} = await this.service.sendRequest({
-                method: 'POST',
-                url: 'beyond/login',
-                data: credentials // {username: 'admin', password: 'admin1029'}
+                method: 'GET',
+                url: 'beyond/oauth/authenticate'
             });
-            this.service.setAuthorizationToken(data.token);
-            this.refreshAuthenticatedState();
-            this.set({authenticating: false});
+
+            this.service.setAuthorizationToken(data.payload.access_token + '|||' + data.payload.id);
+            this.set({
+                currentUser: data.userInfo.username,
+                authenticated: true,
+                authenticating: false
+            });
         }catch(ex){
-            this.refreshAuthenticatedState();
-            this.set({authenticating: false});
-            throw ex;
+            this.set({
+                currentUser: undefined,
+                authenticated: false,
+                authenticating: false
+            });
+            Beyond.App.TopMessage.show('Unauthorized');
+            location.replace('/#/login');
+            // throw ex;
         }
     }
 
-    logout() {
-        this.service.removeAuthorizationToken();
-        this.set({authenticated: false});
-    }
+    // logout() {
+    //     this.service.removeAuthorizationToken();
+    //     this.set({authenticated: false});
+    // }
 
     async fetchSystemStatus() {
         let {data} = await this.service.sendRequest({
@@ -130,7 +158,7 @@ export default class AppState extends BaseStore {
     async startCalculations() {
         await this.service.sendRequest({
             method: 'GET',
-            url: 'beyond/calculations/all/set'
+            url: 'beyond/calculations/scorecard/set'
         });
 
         Beyond.App.TopMessage.show('Calculations Command Sent!');

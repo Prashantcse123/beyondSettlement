@@ -1,31 +1,14 @@
 const models = require('../../../models');
 const express = require('express');
+// const creditorCalculationsLogic = require('../../../logic/calculations/old/creditorCalculations');
+// const accountCalculationsLogic = require('../../../logic/calculations/old/accountCalculations');
 const scorecardCalculationsLogic = require('../../../logic/calculations/scorecardCalculations');
 
 const router = express.Router();
 
-// router.get('/creditor/set', (req, res) => {
-//   creditorCalculationsLogic.setData().then((data) => {});
-//   res.status(200).json(data);
-// });
-//
-// router.get('/account/set', (req, res) => {
-//   accountCalculationsLogic.setData().then((data) => {});
-//   res.status(200).json(data);
-// });
-
 router.get('/scorecard/set', (req, res) => {
   scorecardCalculationsLogic.setData().then((data) => {});
   res.status(200).json('Calculation started....');
-});
-
-router.get('/all/set', (req, res) => {
-  Promise.resolve()
-    // .then(() => creditorCalculationsLogic.setData())
-    // .then(() => accountCalculationsLogic.setData())
-    .then(() => scorecardCalculationsLogic.setData());
-
-  res.status(200).json('Success!');
 });
 
 router.get('/scorecard', (req, res) => {
@@ -41,16 +24,13 @@ router.get('/scorecard', (req, res) => {
         }
     }
 
-    // console.log(options);
-
-    models.Scorecard.findAll(options).then(rows => {
+    models.ScorecardRecord.findAll(options).then(rows => {
         let page = parseInt(req.query.page || 1);
         let pageSize = parseInt(req.query.page_size || 10);
         let start = pageSize * page - pageSize;
         let end = pageSize * page;
         let totalCount = rows.length;
 
-        // rows = rows.filter(r => JSON.stringify(r).includes(req.query.filter));
         rows = rows.slice(start, end);
 
         res.status(200).json({
@@ -67,7 +47,7 @@ router.get('/scorecard', (req, res) => {
 router.put('/update_scorecard', (req, res) => {
     console.log(req.body);
 
-    models.Scorecard.findAll({where: {id: req.body.id}}).then(rows => {
+    models.ScorecardRecord.findAll({where: {id: req.body.id}}).then(rows => {
         let row = rows[0];
         // console.log(row);
         row.update({isDone: req.body.isDone}).then(() => res.status(200).json('cool!'));

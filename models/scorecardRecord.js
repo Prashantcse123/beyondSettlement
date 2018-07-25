@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Scorecard = sequelize.define('Scorecard', {
+    const ScorecardRecord = sequelize.define('ScorecardRecord', {
 
         /// Metadata
         tradeLineName: DataTypes.STRING,
@@ -52,5 +52,5 @@ module.exports = (sequelize, DataTypes) => {
         isDone: DataTypes.BOOLEAN,
     });
 
-    return Scorecard;
+    return ScorecardRecord;
 };

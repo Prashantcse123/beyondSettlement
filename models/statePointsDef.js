@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const State = sequelize.define('State', {
+  const StatePointsDef = sequelize.define('StatePointsDef', {
     code: DataTypes.STRING,
     points: DataTypes.INTEGER,
   });
@@ -8,5 +8,5 @@ module.exports = (sequelize, DataTypes) => {
   //   models.State.hasMany(models.Account, {foreignKey: 'enrolledStateId'});
   // };
 
-  return State;
+  return StatePointsDef;
 };

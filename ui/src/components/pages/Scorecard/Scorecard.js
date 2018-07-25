@@ -234,11 +234,6 @@ export default class Scorecard extends Component {
                         sortable: true,
                         // style: {width: Scorecard.columnWidths[2]}
                     }, {
-                        key: 'accountNumber',
-                        label: 'Account',
-                        sortable: true,
-                        // style: {width: Scorecard.columnWidths[2]}
-                    }, {
                         key: 'totalScore',
                         label: 'Score',
                         sortable: true,
