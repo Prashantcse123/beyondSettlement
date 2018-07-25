@@ -185,11 +185,12 @@ app.use(function (req, res, next) {
         console.log('Found cookie... ', cookie);
 
         let protocol = req.protocol;
-        let hostname = req.headers.host.split(':')[0] + ':' + (process.env.PORT || 3000);
+        let requestUrl = protocol + '://' + process.env.BASE_URL + '/api/beyond/oauth/user_info?' + cookie;
 
-        request(protocol + '://' + hostname + '/api/beyond/oauth/user_info?' + cookie, function(error, response, body) {
+        request(requestUrl, function(error, response, body) {
             if (error || response.statusCode !== 200) {
-                console.log('error... ', error, protocol + '://' + hostname + '/api/beyond/oauth/user_info?' + cookie);
+                console.log('error... ', error);
+                console.log('url error: ' + requestUrl);
                 return res.status(401).json({
                     error: {
                         msg: 'Failed to authenticate token!'
