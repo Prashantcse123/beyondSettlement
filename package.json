@@ -9,7 +9,7 @@
     "db:seed:all": "node ./node_modules/.bin/sequelize db:seed:all",
     "db:sync": "node dbSync",
     "start:dev": "node www.js",
-    "start:inspect": "nodemon --inspect --inspect-brk www",
+    "start:inspect": "node --inspect www",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/unit/*.test.js",
     "test-integration": "cross-env NODE_ENV=test ./node_modules/.bin/mocha test/integration/*.test.js",

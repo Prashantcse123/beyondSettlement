@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
         tradeLineName: DataTypes.STRING,
         programName: DataTypes.STRING,
         creditor: DataTypes.STRING,
+        eligibility: DataTypes.STRING,
         // accountNumber: DataTypes.STRING,
 
         /// Metrics

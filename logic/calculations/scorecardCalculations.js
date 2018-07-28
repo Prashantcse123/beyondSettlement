@@ -1,5 +1,6 @@
 const models = require('../../models/index');
 const calculationsHelper = require('./calculationsHelper');
+const eligibleAccountsFilter = require('./eligibleAccountsFilter');
 
 const scorecardCalculations = {
 
@@ -25,6 +26,7 @@ const scorecardCalculations = {
                 let accounts = scorecardCalculations._accounts;
 
                 calculationsHelper.calculateAllRows(scorecardCalculations, models.ScorecardRecord, accounts, 'create')
+                    .then(() => eligibleAccountsFilter.filter()) //filters the scorecard to contain only 1. max score per program 2. eligible programs
                     .then(() => resolve('Scorecard Calculations Success! :)'))
                     .catch(() => resolve('Scorecard Calculations Error! :('))
             })
@@ -152,6 +154,7 @@ const scorecardCalculations = {
         tradeLineName: (account) => scorecardCalculations.accountColumnImport(account, 'tradelinename'),
         programName: (account) => scorecardCalculations.accountColumnImport(account, 'programname'),
         creditor: (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),
+        eligibility: (account) => scorecardCalculations.accountColumnImport(account, 'eligibility'),
 
         /// Metrics
         metrics_creditorScore: (account) => scorecardCalculations.accountColumnImport(account, 'credit_score'),
