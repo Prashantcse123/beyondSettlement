@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start-app": "DEBUG=express-lambda node www",
-    "start": "npm-run-all --serial db:sync db:seed:all start-app",
+    "start": "npm-run-all --serial db:sync db:migrate db:seed:all start-app",
     "db:migrate": "node ./node_modules/.bin/sequelize db:migrate",
     "db:seed:all": "node ./node_modules/.bin/sequelize db:seed:all",
     "db:sync": "node dbSync",
