@@ -2,7 +2,11 @@ module.exports = (sequelize, DataTypes) => {
     const ScorecardRecord = sequelize.define('ScorecardRecord', {
 
         /// Metadata
-        tradeLineName: DataTypes.STRING,
+        tradeLineName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+        },
         programName: DataTypes.STRING,
         creditor: DataTypes.STRING,
         eligibility: DataTypes.STRING,
@@ -50,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
         rank: DataTypes.INTEGER,
 
         /// Operative
-        isDone: DataTypes.BOOLEAN,
+        // isDone: DataTypes.BOOLEAN,
     });
 
     return ScorecardRecord;

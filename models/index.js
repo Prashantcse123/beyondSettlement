@@ -29,6 +29,8 @@ Object.keys(db).forEach((modelName) => {
   }
 });
 
+db['TradelinesState'].belongsTo(db['ScorecardRecord'], { foreignKey: 'tradeLineName', targetKey: 'tradeLineName', foreignKeyConstraint: true });
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
