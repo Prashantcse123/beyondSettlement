@@ -41,7 +41,8 @@ export default class ScorecardStore extends BaseStore {
 
         let {data} = await this.service.sendRequest({
             method: 'GET',
-            url: 'beyond/calculations/scorecard',
+            // url: 'beyond/calculations/scorecard',
+            url: 'beyond/calculations/scorecard_eligible',
             data: {params}
         });
 

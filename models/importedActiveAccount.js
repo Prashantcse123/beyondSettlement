@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       m12_bal_percent: DataTypes.FLOAT,
       term_end_bal_percent: DataTypes.FLOAT,
       account_status: DataTypes.STRING,
-      tradeline_last_negotiated: DataTypes.DATE,
+      tradeline_last_negotiated: DataTypes.STRING,
       accepted_ratio: DataTypes.FLOAT,
       accepted_terms: DataTypes.FLOAT,
       accepted_pay: DataTypes.STRING,

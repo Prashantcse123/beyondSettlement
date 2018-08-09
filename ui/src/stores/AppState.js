@@ -161,6 +161,8 @@ export default class AppState extends BaseStore {
             url: 'beyond/calculations/scorecard/set'
         });
 
+        this.fetchSystemStatus();
+
         Beyond.App.TopMessage.show('Calculations Command Sent!');
     }
 

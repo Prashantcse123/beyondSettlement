@@ -1,11 +1,13 @@
 const models = require('../../models/index');
 
 const calculationsHelper = {
-    calculateAllRows: (calculationsUnit, model, rows, method) => {
+    calculateAllRows: (calculationsUnit, processName, model, rows, method) => {
         return new Promise(resolve => {
+            console.log('Starting ' + processName + ' calculation process');
+
             let calcRowIndex = (rowIndex) => {
                 console.log('Calculating index', rowIndex, rows.length);
-                calculationsHelper.updateProgress('Scorecard calculations', (rowIndex + 1) / rows.length);
+                calculationsHelper.updateProgress(processName + ' calculations', (rowIndex + 1) / rows.length);
                 if (rowIndex === rows.length) {
                     resolve();
                 } else {
