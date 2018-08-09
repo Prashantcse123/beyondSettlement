@@ -49,6 +49,12 @@ module.exports = (sequelize, DataTypes) => {
         totalScore: DataTypes.INTEGER,
         rank: DataTypes.INTEGER,
 
+        /// Account Eligibility Ranking
+        minAccountRank: DataTypes.INTEGER,
+        accountRepeatCountByIndex: DataTypes.INTEGER,
+        calculatedCreditScore: DataTypes.INTEGER,
+        concatenatedIndex: DataTypes.INTEGER,
+
         /// Operative
         isDone: DataTypes.BOOLEAN,
     });

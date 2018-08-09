@@ -25,8 +25,8 @@ const scorecardCalculations = {
             init.then(() => {
                 let accounts = scorecardCalculations._accounts;
 
-                calculationsHelper.calculateAllRows(scorecardCalculations, models.ScorecardRecord, accounts, 'create')
-                    .then(() => eligibleAccountsFilter.filter()) //filters the scorecard to contain only 1. max score per program 2. eligible programs
+                calculationsHelper.calculateAllRows(scorecardCalculations, 'Scorecard', models.ScorecardRecord, accounts, 'create')
+                    // .then(() => eligibleAccountsFilter.filter()) //filters the scorecard to contain only 1. max score per program 2. eligible programs
                     .then(() => resolve('Scorecard Calculations Success! :)'))
                     .catch(() => resolve('Scorecard Calculations Error! :('))
             })
