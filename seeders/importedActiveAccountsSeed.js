@@ -3,7 +3,10 @@ const staticData = require('../staticData/importedActiveAccountsData');
 module.exports = {
   up: function (queryInterface, Sequelize) {
 
-    let date = new Date();
+    return true;
+    //removed because each time the service restarts on production it runs
+
+    /*let date = new Date();
 
     staticData.forEach(sd => {
       sd.createdAt = date;
@@ -11,7 +14,7 @@ module.exports = {
     });
 
     queryInterface.bulkDelete('ImportedActiveAccounts', null, {});
-    return queryInterface.bulkInsert('ImportedActiveAccounts', staticData, {});
+    return queryInterface.bulkInsert('ImportedActiveAccounts', staticData, {});*/
   },
 
   down: function (queryInterface, Sequelize) {
