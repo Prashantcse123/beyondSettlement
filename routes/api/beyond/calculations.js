@@ -24,6 +24,10 @@ router.get('/scorecard', (req, res) => {
         }
     }
 
+    options.include = [{
+        model: models.TradelinesState,
+    }]
+
     models.ScorecardRecord.findAll(options).then(rows => {
         let page = parseInt(req.query.page || 1);
         let pageSize = parseInt(req.query.page_size || 10);
@@ -47,9 +51,8 @@ router.get('/scorecard', (req, res) => {
 router.put('/update_scorecard', (req, res) => {
     console.log(req.body);
 
-    models.ScorecardRecord.findAll({where: {id: req.body.id}}).then(rows => {
-        let row = rows[0];
-        // console.log(row);
+    models.TradelinesState.findOne({where: {tradeLineId: req.body.tradeLineId}}).then(row => {
+        console.log(row);
         row.update({isDone: req.body.isDone}).then(() => res.status(200).json('cool!'));
     });
 });

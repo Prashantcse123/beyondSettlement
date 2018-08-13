@@ -151,6 +151,10 @@ const scorecardCalculations = {
     columns: {
 
         /// Metadata
+        tradeLineId: async (account) => {
+            var tradeLineName = await scorecardCalculations.accountColumnImport(account, 'tradelinename');
+            return parseInt(tradeLineName.replace ( /[^\d.]/g, '' ))
+        },
         tradeLineName: (account) => scorecardCalculations.accountColumnImport(account, 'tradelinename'),
         programName: (account) => scorecardCalculations.accountColumnImport(account, 'programname'),
         creditor: (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),

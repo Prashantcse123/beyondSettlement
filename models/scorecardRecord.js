@@ -7,6 +7,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             unique: true,
         },
+        tradeLineId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            unique: true,
+        },
         programName: DataTypes.STRING,
         creditor: DataTypes.STRING,
         eligibility: DataTypes.STRING,
