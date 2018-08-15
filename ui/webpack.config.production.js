@@ -8,10 +8,12 @@ module.exports = {
     mode: 'production',
     entry: {
         vendor: [
+            "@material-ui/core",
+            "@material-ui/icons",
+            "@material-ui/lab",
             "axios",
             "classnames",
             "lazy-route",
-            "material-ui",
             "mobx",
             "mobx-react",
             "mobx-react-devtools",
@@ -20,8 +22,7 @@ module.exports = {
             "ramda",
             "react",
             "react-dom",
-            "react-router-dom",
-            "react-swipeable-views"
+            "react-router-dom"
         ],
         app: ["babel-polyfill", "./src/index"]
     },

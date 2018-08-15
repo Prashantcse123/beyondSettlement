@@ -1,19 +1,38 @@
 import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
 import { withRouter } from "react-router-dom";
+import { withStyles } from "@material-ui/core/styles";
 
-import SystemProgress from './SystemProgress/SystemProgress';
+import LogoImage from './LogoSmall.png';
+
+import SystemProgress from '../SystemProgress/SystemProgress';
+
+// import AnalysisIcon from '@scopio/scopio-components/lib/Icons/Analysis';
+// import DetectingIcon from '@scopio/scopio-components/lib/Icons/Detecting';
+
 import Settings from './Settings/Settings';
 
-import Dialog from 'material-ui/Dialog';
-import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import Popover from 'material-ui/Popover';
-import FlatButton from 'material-ui/FlatButton';
-import SettingsIcon from 'material-ui/svg-icons/action/settings';
+import Tooltip from '@material-ui/core/Tooltip';
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import AppBar from "@material-ui/core/AppBar";
+import IconButton from "@material-ui/core/IconButton";
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Popover from "@material-ui/core/Popover";
 
-import './TopBar.scss'
+import MenuIcon from '@material-ui/icons/Menu';
+import SettingsIcon from '@material-ui/icons/Settings';
 
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+const theme = createMuiTheme({palette: {type: 'dark'}});
+
+import Styles from "./TopBar.styles";
+
+@withStyles(Styles)
 @withRouter
 @inject("store")
 @observer
@@ -22,77 +41,159 @@ export default class TopBar extends Component {
 		super(props);
 		this.state = {
             aborting: false,
+            abortScanDialog: false,
             restarting: false,
             restartDialog: false,
             showSettings: false
 		};
 	}
 
-    renderSystemProgressPopover() {
-        const { appState } = this.props.store;
-        const { systemProgressOpen } = appState;
+	// authenticate(e) {
+	// 	if (e) e.preventDefault();
+	// 	console.log("CLICKED BUTTON");
+	// 	this.store.authenticate();
+	// }
 
-		return (
-			<Popover className="system-progress-popover" open={systemProgressOpen} useLayerForClickAway={false}>
-				<SystemProgress
-                    key={systemProgressOpen}
-                    abortHidden={true}
-					onClose={() => appState.set({systemProgressOpen: false})}
-				/>
-			</Popover>
+	onAbortClick() {
+        const { store } = this.props;
+        const { systemProgress } = store;
+
+        this.setState({aborting: true});
+
+        systemProgress.abortSystemTask()
+			.then(() =>
+				this.setState({
+					aborting: false,
+					abortScanDialog: false
+				}))
+			.catch((ex) => {
+                this.setState({aborting: false});
+                Scopio.TopMessage.show('Abort Error');
+			});
+    }
+
+    onRestartClick() {
+        const { store } = this.props;
+        const { appState } = store;
+
+		this.setState({restarting: true});
+
+		appState.restartDevices().then(() =>
+			this.setState({
+				restarting: false,
+				restartDialog: false,
+				showSettings: false
+			}));
+    }
+
+    onShutdownClick() {
+		const { store } = this.props;
+		const { appState } = store;
+
+		this.setState({shutting: true});
+
+		appState.shutdownDevices().then(() =>
+			this.setState({
+                shutting: false,
+				shutdownDialog: false,
+				showSettings: false
+			}));
+    }
+
+    onAutoScaleClick() {
+        const { store } = this.props;
+        const { appState } = store;
+
+        appState.set(
+            {isAutoScale: (appState.isAutoScale === 'false' ? 'true' : 'false')},
+            {storage: true}
+        );
+
+        location.reload();
+    }
+
+    renderSystemProgressPopover() {
+        const { store } = this.props;
+        const { systemProgress } = store;
+        const { systemProgressOpen } = systemProgress;
+
+        return (
+            <SystemProgress
+                key={systemProgressOpen}
+                onClose={() => systemProgress.set({systemProgressOpen: false})}
+            />
         );
 	}
 
     renderSettingsPopover() {
+        const { showSettings } = this.state;
+
 		return (
-			<Popover className="settings-popover" open={this.state.showSettings} useLayerForClickAway={false}>
-				<Settings
-					onRestart	={() => this.setState({restartDialog: true})}
-					onShutdown	={() => this.setState({shutdownDialog: true})}
-					onClose		={() => this.setState({showSettings: undefined})}
-				/>
-			</Popover>
+            <MuiThemeProvider theme={theme}>
+                <Popover
+                    open={Boolean(showSettings)}
+                    anchorEl={this.settingsAnchorEl}
+                    anchorOrigin={{vertical: 'top', horizontal: 'right',}}
+                    transformOrigin={{vertical: 'top', horizontal: 'right',}}
+                    onClose={() => this.setState({showSettings: undefined})}
+                >
+                    <Settings onClose={() => this.setState({showSettings: undefined})}/>
+                </Popover>
+            </MuiThemeProvider>
         );
 	}
 
-	renderUser() {
-        const { store } = this.props;
+    renderTitle() {
+        const { classes, store } = this.props;
         const { appState } = store;
-        const { currentUser } = appState;
+        const { appTitle } = appState;
 
-        if (currentUser && !location.href.includes('login')) {
-            return (
-                <span className="app-username">
-                    | {currentUser}
-                </span>
-            );
-        }
+        return (
+            <Typography className={classes.appTitle} variant="title" color="inherit">
+                {appTitle}
+            </Typography>
+        );
+	}
+
+	renderLeftArea() {
+        const { classes, onMenuHandleClick, store } = this.props;
+        const { appState } = store;
+        const { authenticated } = appState;
+
+	    return (
+	        <div className={classes.leftArea}>
+                <IconButton onClick={() => onMenuHandleClick()} color="inherit" hidden={!authenticated}>
+                    <MenuIcon color="inherit" />
+                </IconButton>
+                <img src={LogoImage} />
+            </div>
+        );
     }
 
 	render() {
-        const { store } = this.props;
-        const { appState } = store;
-        const { currentUser } = appState;
+	    const { classes, hidden } = this.props;
+        const { systemStatus } = this.props.store.systemProgress;
 
         return (
-			<div className="top-bar" hidden={this.props.hidden}>
-                <AppBar
-                    title={<span className="app-header">Beyond {this.renderUser()}</span>}
-                    onLeftIconButtonTouchTap={() => this.props.onMenuHandleClick()}
-                    iconElementLeft={location.hash.includes('login') ? <div/> : undefined}
-					iconElementRight={
-						<div>
-                            <IconButton
-                                data-tooltip="Settings"
-                                onClick={() => this.setState({showSettings: true})}
-                                hidden={location.hash.toLowerCase().includes('login')}
-                                // hidden={currentUser !== 'admin'}
-                            >
-                                <SettingsIcon />
-                            </IconButton>
-						</div>
-					}
-				/>
+			<div className={classes.topBar} hidden={hidden}>
+                <AppBar position="static">
+                    <Toolbar className={classes.innerToolbar}>
+                        {this.renderLeftArea()}
+                        {this.renderTitle()}
+                        <div className={classes.rightControls}>
+                            <Tooltip title="Admin Tools">
+                                <IconButton
+                                    className={ClassNames({[classes.blink]: systemStatus.busy})}
+                                    buttonRef={node => this.settingsAnchorEl = node}
+                                    onClick={() => this.setState({showSettings: true})}
+                                    color="inherit"
+                                >
+                                    <SettingsIcon/>
+                                </IconButton>
+                            </Tooltip>
+                        </div>
+                    </Toolbar>
+                </AppBar>
                 {this.renderSystemProgressPopover()}
                 {this.renderSettingsPopover()}
 			</div>

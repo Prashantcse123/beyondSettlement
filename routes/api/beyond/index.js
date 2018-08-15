@@ -109,7 +109,7 @@ router.get('/oauth/callback', function(req, res) {
                 if (error) {
                     res.status(401).send(error.toString());
                 }else{
-                    res.cookie('PASSPORT', passInfo, { maxAge: 900000, httpOnly: true });
+                    res.cookie('PASSPORT', passInfo, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
                     res.sendFile(path.join(__dirname + '/auth_finish.html'));
                     // res.status(200).json({payload, userInfo: JSON.parse(body)});
                 }

@@ -32,7 +32,7 @@ const dataImport = {
         return new Promise((resolve, reject) =>
             redshift.connect((err) => {
                 if (!err) {
-                    dataImport.updateProgress('Data import', 0.0111222333);
+                    dataImport.updateProgress('Data import', -1);
                     console.log('<< RedShift database connected successfully');
                     resolve();
                 } else {
