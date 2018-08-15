@@ -111,6 +111,7 @@ export default class TopBar extends Component {
 
 	render() {
 	    const { classes, hidden } = this.props;
+        const { authenticated } = this.props.store.appState;
         const { systemStatus } = this.props.store.systemProgress;
 
         return (
@@ -119,7 +120,7 @@ export default class TopBar extends Component {
                     <Toolbar className={classes.innerToolbar}>
                         {this.renderLeftArea()}
                         {this.renderTitle()}
-                        <div className={classes.rightControls}>
+                        <div className={classes.rightControls} hidden={!authenticated}>
                             <Tooltip title="Admin Tools">
                                 <IconButton
                                     className={ClassNames({[classes.blink]: systemStatus.busy})}
