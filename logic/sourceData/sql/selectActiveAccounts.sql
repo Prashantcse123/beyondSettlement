@@ -1,9 +1,10 @@
+
 with pre_ct as (  --For each tradeline, we need to calculate FA for all terms.  splitting each term from below cte
                 select distinct creditor,'precharge' as type, cr.most_accepted_terms_pre_charge as accepted_terms,override_type,debt_type,min_debt,max_debt,
                        cr.most_accepted_ratio_pre_charge as accepted_ratio, cr.min_monthly_pay_pre_charge as accepted_pay,
                        cj.term , last_day(dateadd(month,term-1,getdate())) as Target_Date , total_number_settlements_pre_charge as Data_Points
-                from ##temp_merged_ct_overrides cr
-                cross join (select row_number()over(order by creditor) as term from ##temp_merged_ct_overrides limit 100) cj
+                from asb.merged_ct_overrides cr
+                cross join (select row_number()over(order by creditor) as term from asb.merged_ct_overrides limit 100) cj
                 where cr.most_accepted_terms_pre_charge is not null
                       and cr.most_accepted_terms_pre_charge >= cj.term
 
@@ -13,8 +14,8 @@ with pre_ct as (  --For each tradeline, we need to calculate FA for all terms.  
                 select distinct creditor,'precharge' as type, cr.most_accepted_terms_post_charge as accepted_terms,override_type,debt_type,min_debt,max_debt,
                        cr.most_accepted_ratio_post_charge as accepted_ratio, cr.min_monthly_pay_post_charge as accepted_pay,
                        cj.term , last_day(dateadd(month,term-1,getdate())) as Target_Date , total_number_settlements_pre_charge as Data_Points
-                from ##temp_merged_ct_overrides cr
-                cross join (select row_number()over(order by creditor) as term from ##temp_merged_ct_overrides limit 100) cj
+                from asb.merged_ct_overrides cr
+                cross join (select row_number()over(order by creditor) as term from asb.merged_ct_overrides limit 100) cj
                 where cr.most_accepted_terms_pre_charge is null
                       and cr.most_accepted_terms_post_charge is not null
                       and cr.most_accepted_terms_post_charge>=cj.term
@@ -24,8 +25,8 @@ with pre_ct as (  --For each tradeline, we need to calculate FA for all terms.  
                 select distinct creditor,'postcharge' as type, cr.most_accepted_terms_post_charge as accepted_terms,override_type,debt_type,min_debt,max_debt,
                        cr.most_accepted_ratio_post_charge as accepted_ratio, cr.min_monthly_pay_post_charge as accepted_pay,
                        cj.term , last_day(dateadd(month,term-1,getdate())) as Target_Date , total_number_settlements_post_charge as Data_Points
-                from ##temp_merged_ct_overrides cr
-                cross join (select row_number()over(order by creditor) as term from ##temp_merged_ct_overrides limit 100) cj
+                from asb.merged_ct_overrides cr
+                cross join (select row_number()over(order by creditor) as term from asb.merged_ct_overrides limit 100) cj
                 where cr.most_accepted_terms_post_charge is not null
                       and cr.most_accepted_terms_post_charge>=cj.term
 
@@ -34,8 +35,8 @@ with pre_ct as (  --For each tradeline, we need to calculate FA for all terms.  
                 select distinct creditor,'postcharge' as type, cr.most_accepted_terms_pre_charge as accepted_terms,override_type,debt_type,min_debt,max_debt,
                        cr.most_accepted_ratio_pre_charge as accepted_ratio, cr.min_monthly_pay_pre_charge as accepted_pay,
                        cj.term , last_day(dateadd(month,term-1,getdate())) as Target_Date , total_number_settlements_post_charge as Data_Points
-                from ##temp_merged_ct_overrides cr
-                cross join (select row_number()over(order by creditor) as term from ##temp_merged_ct_overrides limit 100) cj
+                from asb.merged_ct_overrides cr
+                cross join (select row_number()over(order by creditor) as term from asb.merged_ct_overrides limit 100) cj
                 where cr.most_accepted_terms_post_charge is null
                       and cr.most_accepted_terms_pre_charge is not null
                       and cr.most_accepted_terms_pre_charge >= cj.term
@@ -223,8 +224,8 @@ select programname,tradelinename,creditor,delinquency as Account_Delinquency,
                    else ' ' --concat(concat('$',accepted_pay), ' min pay')
                    end) as Creditor_Terms,
        Data_Points,  debt_type,
-          case when  tradelinename_fa is null and ((((m0_bal/NULLIF(Fee,0))*100) < 0) or (((m0_bal/NULLIF(Fee,0))*100) IS NULL)) then 'not eligible(fa)' -- These tradelines have negative funds in their terms if we settle them
-            when  (UPPER(creditor) in ('CITIBANK','CITI CARDS','SEARS', 'MACYS', 'BEST BUY', 'COSTCO', 'HOME DEPOT', 'TRACTOR SUPPLY', 
+       case when  tradelinename_fa is null and ((((m0_bal/NULLIF(Fee,0))*100) < 0) or (((m0_bal/NULLIF(Fee,0))*100) IS NULL)) then 'not eligible(fa)' -- These tradelines have negative funds in their terms if we settle them
+            when  (UPPER(creditor) in ('CITIBANK','CITI CARDS','SEARS', 'MACYS', 'BEST BUY', 'COSTCO', 'HOME DEPOT', 'TRACTOR SUPPLY',
                                      'GOOD YEAR', 'BLOOMINGDALES', 'EXXON', 'SHELL', 'BROOKS BROTHERS')
                                      OR UPPER(creditor) like '%/CITI' OR UPPER(creditor) like '%/CITIBANK')
                   and (lpoa_sent__c <> true or lpoa_sent__c is null)
@@ -350,3 +351,4 @@ group by programname,tradelinename,creditor, delinquency, Balance, estimated_Off
          debt_type, nu_dse__Last_Payment_Date__c, CreatedDate,  State_Of_Residency,  avg_monthly_payment, Enrolled_Debt, Type
 
 ;
+

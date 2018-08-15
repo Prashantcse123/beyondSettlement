@@ -17,10 +17,8 @@ const dataImport = {
     importData: () => {
         return new Promise((resolve, reject) => {
             dataImport.connectDb()
-                .then(() => dataImport.dropTempCreditorVariablesTempTable())
-                .then(() => dataImport.createTempCreditorVariablesTempTable())
-                .then(() => dataImport.saveData())
-                .then(() => dataImport.dropTempCreditorVariablesTempTable())
+                .then(() => dataImport.createTempCreditorVariablesTempTable()) // createTempCreditorVariablesTempTable.sql
+                .then(() => dataImport.saveData()) // calls getAllActiveAccounts => selectActiveAccounts.sql
                 .then(() => dataImport.disconnectDb())
                 .then(() => resolve('Import Success! :)'));
         })
@@ -75,40 +73,6 @@ const dataImport = {
                 }));
     },
 
-    dropTempCreditorVariablesTempTable: () => {
-        const sql = require('./sql/dropTempCreditorVariables.sql');
-
-        console.log('>> Attempting to drop ##temp_Creditor_Variables temporary table');
-
-        return new Promise((resolve, reject) =>
-            redshift.query(sql, {raw: true})
-                .then((data) => {
-                    console.log('<< ##temp_Creditor_Variables temporary table dropped successfully');
-                    resolve(data);
-                })
-                .catch((err) => {
-                    console.log('<< Could not drop ##temp_Creditor_Variables temporary table');
-                    reject(err);
-                }));
-    },
-
-
-    getAllCreditorVariables: () => {
-        const sql = require('./sql/selectCreditorVariables.sql');
-
-        console.log('>> Attempting to select data from ##temp_Creditor_Variables table');
-
-        return new Promise((resolve, reject) =>
-            redshift.query(sql, {raw: true})
-                .then((data) => {
-                    console.log('<< ##temp_Creditor_Variables data selected successfully');
-                    resolve(data);
-                })
-                .catch((err) => {
-                    console.log('<< Could not select data from ##temp_Creditor_Variables ');
-                    reject(err);
-                }));
-    },
 
     getAllActiveAccounts: () => {
         const sql = require('./sql/selectActiveAccounts.sql');
@@ -131,26 +95,12 @@ const dataImport = {
         console.log('** Importing Data from RedShift...');
 
         let promises = [
-            // new Promise((resolve, reject) =>
-            //     dataImport.getAllCreditorVariables()
-            //         .then((varData) => {
-            //             models.ImportedCreditorVariable.destroy({truncate: true});
-            //             models.ImportedCreditorVariable.bulkCreate(varData).then(() => resolve());
-            //             // varData.forEach(d => {
-            //             //     models.ImportedCreditorVariable.create(d);
-            //             //     resolve();
-            //             // });
-            //         })),
             new Promise((resolve, reject) =>
                 dataImport.getAllActiveAccounts()
                     .then((varData) => {
+                        console.log('** Importing Query Finished, Appending Data');
                         models.ImportedActiveAccount.destroy({truncate: true});
                         models.ImportedActiveAccount.bulkCreate(varData).then(() => resolve());
-                        // varData.forEach(d => {
-                        //     // dataImport.updateProgress('Accounts import', (varData.indexOf(d) + 1) / varData.length);
-                        //     models.ImportedActiveAccount.create(d);
-                        //     resolve();
-                        // });
                     }))
         ];
 
@@ -173,26 +123,5 @@ const dataImport = {
         });
     }
 };
-
-// saveData: () => {
-//   console.log('** Importing Data from RedShift...');
-//
-//   var promises = [
-//     new Promise((resolve, reject) =>
-//       // models.Creditor.findAll()
-//       //   .then((crData) => {
-//       //     crData.forEach(rec => console.log(rec));
-//       //     dataImport.getAllCreditorVariables()
-//       //   })
-//       //   .then((varData) => {
-//       //     varData.forEach(rec => console.log(rec));
-//       //     resolve(true);
-//       //   })
-//       dataImport.getAllCreditorVariables()
-//         .then((varData) =>
-//           varData.forEach(d =>
-//             models.ImportedCreditorVariable.create(d))));
-// }
-
 
 module.exports = dataImport;
