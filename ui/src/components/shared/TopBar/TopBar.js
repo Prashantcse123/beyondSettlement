@@ -7,9 +7,6 @@ import LogoImage from './LogoSmall.png';
 
 import SystemProgress from '../SystemProgress/SystemProgress';
 
-// import AnalysisIcon from '@scopio/scopio-components/lib/Icons/Analysis';
-// import DetectingIcon from '@scopio/scopio-components/lib/Icons/Detecting';
-
 import Settings from './Settings/Settings';
 
 import Tooltip from '@material-ui/core/Tooltip';
@@ -53,64 +50,6 @@ export default class TopBar extends Component {
 	// 	console.log("CLICKED BUTTON");
 	// 	this.store.authenticate();
 	// }
-
-	onAbortClick() {
-        const { store } = this.props;
-        const { systemProgress } = store;
-
-        this.setState({aborting: true});
-
-        systemProgress.abortSystemTask()
-			.then(() =>
-				this.setState({
-					aborting: false,
-					abortScanDialog: false
-				}))
-			.catch((ex) => {
-                this.setState({aborting: false});
-                Scopio.TopMessage.show('Abort Error');
-			});
-    }
-
-    onRestartClick() {
-        const { store } = this.props;
-        const { appState } = store;
-
-		this.setState({restarting: true});
-
-		appState.restartDevices().then(() =>
-			this.setState({
-				restarting: false,
-				restartDialog: false,
-				showSettings: false
-			}));
-    }
-
-    onShutdownClick() {
-		const { store } = this.props;
-		const { appState } = store;
-
-		this.setState({shutting: true});
-
-		appState.shutdownDevices().then(() =>
-			this.setState({
-                shutting: false,
-				shutdownDialog: false,
-				showSettings: false
-			}));
-    }
-
-    onAutoScaleClick() {
-        const { store } = this.props;
-        const { appState } = store;
-
-        appState.set(
-            {isAutoScale: (appState.isAutoScale === 'false' ? 'true' : 'false')},
-            {storage: true}
-        );
-
-        location.reload();
-    }
 
     renderSystemProgressPopover() {
         const { store } = this.props;
