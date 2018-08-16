@@ -75,7 +75,7 @@ export default class ServiceController {
             let statusCode = ex.response.status;
 
             if (statusCode === 401) {
-                this._autheticationStore.login();
+                location.replace('/#/login');
                 return;
             }
 
