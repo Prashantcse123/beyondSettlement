@@ -2,6 +2,11 @@ module.exports = (sequelize, DataTypes) => {
     const ScorecardRecord = sequelize.define('ScorecardRecord', {
 
         /// Metadata
+        id: {
+            type: DataTypes.INTEGER,
+            // primaryKey: true,
+            autoIncrement: true,
+        },
         tradeLineName: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -11,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             unique: true,
+            primaryKey: true,
         },
         programName: DataTypes.STRING,
         creditor: DataTypes.STRING,

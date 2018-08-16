@@ -1,6 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
     const TradelinesState = sequelize.define('TradelinesState', {
-      isDone: DataTypes.BOOLEAN,
+      isDone: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: function() {
+          return false;
+        },
+      }
     });
   
     return TradelinesState;

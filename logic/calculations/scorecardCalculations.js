@@ -28,6 +28,10 @@ const scorecardCalculations = {
                 calculationsHelper.calculateAllRows(scorecardCalculations, models.ScorecardRecord, accounts, 'create')
                     .then(() => eligibleAccountsFilter.filter()) //filters the scorecard to contain only 1. max score per program 2. eligible programs
                     .then(() => resolve('Scorecard Calculations Success! :)'))
+                    .then(async () => {
+                        await scorecardCalculations.fillTradeLineState();
+                        resolve('Tradeline state data imported');
+                    })
                     .catch(() => resolve('Scorecard Calculations Error! :('))
             })
         );
@@ -146,6 +150,15 @@ const scorecardCalculations = {
                 resolve(result);
             });
         });
+    },
+
+    fillTradeLineState: () => {
+        return new Promise(resolve =>
+            models.ScorecardRecord.findAll({ raw: true, attributes: ['tradeLineId'] }).then(results => {
+                models.TradelinesState.bulkCreate(results).then(rows => {
+                    resolve();
+                })
+            }));
     },
 
     columns: {
