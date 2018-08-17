@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
-const request = require("request");
+const request = require('request');
 
 const api = require('./routes/api');
 // const ui = require('./routes/ui');
@@ -22,7 +22,7 @@ const config = {
 };
 
 
-/// catch 403 and forward to error handler
+// / catch 403 and forward to error handler
 // app.use((req, res, next) => {
 //     /*
 //      * Check if authorization header is set
@@ -135,8 +135,7 @@ app.use(logger('dev'));
 //   }));
 // }
 
-app.get('/status', function(req, res) {
-
+app.get('/status', (req, res) => {
 //   var failed = 0;
 //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
 //                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
@@ -160,70 +159,69 @@ app.get('/status', function(req, res) {
 //   if (failed > 0) {
 //     res.status(500).json("false");
 //   } else {
-    res.status(200).json("true");
-  //}
-}
+  res.status(200).json('true');
+  // }
+},
 
-//start()
+// start()
 
-//}
+// }
 );
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(function (req, res, next) {
-    if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
-        next();
-        return;
-    }
+app.use((req, res, next) => {
+  if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
+    next();
+    return;
+  }
 
-    let cookie = req.cookies.PASSPORT;
+  const cookie = req.cookies.PASSPORT;
 
-    if (cookie) {
-        console.log('Found cookie... ', cookie);
+  if (cookie) {
+    console.log('Found cookie... ', cookie);
 
-        let protocol = req.protocol;
-        let requestUrl = protocol + '://' + process.env.BASE_URL + '/api/beyond/oauth/user_info?' + cookie;
+    const protocol = req.protocol;
+    const requestUrl = `${protocol}://${process.env.BASE_URL}/api/beyond/oauth/user_info?${cookie}`;
 
-        request(requestUrl, function(error, response, body) {
-            if (error || response.statusCode !== 200) {
-                console.log('error... ', error);
-                console.log('url error: ' + requestUrl);
-                return res.status(401).json({
-                    error: {
-                        msg: 'Failed to authenticate token!'
-                    }
-                });
-            }else{
-                next();
-            }
-        });
-    }else{
-        console.log('No cookie');
+    request(requestUrl, (error, response, body) => {
+      if (error || response.statusCode !== 200) {
+        console.log('error... ', error);
+        console.log(`url error: ${requestUrl}`);
         return res.status(401).json({
-            error: {
-                msg: 'No authentication token provided!'
-            }
+          error: {
+            msg: 'Failed to authenticate token!',
+          },
         });
-    }
+      }
+      next();
+    });
+  } else {
+    console.log('No cookie');
+    return res.status(401).json({
+      error: {
+        msg: 'No authentication token provided!',
+      },
+    });
+  }
 });
 
-/// api
+// / api
 app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
 
-/// catch 404 and forward to error handler
+// / catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-/// error handler
-/// no stacktraces leaked to user unless in development environment
+// / error handler
+// / no stacktraces leaked to user unless in development environment
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({
