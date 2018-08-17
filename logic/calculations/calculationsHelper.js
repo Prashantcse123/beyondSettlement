@@ -23,13 +23,13 @@ const calculationsHelper = {
       };
 
       if (method === 'create') {
-        await models.sequelize.query('DROP TABLE public."TradelinesStates" CASCADE;')
+/*         await models.sequelize.query('DROP TABLE public."TradelinesStates" CASCADE;')
           .then((users) => {
             console.log('Inside delete');
-          });
+          }); */
         /* await models.TradelinesState.destroy({ truncate : true, cascade: true })
                  */
-        model.destroy({ truncate: true });
+        model.destroy({ truncate: true, cascade: true });
       }
 
       calculationsUnit._newRows = [];
