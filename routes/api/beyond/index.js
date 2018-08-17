@@ -149,8 +149,8 @@ router.get('/oauth/callback', function(req, res) {
 });
 
 router.get('/oauth/user_info', function(req, res) {
-    let id = req.param('id');
-    let token = req.param('token');
+    let id = req.query.id;
+    let token = req.query.token;
 
     request(id + '?format=json&oauth_token=' + token, function(error, response, body) {
         if (error || response.statusCode !== 200) {
