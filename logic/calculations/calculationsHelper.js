@@ -23,12 +23,6 @@ const calculationsHelper = {
       };
 
       if (method === 'create') {
-/*         await models.sequelize.query('DROP TABLE public."TradelinesStates" CASCADE;')
-          .then((users) => {
-            console.log('Inside delete');
-          }); */
-        /* await models.TradelinesState.destroy({ truncate : true, cascade: true })
-                 */
         model.destroy({ truncate: true, cascade: true });
       }
 
