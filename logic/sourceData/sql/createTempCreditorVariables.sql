@@ -13,8 +13,8 @@ Creditor_var_Calc as (Select stl.ProgramName, stl.Name as TradelineName, stl.Id 
                                   stl.number_of_days_overdue__c as number_of_days_overdue, so.NegotiatedOn
 
                       from (Select stl.*, UPPER(sac.Name) as Creditor, spg.Name as ProgramName
-                            from salesforce.nu_dse__tradeline__c stl
-                            join (Select spg.* from salesforce.nu_dse__program__c spg
+                            from datalake_sf.sf_nu_dse_tradeline_c_src stl
+                            join (Select spg.* from datalake_sf.sf_nu_dse_program_c_src spg
                                   where
                                         spg.CreatedDate > cast('2017-06-13' as date) and
                                         (UPPER(spg.Name) not like '%TEST%' or spg.Name is null) and
@@ -22,20 +22,20 @@ Creditor_var_Calc as (Select stl.ProgramName, stl.Name as TradelineName, stl.Id 
                                         (UPPER(spg.Email_Address__c) not like '%TEST%' or spg.Email_Address__c is null) and
                                         spg.nu_dse__Account__c not in ('0014600000jaugGAAQ') and
                                         UPPER(spg.nu_dse__Program_Status__c) not in ('CLOSED')) spg on UPPER(spg.Id) = UPPER(stl.nu_dse__Program__c)
-                            left join (Select * from salesforce.account
+                            left join (Select * from datalake_sf.sf_account_src
                                        ) sac on UPPER(sac.Id) = UPPER(case when stl.nu_dse__New_Creditor__c is null or stl.nu_dse__New_Creditor__c =''
                                                                                     then stl.nu_dse__Original_Creditor__c
                                                                                  else stl.nu_dse__New_Creditor__c end)
-                            left join (Select * from salesforce.recordtype) src on UPPER(src.id) = UPPER(sac.RecordTypeId)
+                            left join (Select * from datalake_sf.sf_recordtype_src) src on UPPER(src.id) = UPPER(sac.RecordTypeId)
                             where src.name = 'Creditor' and stl.nu_dse__Current_Stage__c <> 'Removed' and  stl.nu_dse__Include_In_The_Program__c = 1 ) stl
 
                       -- First Accepted Offer for a tradeline
                       join (  Select soh.parentID as OfferID, soh.CreatedDate as First_Processed_On, so.tradeline,
                                       so.OfferAmount, so.NegotiatedOn,
                                       row_number() over (partition by so.tradeline order by soh.CreatedDate asc, id asc) as is_first_processed
-                              from salesforce.nu_dse__offer__history  soh
+                              from datalake_sf.sf_nu_dse_offer_history_src soh
                               join (  Select Id as OID, nu_dse__TradeLine__c as tradeline, nu_dse__Offer_Amount__c as OfferAmount, CreatedDate as NegotiatedOn
-                                      from salesforce.nu_dse__offer__c
+                                      from datalake_sf.sf_nu_dse_offer_c_src
                                     ) so on so.OID = soh.parentID
                               --where soh.Field = 'Status'
                                     --and soh.newvalue = 'Accepted'
@@ -44,7 +44,7 @@ Creditor_var_Calc as (Select stl.ProgramName, stl.Name as TradelineName, stl.Id 
 
                       --To get total # terms (payment terms)
                       join (Select sp.nu_dse__Offer__c as Offer, sum(sp.nu_dse__Amount__c) as Offer_Amount_Scheduled, count(sp.Id) as Number_of_CreditorPays
-                                  from salesforce.nu_dse__payment__c sp
+                                  from datalake_sf.sf_nu_dse_payment_c_src sp
                                   where sp.nu_dse__Payment_Type__c = 'Withdrawal'
                                         and sp.nu_dse__Transaction_Status__c in ('Completed','Cleared','Pending','Scheduled','In Progress')
                                   group by sp.nu_dse__Offer__c) sp on sp.Offer = so.OfferID
@@ -53,7 +53,7 @@ Creditor_var_Calc as (Select stl.ProgramName, stl.Name as TradelineName, stl.Id 
                       left join (Select sp.Offer, cast(min (sp.amount) as int) as Minimum_Pay
                                   from (Select sp.nu_dse__Offer__c as Offer, sp.nu_dse__Amount__c as amount,
                                                row_number() over (partition by sp.nu_dse__Offer__c order by sp.nu_dse__Schedule_Date__c desc) as is_last_pay
-                                        from salesforce.nu_dse__payment__c sp
+                                        from datalake_sf.sf_nu_dse_payment_c_src sp
                                         where sp.nu_dse__Payment_Type__c = 'Withdrawal'
                                               and sp.nu_dse__Transaction_Status__c in ('Completed','Cleared','Pending','Scheduled','In Progress')
                                         ) sp
