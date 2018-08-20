@@ -2,10 +2,8 @@ const models = require('../../models/index');
 
 const calculationsHelper = {
   calculateAllRows: (calculationsUnit, model, rows, method) => {
-    console.log('model', model);
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       const calcRowIndex = (rowIndex) => {
-        console.log('Calculating index', rowIndex, rows.length);
         calculationsHelper.updateProgress('Scorecard calculations', (rowIndex + 1) / rows.length);
         if (rowIndex === rows.length) {
           resolve();
@@ -23,7 +21,24 @@ const calculationsHelper = {
       };
 
       if (method === 'create') {
-        model.destroy({ truncate: true, cascade: true });
+        models.sequelize.transaction(function(t) {
+          var options = { raw: true, transaction: t }
+        
+          models.sequelize
+            .query('SET FOREIGN_KEY_CHECKS = 0', options)
+            .then(function() {
+              return model.destroy();
+            })
+            .then(function() {
+              return models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', options)
+            })
+            .then(function() {
+              return t.commit()
+            })
+        }).success(function() {
+          // go on here ...
+        })
+        // model.destroy();
       }
 
       calculationsUnit._newRows = [];
