@@ -3,7 +3,7 @@ import { inject, observer } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 
-import LogoImage from './LogoSmall.png';
+import LogoImage from './LogoSmall.jpg';
 
 import SystemProgress from '../SystemProgress/SystemProgress';
 
@@ -12,13 +12,8 @@ import Settings from './Settings/Settings';
 import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import Popover from "@material-ui/core/Popover";
 
 import MenuIcon from '@material-ui/icons/Menu';
