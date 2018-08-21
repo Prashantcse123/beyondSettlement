@@ -24,21 +24,19 @@ const calculationsHelper = {
         models.sequelize.transaction(function(t) {
           var options = { raw: true, transaction: t }
         
-          models.sequelize
-            .query('SET FOREIGN_KEY_CHECKS = 0', options)
+          return models.sequelize
+            .query('ALTER TABLE "public"."TradelinesStates" DROP CONSTRAINT IF EXISTS "TradelinesStates_tradeLineId_fkey";')
             .then(function() {
-              return model.destroy();
+              return models.sequelize.query('truncate table "public"."ScorecardRecords";');
             })
             .then(function() {
-              return models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', options)
+              return models.sequelize.query('ALTER TABLE "public"."TradelinesStates" ADD CONSTRAINT "TradelinesStates_tradeLineId_fkey" FOREIGN KEY ("tradeLineId") REFERENCES "public"."ScorecardRecords"("tradeLineId");')
             })
-            .then(function() {
-              return t.commit()
-            })
-        }).success(function() {
-          // go on here ...
+            .catch(function (err) {
+              console.log('err', err);
+              return t.rollback();
+            });
         })
-        // model.destroy();
       }
 
       calculationsUnit._newRows = [];

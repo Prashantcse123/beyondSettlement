@@ -22,9 +22,9 @@ const scorecardCalculations = {
     ]);
 
     return new Promise((resolve, reject) =>
-      init.then(() => {
+      init.then( async () => {
         const accounts = scorecardCalculations._accounts;
-
+        
         calculationsHelper.calculateAllRows(scorecardCalculations, models.ScorecardRecord, accounts, 'create')
           .then(() => eligibleAccountsFilter.filter()) // filters the scorecard to contain only 1. max score per program 2. eligible programs
           .then(() => resolve('Scorecard Calculations Success! :)'))
@@ -126,11 +126,12 @@ const scorecardCalculations = {
   }),
 
   fillTradeLineState: () => new Promise(resolve =>
-    models.ScorecardRecord.findAll({ raw: true, attributes: ['tradeLineId'] }).then((results) => {
-      models.TradelinesState.bulkCreate(results).then((rows) => {
+    models.sequelize
+      .query('INSERT INTO "public"."TradelinesStates" ( "createdAt", "updatedAt", "tradeLineId") SELECT "createdAt","updatedAt","tradeLineId" FROM "public"."ScorecardRecords" WHERE "tradeLineId" NOT IN ( SELECT "tradeLineId" FROM  "public"."TradelinesStates");')
+      .then(() => {
         resolve();
-      });
-    })),
+      }), 
+  ),
 
   columns: {
 
