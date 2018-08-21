@@ -10,9 +10,9 @@ console.log({ message: `Seeding ${process.env.NODE_ENV} environment, port ${port
 debug({ message: `sSeeding ${process.env.NODE_ENV} environment, port ${port}` });
 
 models.sequelize.sync().then(() => {
-  /**
+    /**
      * Listen on provided port, on all network interfaces.
      */
-  // finish, process will exit
-  console.log('dbSync finished');
+    //finish, process will exit
+    console.log('dbSync finished');
 });

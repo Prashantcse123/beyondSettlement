@@ -1,20 +1,24 @@
 const models = require('../../models/index');
-const features = require('../../config/featureToggle');
 
 const eligibleAccountsFilter = {
-  filter: () => {
-    // check if feature is enabled
-    if (features.eligibleAccounts) {
-      const sql = require('./sql/eligibleAccountsFilter.sql');
+    getEligibleScorecardRecords: (options) => {
+        let sql = require('./sql/eligibleAccountsFilter.sql');
 
-      console.log('>> filtering eligible accounts');
+        if (options.order) {
+            let orderArr = [];
+            let orderStr = 'ORDER BY ';
 
-      return new Promise((resolve, reject) =>
-        models.sequelize.query(sql) // run sql
-          .spread((results, metadata) => resolve()));
+            options.order.forEach(o =>
+                orderArr.push('"' + o[0] + '" ' + o[1]));
+
+            orderStr += orderArr.join(',');
+            sql += orderStr;
+        }
+
+        return new Promise((resolve, reject) =>
+            models.sequelize.query(sql) //run sql
+                .spread((results, metadata) => resolve(results)));
     }
-    return new Promise((resolve, reject) => resolve());
-  },
 };
 
 module.exports = eligibleAccountsFilter;

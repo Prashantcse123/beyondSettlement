@@ -1,34 +1,36 @@
-import React, { Component } from "react";
-import {Route, Redirect, Link, withRouter} from "react-router-dom";
-import { inject, observer } from "mobx-react";
-import LazyRoute from "lazy-route";
+import React, { Component } from 'react';
+import {Route, Redirect, Link, withRouter} from 'react-router-dom';
+import { inject, observer } from 'mobx-react';
+import { withStyles } from '@material-ui/core/styles';
 
-import TooltipService from '../utils/tooltipService'
+// import LazyRoute from 'lazy-route';
+// import DevTools from 'mobx-react-devtools';
 
-import Home from "./Home";
-import NotFound from "./pages/Errors/NotFound";
+// import TooltipService from '../utils/tooltipService'
+import NotFound from './pages/Errors/NotFound';
+import TopBar from './shared/TopBar/TopBar';
 
-import DevTools from "mobx-react-devtools";
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import Snackbar from '@material-ui/core/Snackbar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
-import TopBar from "./shared/TopBar/TopBar";
-
-import '../fonts/roboto/index.css'
-import '../styles/main.scss'
-import './App.scss'
-
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
-import Paper from 'material-ui/Paper';
-import MenuItem from 'material-ui/MenuItem';
-import Snackbar from 'material-ui/Snackbar';
-
-import SettingsIcon from 'material-ui/svg-icons/action/settings-applications';
+import SettingsIcon from '@material-ui/icons/SettingsApplications';
 
 import ScorecardPage from './pages/Scorecard/Scorecard';
 import LoginPage from './pages/Login/Login';
 
+import Theme from './Theme';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+const theme = createMuiTheme(Theme);
+
+import Styles from './App.styles';
+
+@withStyles(Styles)
 @withRouter
-@inject("store")
+@inject('store')
 @observer
 export default class App extends Component {
 	constructor(props) {
@@ -135,25 +137,22 @@ export default class App extends Component {
             Beyond.App.TopMessage.show(ex.message));
 
 		this.attachFullScreenEvent();
-
-        new TooltipService().startService();
-		// this.authenticate();
 	}
 
 	componentDidUpdate() {
-        const { appState } = this.props.store;
+        const { systemProgress } = this.props.store;
 
         if (location.hash.includes('login')) {
-            appState.stopSystemStatusMonitor();
+            systemProgress.stopSystemStatusMonitor();
         }else{
-            appState.startSystemStatusMonitor();
+            systemProgress.startSystemStatusMonitor({force: true});
         }
     }
 
 	componentWillUnmount() {
-        const { appState } = this.props.store;
+        const { systemProgress } = this.props.store;
 
-        appState.stopSystemStatusMonitor();
+        systemProgress.stopSystemStatusMonitor();
 	}
 
     onScorecardClick() {
@@ -164,9 +163,10 @@ export default class App extends Component {
 	}
 
 	renderRoutes() {
+        const { classes } = this.props;
+
         return (
-            <div className="app-content">
-                <Route exact path="/" component={Home}/>
+            <div className={classes.appContent}>
                 <Route exact path="/not_found" component={NotFound}/>
                 <Route
                     exact
@@ -183,15 +183,10 @@ export default class App extends Component {
     }
 
 	render() {
-        const { appState } = this.props.store;
-		const {
-			authenticated,
-			authenticating,
-			timeToRefresh,
-			refreshToken,
-			leftMenuOpen,
-            isFullScreen
-		} = appState;
+        const { infoBarMessageAction, infoBarMessageDuration } = this.state;
+        const { classes, store } = this.props;
+        const { appState } = store;
+		const { leftMenuOpen, isFullScreen } = appState;
 
 		let infoBarMessage = this.state.infoBarMessage || appState.infoBarMessage;
 
@@ -200,41 +195,54 @@ export default class App extends Component {
 		}
 
 		return (
-			<MuiThemeProvider>
-				<div className="app">
+            <MuiThemeProvider theme={theme}>
+				<div className={ClassNames(classes.app, classes.root)}>
 					{/*<DevTools />*/}
 
-					<TopBar onMenuHandleClick={() => appState.set({leftMenuOpen: !leftMenuOpen})} hidden={isFullScreen === true} />
+                    <TopBar key={appState.authenticated} onMenuHandleClick={() => appState.set({leftMenuOpen: !leftMenuOpen})} hidden={isFullScreen === true} />
 
-					<div className={ClassNames('app-layout', {'full-screen': isFullScreen === true}, {'left-menu-open': leftMenuOpen === true})}>
-						<Paper
-							className={
-								ClassNames(
-									'left-drawer-menu',
-									{open: !isFullScreen && leftMenuOpen}
-								)}
-						>
-							<MenuItem
-								primaryText="Scorecard"
-								leftIcon={<SettingsIcon/>}
-                                onClick={(e) => this.onScorecardClick(e)}
-								className={ClassNames('left-drawer-menu-item', {selected: location.hash.includes('/scorecard')})}
-							/>
-						</Paper>
+                    <div className={
+                        ClassNames(
+                            classes.appLayout,
+                            {[classes.fullScreen]: isFullScreen === true},
+                            {[classes.leftMenuOpen]: leftMenuOpen === true}
+                        )}
+                    >
+                        <Paper
+                            className={
+                                ClassNames(
+                                    classes.leftDrawerMenu,
+                                    {[classes.leftDrawerMenuOpen]: !isFullScreen && leftMenuOpen}
+                                )}
+                        >
+                            <MenuItem onClick={(e) => this.onScorecardClick(e)}>
+                                <ListItemIcon>
+                                    <SettingsIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Scorecard" />
+                            </MenuItem>
+                        </Paper>
+
 						{this.renderRoutes()}
 					</div>
-					<Snackbar
-						className={ClassNames('main-info-bar', {open: !!infoBarMessage})}
-						open={!!infoBarMessage}
-						message={infoBarMessage}
-						autoHideDuration={this.state.infoBarMessageDuration || 4000}
-                        action={(this.state.infoBarMessageAction || {}).text}
-						onActionTouchTap={(e) => this.state.infoBarMessageAction.onClick(e)}
-						onRequestClose={() => {
-							appState.set({infoBarMessage: ''});
-							this.setState({infoBarMessage: '', infoBarMessageAction: undefined, infoBarMessageDuration: undefined});
-						}}
-					/>
+                    <Snackbar
+                        anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                        open={!!infoBarMessage}
+                        message={infoBarMessage}
+                        autoHideDuration={infoBarMessageDuration || 4000}
+                        onClose={() => {
+                            appState.set({infoBarMessage: ''});
+                            this.setState({infoBarMessage: '', infoBarMessageAction: undefined, infoBarMessageDuration: undefined});
+                        }}
+                        action={infoBarMessageAction &&
+                            <Button
+                                color="secondary"
+                                onClick={(e) => infoBarMessageAction.onClick(e)}
+                            >
+                                {infoBarMessageAction.text}
+                            </Button>
+                        }
+                    />
 				</div>
 			</MuiThemeProvider>
 		);

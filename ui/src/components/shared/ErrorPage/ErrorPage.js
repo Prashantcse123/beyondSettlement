@@ -1,17 +1,21 @@
-import ErrorIcon from 'material-ui/svg-icons/alert/error';
-import RaisedButton from 'material-ui/RaisedButton';
-import ScannerIcon from 'material-ui/svg-icons/hardware/scanner';
+import { withStyles } from "@material-ui/core/styles";
 
-import './ErrorPage.scss'
+import Button from '@material-ui/core/Button';
 
+import ErrorIcon from '@material-ui/icons/Error';
+import SettingsIcon from '@material-ui/icons/Settings';
+
+import Styles from './ErrorPage.styles';
+
+@withStyles(Styles)
 export default class ErrorPage extends Component {
     renderIcon() {
-        const { icon } = this.props;
+        const { classes, icon } = this.props;
 
         if (icon) {
             return icon;
         }else{
-            return <ErrorIcon className="error-page-icon" />
+            return <ErrorIcon className={classes.errorPageIcon} />
         }
     }
 
@@ -35,7 +39,7 @@ export default class ErrorPage extends Component {
     }
 
     renderButton() {
-        const { button } = this.props;
+        const { classes, button } = this.props;
 
         if (button === false) return;
 
@@ -43,17 +47,19 @@ export default class ErrorPage extends Component {
             return button;
         }else{
             return (
-                <RaisedButton
-                    label="Go to Scorecard page"
-                    onClick={() => this.props.history.push('/scorecard')}
-                />
+                <Button onClick={() => this.props.history.push('/scorecard')}>
+                    <SettingsIcon className={classes.leftIcon} />
+                    Go to scorecard page
+                </Button>
             );
         }
     }
 
 	render() {
+        const { classes } = this.props;
+
         return (
-			<div className="error-page">
+			<div className={classes.errorPage}>
                 {this.renderIcon()}
                 {this.renderTitle()}
                 <br/>

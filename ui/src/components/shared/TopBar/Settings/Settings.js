@@ -1,17 +1,19 @@
 import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
+import { withStyles } from "@material-ui/core/styles";
 
-import FlatButton from 'material-ui/FlatButton';
-import SettingsIcon from 'material-ui/svg-icons/action/settings';
-import CloseIcon from 'material-ui/svg-icons/navigation/close';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardActions from '@material-ui/core/CardActions';
+import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {Card, CardActions, CardHeader} from "material-ui/Card/index";
+import CloseIcon from '@material-ui/icons/Close';
+import SettingsIcon from '@material-ui/icons/Settings';
 
-import './Settings.scss'
+import Styles from './Settings.styles';
 
+@withStyles(Styles)
 @inject("store")
 @observer
 export default class Settings extends Component {
@@ -20,24 +22,51 @@ export default class Settings extends Component {
 		this.state = {open: false};
 	}
 
+	componentDidMount() {
+        const { store } = this.props;
+        const { systemProgress } = store;
+
+        systemProgress.bind({
+            onSystemStatusChange: (statusData) => {
+                console.log(systemProgress.systemTaskDone);
+                if (systemProgress.systemTaskDone) {
+                    Beyond.App.Views.Scorecard.componentDidMount();
+                }
+            }}, this);
+    }
+
 	render() {
-        const { appState } = this.props.store;
+	    const { classes, store } = this.props;
+        const { appState, systemProgress } = store;
 
 		return (
-			<MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
-				<Card className="settings">
-					<CardHeader
-						style={{fontWeight: 100}}
-						subtitle="Settings"
-						title={<FlatButton icon={<CloseIcon />} onClick={(e) => this.props.onClose(e)} style={{position: 'absolute', right: 6, top: 6, minWidth: 50}} />}
-					/>
-					<CardActions>
-						<FlatButton label="Import Redshift Data" icon={<SettingsIcon/>} onClick={() => appState.importRedshiftData()} />
-                        <br/>
-						<FlatButton label="Start Calculations" icon={<SettingsIcon/>} onClick={() => appState.startCalculations()} />
-					</CardActions>
-				</Card>
-			</MuiThemeProvider>
+            <Card className={classes.settings}>
+                <CardHeader
+                    subheader="Admin Tools"
+                    action={<IconButton onClick={(e) => this.props.onClose(e)}><CloseIcon color="inherit" /></IconButton>}
+                />
+                <CardActions>
+                    <Button
+                        onClick={() =>
+                            appState.importRedshiftData().then(() =>
+                                systemProgress.startSystemStatusMonitor({force: true}))}
+                    >
+                        <SettingsIcon className={classes.leftIcon} color="inherit" />
+                        Import Redshift Data
+                    </Button>
+                </CardActions>
+                <CardActions>
+                    <Button
+                        onClick={() =>
+                            appState.startCalculations().then(() =>
+                                systemProgress.startSystemStatusMonitor({force: true}))}
+                    >
+                        <SettingsIcon className={classes.leftIcon} color="inherit" />
+                        Start Calculations
+                    </Button>
+                </CardActions>
+                <br/>
+            </Card>
 		);
 	}
 }

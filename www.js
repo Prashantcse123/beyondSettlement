@@ -10,7 +10,7 @@ console.log({ message: `starting project in ${process.env.NODE_ENV} environment,
 debug({ message: `starting project in ${process.env.NODE_ENV} environment, port ${port}` });
 
 app.listen(port, (err) => {
-  if (err) {
+    if (err) {
         console.log(err); // eslint-disable-line
-  } else console.log('server started');
+    } else console.log('server started');
 });
