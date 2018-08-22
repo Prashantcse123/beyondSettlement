@@ -4,7 +4,8 @@ export default class ServiceController {
     constructor(options) {
         options = options || {};
 
-        this._urlPrefix = options.urlPrefix || '/api/';
+        const apiUrl = process.env.API_URL || (window && window.location && window.location.origin);
+        this._urlPrefix = `${apiUrl}${options.urlPrefix || '/api/'}`;
         this.refreshAuthorizationToken();
     }
 

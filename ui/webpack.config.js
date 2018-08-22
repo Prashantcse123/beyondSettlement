@@ -1,4 +1,8 @@
 var path = require("path");
+require('dotenv').config({
+  // use main .env for now, but we can move to a separate .env
+  path: path.resolve('../.env'),
+});
 var webpack = require("webpack");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -122,5 +126,11 @@ module.exports = {
         new HtmlWebpackPlugin({ hash: false, template: "./index.hbs" }),
         new HtmlWebpackPlugin({ hash: false, template: "./oauth.hbs", filename: 'oauth.html', chunks: [] }),
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /nb/),
+        new webpack.DefinePlugin({
+          'process.env': {
+            NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+            API_URL: JSON.stringify(process.env.API_URL),
+          },
+        }),
     ]
 };
