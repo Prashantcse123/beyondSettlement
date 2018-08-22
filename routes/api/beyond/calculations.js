@@ -114,7 +114,9 @@ router.get('/progress', (req, res) => {
 router.get('/status', (req, res) => {
     let type = 'Progress';
 
-    models.Progress.findAll({where: {type}}).then(rows => {
+    models.Progress.findAll({ where: { type }, order: [
+        ['value', 'DESC']
+    ]}).then(rows => {
         let row = rows[0];
 
         if (row && row.value > 0 && row.value < 1 && row.value <= 99.99) {
