@@ -8,12 +8,14 @@ const bodyParser = require('body-parser');
 const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
 const request = require("request");
+const cors = require('cors');
 
 const api = require('./routes/api');
 // const ui = require('./routes/ui');
 // const isReachable = require('is-reachable');
 
 const app = express();
+app.use(cors());
 
 const config = {
   token: process.env.SPLUNK_TOKEN,
