@@ -109,7 +109,14 @@ router.get('/oauth/callback', function(req, res) {
                 if (error) {
                     res.status(401).send(error.toString());
                 }else{
-                    res.cookie('PASSPORT', passInfo, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+                    const options = {
+                      maxAge: 24 * 60 * 60 * 1000,
+                      httpOnly: true,
+                    };
+                    if (['production', 'staging'].includes(process.env.NODE_ENV)) {
+                      options.domain = 'beyondfinance.com';
+                    }
+                    res.cookie('PASSPORT', passInfo, options);
                     res.sendFile(path.join(__dirname + '/auth_finish.html'));
                     // res.status(200).json({payload, userInfo: JSON.parse(body)});
                 }

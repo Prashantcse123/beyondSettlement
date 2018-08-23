@@ -15,7 +15,14 @@ const api = require('./routes/api');
 // const isReachable = require('is-reachable');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://d4zf5uuuwbptn.cloudfront.net',
+    'https://settlements-staging.beyondfinance.com',
+    /http:\/\/localhost:/,
+  ],
+  credentials: true,
+}));
 
 const config = {
   token: process.env.SPLUNK_TOKEN,
