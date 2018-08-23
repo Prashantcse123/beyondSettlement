@@ -325,7 +325,7 @@ export default class Scorecard extends Component {
         return (
 			<div className={classes.scorecard}>
                 <MUIDataTable
-                    title="Eligible Accounts"
+                    title={this.state.activeBottomButton.camelCaseToDelimiter(' ').capitalize()}
                     options={{
                         filter: false,
                         download: false,
