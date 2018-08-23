@@ -8,7 +8,9 @@ SELECT * FROM "public"."ScorecardRecords"
             ON "public"."ScorecardRecords"."programName" = "maxScores"."programName"
                 AND "public"."ScorecardRecords"."concatenatedIndex" = "maxScores"."maxScore"
         WHERE "public"."ScorecardRecords"."eligibility" = 'eligible'
-) --ORDER BY Country DESC, City ASC
+    )
+
+--ORDER BY Country DESC, City ASC
 
 --DELETE FROM "public"."ScorecardRecords"
 --    WHERE "public"."ScorecardRecords"."id" NOT IN (
@@ -31,4 +33,3 @@ SELECT * FROM "public"."ScorecardRecords"
 --         ON "public"."ScorecardRecords"."programName" = "maxScores"."programName"
 --             AND "public"."ScorecardRecords"."totalScore" = "maxScores"."maxScore"
 --     WHERE "public"."ScorecardRecords"."eligibility" = 'eligible'
-

@@ -37,6 +37,7 @@ const scorecardCalculations = {
 
     importActiveAccounts: () => {
         return new Promise(resolve =>
+            // models.ImportedActiveAccount.findAll({where: {eligibility: 'eligible'}, raw: true}).then(results => {
             models.ImportedActiveAccount.findAll({raw: true}).then(results => {
                 scorecardCalculations._accounts = results;
                 resolve();
@@ -155,6 +156,11 @@ const scorecardCalculations = {
         programName: (account) => scorecardCalculations.accountColumnImport(account, 'programname'),
         creditor: (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),
         eligibility: (account) => scorecardCalculations.accountColumnImport(account, 'eligibility'),
+
+        balance: (account) => scorecardCalculations.accountColumnImport(account, 'balance'),
+        endOfCurrentMonthFundAccumulation: (account) => scorecardCalculations.accountColumnImport(account, 'm0_bal'),
+        lastWorkedOn: (account) => scorecardCalculations.accountColumnImport(account, 'tradeline_last_negotiated'),
+        creditorTerms: (account) => scorecardCalculations.accountColumnImport(account, 'creditor_terms'),
 
         /// Metrics
         metrics_creditorScore: (account) => scorecardCalculations.accountColumnImport(account, 'credit_score'),

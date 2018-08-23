@@ -75,9 +75,9 @@
    "criteria": "First Month Fee Funding Pct",
    "weightage": 12,
    "maxPoints": 50,
-   "minPoints": 2,
+   "minPoints": 1,
    "maxScore": 600,
-   "minScore": 24,
+   "minScore": 12,
    "remarks": ""
  },
  {

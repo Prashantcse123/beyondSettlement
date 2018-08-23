@@ -6,7 +6,11 @@ module.exports = (sequelize, DataTypes) => {
         programName: DataTypes.STRING,
         creditor: DataTypes.STRING,
         eligibility: DataTypes.STRING,
-        // accountNumber: DataTypes.STRING,
+
+        balance: DataTypes.FLOAT,
+        endOfCurrentMonthFundAccumulation: DataTypes.FLOAT,
+        lastWorkedOn: DataTypes.STRING,
+        creditorTerms: DataTypes.STRING,
 
         /// Metrics
         metrics_creditorScore: DataTypes.INTEGER,
