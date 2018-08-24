@@ -3,7 +3,7 @@ import { inject, observer } from "mobx-react";
 import { withRouter } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 
-import LogoImage from './LogoSmall.jpg';
+import LogoImage from './LogoSmall.png';
 
 import SystemProgress from '../SystemProgress/SystemProgress';
 

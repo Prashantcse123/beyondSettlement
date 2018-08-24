@@ -28,6 +28,10 @@ const scorecardCalculations = {
                 calculationsHelper.calculateAllRows(scorecardCalculations, 'Scorecard', models.ScorecardRecord, accounts, 'create')
                     // .then(() => eligibleAccountsFilter.filter()) //filters the scorecard to contain only 1. max score per program 2. eligible programs
                     .then(() => resolve('Scorecard Calculations Success! :)'))
+                    .then(async () => {
+                        await scorecardCalculations.fillTradeLineState();
+                        resolve('Tradeline state data imported');
+                    })
                     .catch(() => resolve('Scorecard Calculations Error! :('))
             })
         );
@@ -38,7 +42,9 @@ const scorecardCalculations = {
     importActiveAccounts: () => {
         return new Promise(resolve =>
             // models.ImportedActiveAccount.findAll({where: {eligibility: 'eligible'}, raw: true}).then(results => {
-            models.ImportedActiveAccount.findAll({raw: true}).then(results => {
+            models.ImportedActiveAccount.findAll({
+                raw: true
+            }).then(results => {
                 scorecardCalculations._accounts = results;
                 resolve();
             }));
@@ -149,9 +155,23 @@ const scorecardCalculations = {
         });
     },
 
+    fillTradeLineState: () => {
+        new Promise(resolve =>
+            models.sequelize
+                .query('INSERT INTO "public"."TradelinesStates" ( "createdAt", "updatedAt", "tradeLineId") SELECT "createdAt","updatedAt","tradeLineId" FROM "public"."ScorecardRecords" WHERE "tradeLineId" NOT IN ( SELECT "tradeLineId" FROM  "public"."TradelinesStates");')
+                .then(() => {
+                    resolve();
+                }),
+        )
+    },
+
     columns: {
 
         /// Metadata
+        tradeLineId: async (account) => {
+            const tradeLineName = await scorecardCalculations.accountColumnImport(account, 'tradelinename');
+            return parseInt(tradeLineName.replace(/[^\d.]/g, ''));
+        },
         tradeLineName: (account) => scorecardCalculations.accountColumnImport(account, 'tradelinename'),
         programName: (account) => scorecardCalculations.accountColumnImport(account, 'programname'),
         creditor: (account) => scorecardCalculations.accountColumnImport(account, 'creditor'),
