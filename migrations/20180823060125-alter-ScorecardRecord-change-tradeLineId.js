@@ -2,9 +2,11 @@
 var models = require('../models')
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.addColumn('ScorecardRecords', 'tradeLineId', {
+    return queryInterface.changeColumn('ScorecardRecords', 'tradeLineId', {
       type: Sequelize.INTEGER,
-      after: 'tradeLineName',
+      allowNull: false,
+      unique: true,
+      primaryKey: true,
     })
   },
 
