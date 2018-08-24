@@ -23,9 +23,24 @@ const calculationsHelper = {
                 }
             };
 
-            if (method === 'create') {
-                model.destroy({truncate: true});
-            }
+      if (method === 'create') {
+        models.sequelize.transaction(function(t) {
+          var options = { raw: true, transaction: t }
+        
+          return models.sequelize
+            .query('ALTER TABLE "public"."TradelinesStates" DROP CONSTRAINT IF EXISTS "TradelinesStates_tradeLineId_fkey";')
+            .then(function() {
+              return models.sequelize.query('truncate table "public"."ScorecardRecords";');
+            })
+            .then(function() {
+              // return models.sequelize.query('ALTER TABLE "public"."TradelinesStates" ADD CONSTRAINT "TradelinesStates_tradeLineId_fkey" FOREIGN KEY ("tradeLineId") REFERENCES "public"."ScorecardRecords"("tradeLineId");')
+            })
+            .catch(function (err) {
+              console.log('err', err);
+              return t.rollback();
+            });
+        })
+      }
 
             calculationsUnit._newRows = [];
             calcRowIndex(0);

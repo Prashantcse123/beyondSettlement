@@ -29,6 +29,8 @@ Object.keys(db).forEach((modelName) => {
   }
 });
 
+db.ScorecardRecord.hasOne(db.TradelinesState, { foreignKey: 'tradeLineId', targetKey: 'tradeLineId' });
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
