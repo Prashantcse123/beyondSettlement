@@ -28,6 +28,7 @@ export default class Scorecard extends Component {
         this._allSelected = [];
         this.state = {
             sortedColumn: {column: 'Score', order: 'desc'},
+            activeBottomButton: 'scorecard',
             openedRow: false,
             userSelectedRows: []
         };
@@ -51,36 +52,66 @@ export default class Scorecard extends Component {
     }
 
     get tableColumns() {
-        const { sortedColumn } = this.state;
+        const { sort } = this.store;
 
         return [{
-            name: '#',
-            options: {
-                sortDirection: sortedColumn.column === '#' ? sortedColumn.order : undefined
-            },
+            name: '    Details',
+            options: {sort: false, style: {width: 20, textAlign: 'center'}},
+            component: (row) => <Button onClick={(e) => this.onRowClick(e, row)}><MoreIcon/></Button>
         }, {
-            name: 'Tradeline',
-            options: {
-                sortDirection: sortedColumn.column === 'Tradeline' ? sortedColumn.order : undefined
-            },
-        }, {
-            name: 'Creditor',
-            options: {
-                sortDirection: sortedColumn.column === 'Creditor' ? sortedColumn.order : undefined
-            },
-        }, {
-            name: 'Program',
-            options: {
-                sortDirection: sortedColumn.column === 'Program' ? sortedColumn.order : undefined
-            },
-        }, {
+            key: 'totalScore',
             name: 'Score',
             options: {
-                sortDirection: sortedColumn.column === 'Score' ? sortedColumn.order : undefined
+                sortDirection: sort.column === 'totalScore' ? sort.order : undefined
             },
         }, {
-            name: 'Details',
-            options: {sort: false},
+            key: 'programName',
+            name: 'Program',
+            options: {
+                sortDirection: sort.column === 'programName' ? sort.order : undefined
+            },
+        }, {
+            key: 'tradeLineName',
+            name: 'Tradeline',
+            options: {
+                sortDirection: sort.column === 'tradeLineName' ? sort.order : undefined
+            },
+        }, {
+            key: 'creditor',
+            name: 'Creditor',
+            options: {
+                sortDirection: sort.column === 'creditor' ? sort.order : undefined
+            },
+        }, {
+            key: 'metrics_accountDelinquency',
+            name: 'Account Delinquency',
+            options: {
+                sortDirection: sort.column === 'creditor' ? sort.order : undefined
+            },
+        }, {
+            key: 'balance',
+            name: 'Balance',
+            options: {
+                sortDirection: sort.column === 'creditor' ? sort.order : undefined
+            },
+        }, {
+            key: 'metrics_feeEstimate',
+            name: 'Fee Estimate',
+            options: {
+                sortDirection: sort.column === 'creditor' ? sort.order : undefined
+            },
+        }, {
+            key: 'endOfCurrentMonthFundAccumulation',
+            name: 'This Month Fund Acc.',
+            options: {
+                sortDirection: sort.column === 'creditor' ? sort.order : undefined
+            },
+        }, {
+            key: 'metrics_accountStatus',
+            name: 'Account Status',
+            options: {
+                sortDirection: sort.column === 'creditor' ? sort.order : undefined
+            },
         }];
     }
 
@@ -88,29 +119,15 @@ export default class Scorecard extends Component {
         const { store } = this.props;
         const { scorecard } = store;
 
-        let sortColumn = this.state.sortedColumn.column;
-        let sortOrder = this.state.sortedColumn.order;
-
         return scorecard.allRows
-            .map(a => ({
-                '#': a.id,
-                Tradeline: a.tradeLineName,
-                Creditor: a.creditor,
-                Program: a.programName,
-                Score: a.totalScore,
-                Details: (<Button onClick={(e) => this.onRowClick(e, a)}><MoreIcon/></Button>)
-            }))
-            .sortBy(sortColumn, sortOrder)
-            .map(a => [
-                a['#'],
-                a.Tradeline,
-                a.Creditor,
-                a.Program,
-                a.Score,
-                a.Details
-            ]);
+            .map(a => this.tableColumns.map(c => {
+                if (c.component) {
+                    return c.component(a)
+                }else{
+                    return a[c.key];
+                }
+            }));
     }
-
 
     onRowClick(e, scorecard) {
         e.stopPropagation();
@@ -119,16 +136,11 @@ export default class Scorecard extends Component {
 
 
     onColumnSort(column, order) {
-        // column = column.toLowerCase();
-        this.setState({sortedColumn: {column, order}});
+        column = this.tableColumns.first(c => c.name === column).key;
+
+        const { scorecard } = this.props.store;
+        scorecard.setSort({column, order});
     }
-
-
-    // onColumnSort(column, order) {
-    //     //this.setState({sortedColumn: {column, order}});
-    //     const { scorecard } = this.props.store;
-    //     scorecard.setSort({column, order});
-    // }
 
     onFilterChange(value) {
         const { scorecard } = this.props.store;
@@ -267,6 +279,44 @@ export default class Scorecard extends Component {
     //     return scorecard.allRows.map(a => Object.assign({}, a, {details: (<Button onClick={(e) => this.onRowClick(e, a)}>...</Button>)}));
     // }
 
+    onBottomButtonClick(button) {
+        this.setState({activeBottomButton: button});
+        this.store.fetchAllRows({[button]: true});
+    }
+
+    renderBottomTabs() {
+        const { classes } = this.props;
+
+        return (
+            <div className={classes.bottomTabs} hidden={this.store.allRows.empty()}>
+                <Button
+                    color="primary"
+                    size="small"
+                    variant={this.state.activeBottomButton === 'scorecard' ? 'contained' : 'outlined'}
+                    className={classes.bottomTabsButton} onClick={() => this.onBottomButtonClick('scorecard')}
+                >
+                    Scorecard
+                </Button>
+                <Button
+                    color="primary"
+                    size="small"
+                    variant={this.state.activeBottomButton === 'clientRanking' ? 'contained' : 'outlined'}
+                    className={classes.bottomTabsButton} onClick={() => this.onBottomButtonClick('clientRanking')}
+                >
+                    Client Rankings
+                </Button>
+                <Button
+                    color="primary"
+                    size="small"
+                    variant={this.state.activeBottomButton === 'eligibleAccounts' ? 'contained' : 'outlined'}
+                    className={classes.bottomTabsButton} onClick={() => this.onBottomButtonClick('eligibleAccounts')}
+                >
+                    Eligible Accounts
+                </Button>
+            </div>
+        );
+    }
+
 	render() {
         const { classes, store } = this.props;
         const { scorecard } = store;
@@ -275,7 +325,7 @@ export default class Scorecard extends Component {
         return (
 			<div className={classes.scorecard}>
                 <MUIDataTable
-                    title="Eligible Accounts"
+                    title={this.state.activeBottomButton.camelCaseToDelimiter(' ').capitalize()}
                     options={{
                         filter: false,
                         download: false,
@@ -299,6 +349,7 @@ export default class Scorecard extends Component {
                 />
                 {this.renderOpenedDialog()}
                 {this.renderConfirmDialog()}
+                {this.renderBottomTabs()}
             </div>
 		);
 	}

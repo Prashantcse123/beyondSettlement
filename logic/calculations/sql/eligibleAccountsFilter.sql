@@ -37,4 +37,3 @@ WHERE "public"."ScorecardRecords"."eligibility" = 'eligible')
 --         ON "public"."ScorecardRecords"."programName" = "maxScores"."programName"
 --             AND "public"."ScorecardRecords"."totalScore" = "maxScores"."maxScore"
 --     WHERE "public"."ScorecardRecords"."eligibility" = 'eligible'
-

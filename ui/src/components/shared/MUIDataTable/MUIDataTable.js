@@ -275,7 +275,7 @@ class MUIDataTable extends React.Component {
       isSearchFound = false;
 
     for (let index = 0; index < row.length; index++) {
-      let column = row[index];
+      let column = row[index] || '';
 
       if (columns[index].customRender) {
         const funcResult = columns[index].customRender(index, column);

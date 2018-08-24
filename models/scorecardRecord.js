@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     eligibility: DataTypes.STRING,
     // accountNumber: DataTypes.STRING,
 
+    balance: DataTypes.FLOAT,
+    endOfCurrentMonthFundAccumulation: DataTypes.FLOAT,
+    lastWorkedOn: DataTypes.STRING,
+    creditorTerms: DataTypes.STRING,
+
       /// Metrics
       metrics_creditorScore: DataTypes.INTEGER,
       metrics_stateOfResidency: DataTypes.STRING,
