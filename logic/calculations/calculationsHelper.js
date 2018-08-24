@@ -33,7 +33,7 @@ const calculationsHelper = {
               return models.sequelize.query('truncate table "public"."ScorecardRecords";');
             })
             .then(function() {
-              return models.sequelize.query('ALTER TABLE "public"."TradelinesStates" ADD CONSTRAINT "TradelinesStates_tradeLineId_fkey" FOREIGN KEY ("tradeLineId") REFERENCES "public"."ScorecardRecords"("tradeLineId");')
+              // return models.sequelize.query('ALTER TABLE "public"."TradelinesStates" ADD CONSTRAINT "TradelinesStates_tradeLineId_fkey" FOREIGN KEY ("tradeLineId") REFERENCES "public"."ScorecardRecords"("tradeLineId");')
             })
             .catch(function (err) {
               console.log('err', err);
