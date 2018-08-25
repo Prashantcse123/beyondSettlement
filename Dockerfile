@@ -22,7 +22,7 @@ ADD . /usr/src/app
 RUN npm install
 
 # Install packages and build - front end
-RUN cd ui && npm install && npm run build
+# RUN cd ui && npm install && npm run build
 
 # COPY entrypoint.sh /entrypoint.sh
 # RUN chmod u+x /entrypoint.sh
