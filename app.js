@@ -19,6 +19,8 @@ app.use(cors({
   origin: [
     'https://d4zf5uuuwbptn.cloudfront.net',
     'https://settlements-staging.beyondfinance.com',
+    'https://d8fu4fo802zow.cloudfront.net',
+    'https://settlements.beyondfinance.com',
     /http:\/\/localhost:/,
   ],
   credentials: true,
