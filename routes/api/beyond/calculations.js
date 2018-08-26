@@ -38,6 +38,7 @@ router.get('/scorecard', (req, res) => {
 
     //pagination
     let page = parseInt(req.query.page || 1);
+    page--; // base 0
     let pageSize = parseInt(req.query.page_size || 10);
     options['offset'] = page;
     options['limit'] = pageSize;
@@ -69,6 +70,7 @@ router.get('/scorecard_eligible', (req, res) => {
 
     //pagination
     let page = parseInt(req.query.page || 1);
+    page--; // base 0
     let pageSize = parseInt(req.query.page_size || 10);
     options['offset'] = page;
     options['limit'] = pageSize;
