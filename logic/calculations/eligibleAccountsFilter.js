@@ -4,6 +4,7 @@ const eligibleAccountsFilter = {
     getEligibleScorecardRecords: (options) => {
         let sql = require('./sql/eligibleAccountsFilter.sql');
 
+        options = options || {};
         if (options.order) {
             let orderArr = [];
             let orderStr = 'ORDER BY ';

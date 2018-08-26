@@ -36,17 +36,16 @@ router.get('/scorecard', (req, res) => {
         }
     }
 
-    models.ScorecardRecord.findAll(options).then(rows => {
-        let page = parseInt(req.query.page || 1);
-        let pageSize = parseInt(req.query.page_size || 10);
-        let start = pageSize * page - pageSize;
-        let end = pageSize * page;
-        let totalCount = rows.length;
+    //pagination
+    let page = parseInt(req.query.page || 1);
+    let pageSize = parseInt(req.query.page_size || 10);
+    options['offset'] = page;
+    options['limit'] = pageSize;
 
-        rows = rows.slice(start, end);
-
+    models.ScorecardRecord.findAndCountAll(options).then(result => {
+        let totalCount = result.count; //number of rows in the table
         res.status(200).json({
-            items: rows,
+            items: result.rows,
             page: page,
             page_size: pageSize,
             total_count: totalCount,
@@ -68,14 +67,18 @@ router.get('/scorecard_eligible', (req, res) => {
         }
     }
 
-    eligibleAccountsFilter.getEligibleScorecardRecords(options).then(rows => {
-        let page = parseInt(req.query.page || 1);
-        let pageSize = parseInt(req.query.page_size || 10);
-        let start = pageSize * page - pageSize;
-        let end = pageSize * page;
-        let totalCount = rows.length;
+    //pagination
+    let page = parseInt(req.query.page || 1);
+    let pageSize = parseInt(req.query.page_size || 10);
+    options['offset'] = page;
+    options['limit'] = pageSize;
 
-        rows = rows.slice(start, end);
+    eligibleAccountsFilter.getEligibleScorecardRecords(options).then(async rows => {
+
+        //count the query rows (row count before pagination)
+        let totalCount = 0;
+        let rowsToCount = await eligibleAccountsFilter.getEligibleScorecardRecords();
+        totalCount = rowsToCount.length;
 
         res.status(200).json({
             items: rows,
