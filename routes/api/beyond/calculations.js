@@ -55,6 +55,35 @@ router.get('/scorecard', (req, res) => {
     });
 });
 
+router.get('/client_ranking', (req, res) => {
+    let order = [];
+    let where = { 'eligibility': 'eligible' };
+    if (req.query.sortBy) {
+        order = [[req.query.sortBy, req.query.sortOrder.toUpperCase()]];
+    }else{
+        order = [['totalScore', 'DESC']];
+    }
+    let options = { where, order };
+
+    //pagination
+    let page = parseInt(req.query.page || 1);
+    page--; // base 0
+    let pageSize = parseInt(req.query.page_size || 10);
+    options['offset'] = page;
+    options['limit'] = pageSize;
+
+    models.ScorecardRecord.findAndCountAll(options).then(result => {
+        let totalCount = result.count; //number of rows in the table
+        res.status(200).json({
+            items: result.rows,
+            page: page,
+            page_size: pageSize,
+            total_count: totalCount,
+            page_count: Math.ceil(totalCount / pageSize)
+        });
+    });
+});
+
 router.get('/scorecard_eligible', (req, res) => {
     let options = {};
 
