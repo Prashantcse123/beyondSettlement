@@ -92,13 +92,9 @@ router.get('/scorecard_eligible', (req, res) => {
     });
 });
 
-
 router.put('/update_scorecard', (req, res) => {
-  console.log(req.body);
-
   models.TradelinesState.findOne({ where: { tradeLineId: req.body.tradeLineId } }).then((row) => {
-    console.log(row);
-    row.update({ isDone: req.body.isDone }).then(() => res.status(200).json('cool!'));
+    row.update({ isDone: req.body.isDone }).then(() => res.status(200).json('Tradeline updated'));
   });
 });
 
