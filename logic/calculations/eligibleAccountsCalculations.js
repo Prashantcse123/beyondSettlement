@@ -32,7 +32,7 @@ const eligibleAccountsCalculations = {
         let scoreRepeatCounters = {};   /// note: last repeat count for each program name
 
         return new Promise(resolve =>
-            models.ScorecardRecord.findAll({order: [['totalScore', 'DESC'], ['creditor', 'ASC']]}).then(results => {
+            models.ScorecardRecord.findAll({ order: [['totalScore', 'DESC'], ['creditor', 'ASC']] }).then(results => {
                 /// set min account ranking , account repeats by index & score repeats by index (score repeats are for ranking system)
                 results.forEach((scorecardRec, i) => {
                     let rank = i + 1;
@@ -43,7 +43,7 @@ const eligibleAccountsCalculations = {
                         minAccountRanks[programName] = rank;
                         accountRepeatCounters[programName] = 1;
                         scoreRepeatCounters[programName] = 1;
-                    }else{
+                    } else {
                         if (minAccountRanks[programName] > rank) {
                             minAccountRanks[programName] = rank;
                         }
@@ -51,14 +51,14 @@ const eligibleAccountsCalculations = {
                         scoreRepeatCounters[programName]++;
                     }
 
-                    accountRepeats.push({[programName]: accountRepeatCounters[programName]});
-                    scoreRepeats.push({[programName]: scoreRepeatCounters[programName]});
+                    accountRepeats.push({ [programName]: accountRepeatCounters[programName] });
+                    scoreRepeats.push({ [programName]: scoreRepeatCounters[programName] });
                 });
 
-                eligibleAccountsCalculations._scorecardRecords  = results;
-                eligibleAccountsCalculations._minAccountRanks   = minAccountRanks;
-                eligibleAccountsCalculations._accountRepeats    = accountRepeats;
-                eligibleAccountsCalculations._scoreRepeats      = scoreRepeats;
+                eligibleAccountsCalculations._scorecardRecords = results;
+                eligibleAccountsCalculations._minAccountRanks = minAccountRanks;
+                eligibleAccountsCalculations._accountRepeats = accountRepeats;
+                eligibleAccountsCalculations._scoreRepeats = scoreRepeats;
 
                 resolve();
             }));
@@ -66,7 +66,7 @@ const eligibleAccountsCalculations = {
 
     importActiveAccounts: () => {
         return new Promise(resolve =>
-            models.ImportedActiveAccount.findAll({raw: true}).then(results => {
+            models.ImportedActiveAccount.findAll({ raw: true }).then(results => {
                 eligibleAccountsCalculations._accounts = results;
                 resolve();
             }));
@@ -125,20 +125,20 @@ const eligibleAccountsCalculations = {
                     if (activeAccountRecord.account_status.toLowerCase() === 'legal demand letter') {
                         // console.log('creditorscore ===>>', creditScore, scorecardRecord.tradeLineName);
                         result = 50 - creditScore - 21;
-                    }else if (activeAccountRecord.account_status.toLowerCase() === 'cancelled termsif') {
+                    } else if (activeAccountRecord.account_status.toLowerCase() === 'cancelled termsif') {
                         result = 50 - creditScore - 11;
-                    }else{
+                    } else {
                         result = 50 - creditScore
                     }
 
-                }catch(ex) {
+                } catch (ex) {
                     result = null;
                 }
 
                 resolve(result);
             });
 
-  },
+        },
         concatenatedIndex: (scorecardRecord) => {
             return new Promise(resolve => {
                 let result;
@@ -160,13 +160,13 @@ const eligibleAccountsCalculations = {
                         if (calculatedCreditScore > 9) {
                             if (accountRepeatCountByIndex > 9) {
                                 result = String(minAccountRank) + String(calculatedCreditScore) + String(accountRepeatCountByIndex);
-                            }else{
+                            } else {
                                 result = String(Number(String(minAccountRank) + String(calculatedCreditScore)) * 10) + String(accountRepeatCountByIndex);
                             }
-                        }else{
+                        } else {
                             if (accountRepeatCountByIndex > 9) {
                                 result = String(minAccountRank * 10) + String(calculatedCreditScore) + String(accountRepeatCountByIndex);
-                            }else{
+                            } else {
                                 result = String(Number(String(minAccountRank * 10) + String(calculatedCreditScore)) * 10) + String(accountRepeatCountByIndex);
                             }
                         }
@@ -175,7 +175,7 @@ const eligibleAccountsCalculations = {
 
                         if (!isEligible) { result += 50 }
 
-                    } catch(ex) {
+                    } catch (ex) {
                         result = null;
                     }
 

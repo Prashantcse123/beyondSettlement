@@ -10,6 +10,11 @@ const jwt = require('jsonwebtoken');
 const request = require("request");
 const cors = require('cors');
 
+//Swagger integration
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger/swagger.yaml');
+
 const api = require('./routes/api');
 // const ui = require('./routes/ui');
 // const isReachable = require('is-reachable');
@@ -225,6 +230,7 @@ app.use(function (req, res, next) {
 app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /// catch 404 and forward to error handler
 app.use((req, res, next) => {
