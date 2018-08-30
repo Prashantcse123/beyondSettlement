@@ -13,7 +13,7 @@ const cors = require('cors');
 //Swagger integration
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger/swagger.yaml');
+const swaggerDocument = YAML.load('./swagger/swagger3.yml');
 
 const api = require('./routes/api');
 // const ui = require('./routes/ui');
@@ -196,7 +196,6 @@ app.use(function (req, res, next) {
     }
 
     let cookie = req.cookies.PASSPORT;
-
     if (cookie) {
         console.log('Found cookie... ', cookie);
 

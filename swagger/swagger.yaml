@@ -64,6 +64,50 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
+  /oauth/authenticate:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-2
+      description: Authenticate user API-2
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
+  /oauth/refresh:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-3
+      description: Authenticate user API-3
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
+  /oauth/callback:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-4
+      description: Authenticate user API-4
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
+  /oauth/user_info:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-5
+      description: Authenticate user API-5
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
   /calculations/scorecard:
     get:
       tags:
