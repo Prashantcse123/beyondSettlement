@@ -1,5 +1,5 @@
-'use strict';
-var models = require('../models')
+
+const models = require('../models');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => queryInterface.addColumn('ScorecardRecords', 'tradeLineId', {
@@ -7,5 +7,5 @@ module.exports = {
     after: 'tradeLineName',
   }),
 
-  down: (queryInterface, Sequelize) => { }
+  down: (queryInterface, Sequelize) => { },
 };

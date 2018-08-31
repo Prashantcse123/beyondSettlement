@@ -9,12 +9,10 @@ describe('models/task', () => {
   });
 
   describe('create', () => {
-    it('creates a task', () =>
-      this.User.create({ username: 'johndoe' })
-        .bind(this)
-        .then(user =>
-          this.Task.create({ title: 'a title', userId: user.id }).then((task) => {
-            expect(task.title).to.equal('a title');
-          })));
+    it('creates a task', () => this.User.create({ username: 'johndoe' })
+      .bind(this)
+      .then(user => this.Task.create({ title: 'a title', userId: user.id }).then((task) => {
+        expect(task.title).to.equal('a title');
+      })));
   });
 });

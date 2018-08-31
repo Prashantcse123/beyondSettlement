@@ -21,91 +21,78 @@ const scorecardCalculations = {
       scorecardCalculations.importWeightageFactors(),
     ]);
 
-    return new Promise((resolve, reject) =>
-      init.then(() => {
-        const accounts = scorecardCalculations._accounts;
+    return new Promise((resolve, reject) => init.then(() => {
+      const accounts = scorecardCalculations._accounts;
 
-        calculationsHelper.calculateAllRows(scorecardCalculations, 'Scorecard', models.ScorecardRecord, accounts, 'create')
+      calculationsHelper.calculateAllRows(scorecardCalculations, 'Scorecard', models.ScorecardRecord, accounts, 'create')
         // .then(() => eligibleAccountsFilter.filter()) //filters the scorecard to contain only 1. max score per program 2. eligible programs
-          .then(() => resolve('Scorecard Calculations Success! :)'))
-          .then(async () => {
-            await scorecardCalculations.fillTradeLineState();
-            resolve('Tradeline state data imported');
-          })
-          .catch(() => resolve('Scorecard Calculations Error! :('));
-      }),);
+        .then(() => resolve('Scorecard Calculations Success! :)'))
+        .then(async () => {
+          await scorecardCalculations.fillTradeLineState();
+          resolve('Tradeline state data imported');
+        })
+        .catch(() => resolve('Scorecard Calculations Error! :('));
+    }));
   },
 
   // / Internal Service Functions ---------------------------------------------------------
 
-  importActiveAccounts: () => new Promise(resolve =>
-  // models.ImportedActiveAccount.findAll({where: {eligibility: 'eligible'}, raw: true}).then(results => {
-    models.ImportedActiveAccount.findAll({
-      raw: true,
-    }).then((results) => {
-      scorecardCalculations._accounts = results;
-      resolve();
-    })),
+  importActiveAccounts: () => new Promise(resolve => models.ImportedActiveAccount.findAll({
+    raw: true,
+  }).then((results) => {
+    scorecardCalculations._accounts = results;
+    resolve();
+  })),
 
-  importStates: () => new Promise(resolve =>
-    models.StatePointsDef.findAll().then((results) => {
-      scorecardCalculations._states = results;
-      resolve();
-    })),
+  importStates: () => new Promise(resolve => models.StatePointsDef.findAll().then((results) => {
+    scorecardCalculations._states = results;
+    resolve();
+  })),
 
-  importMonthlyProgramPaymentRanges: () => new Promise(resolve =>
-    models.MonthlyProgramPaymentPointsDef.findAll().then((results) => {
-      scorecardCalculations._monthlyProgramPaymentRanges = results;
-      resolve();
-    })),
+  importMonthlyProgramPaymentRanges: () => new Promise(resolve => models.MonthlyProgramPaymentPointsDef.findAll().then((results) => {
+    scorecardCalculations._monthlyProgramPaymentRanges = results;
+    resolve();
+  })),
 
-  importAccountDelinquencyRanges: () => new Promise(resolve =>
-    models.AccountDelinquencyPointsDef.findAll().then((results) => {
-      scorecardCalculations._accountDelinquencyRanges = results;
-      resolve();
-    })),
+  importAccountDelinquencyRanges: () => new Promise(resolve => models.AccountDelinquencyPointsDef.findAll().then((results) => {
+    scorecardCalculations._accountDelinquencyRanges = results;
+    resolve();
+  })),
 
-  importAvgAcceptedSettlementRanges: () => new Promise(resolve =>
-    models.AvgAcceptedSettlementPointsDef.findAll().then((results) => {
-      scorecardCalculations._avgAcceptedSettlementRanges = results;
-      resolve();
-    })),
+  importAvgAcceptedSettlementRanges: () => new Promise(resolve => models.AvgAcceptedSettlementPointsDef.findAll().then((results) => {
+    scorecardCalculations._avgAcceptedSettlementRanges = results;
+    resolve();
+  })),
 
-  importSettlementTermRanges: () => new Promise(resolve =>
-    models.SettlementTermPointsDef.findAll().then((results) => {
-      scorecardCalculations._settlementTermRanges = results;
-      resolve();
-    })),
+  importSettlementTermRanges: () => new Promise(resolve => models.SettlementTermPointsDef.findAll().then((results) => {
+    scorecardCalculations._settlementTermRanges = results;
+    resolve();
+  })),
 
-  importAccountStatusValues: () => new Promise(resolve =>
-    models.AccountStatusPointsDef.findAll().then((results) => {
-      scorecardCalculations._accountStatusValues = results;
-      resolve();
-    })),
+  importAccountStatusValues: () => new Promise(resolve => models.AccountStatusPointsDef.findAll().then((results) => {
+    scorecardCalculations._accountStatusValues = results;
+    resolve();
+  })),
 
-  importEnrollDebtRanges: () => new Promise(resolve =>
-    models.EnrollDebtPointsDef.findAll().then((results) => {
-      scorecardCalculations._enrollDebtRanges = results;
-      resolve();
-    })),
+  importEnrollDebtRanges: () => new Promise(resolve => models.EnrollDebtPointsDef.findAll().then((results) => {
+    scorecardCalculations._enrollDebtRanges = results;
+    resolve();
+  })),
 
-  importFeeEstimateRanges: () => new Promise(resolve =>
-    models.FeeEstimatePointsDef.findAll().then((results) => {
-      scorecardCalculations._feeEstimateRanges = results;
-      resolve();
-    })),
+  importFeeEstimateRanges: () => new Promise(resolve => models.FeeEstimatePointsDef.findAll().then((results) => {
+    scorecardCalculations._feeEstimateRanges = results;
+    resolve();
+  })),
 
-  importFirstMonthFeeFundPctRanges: () => new Promise(resolve =>
-    models.FirstMonthFeeFundPctPointsDef.findAll().then((results) => {
-      scorecardCalculations._firstMonthFeeFundPctRanges = results;
-      resolve();
-    })),
+  importFirstMonthFeeFundPctRanges: () => new Promise(resolve => models.FirstMonthFeeFundPctPointsDef.findAll().then((results) => {
+    scorecardCalculations._firstMonthFeeFundPctRanges = results;
+    resolve();
+  })),
 
-  importWeightageFactors: () => new Promise(resolve =>
-    models.WeightDef.findAll().then((results) => {
-      scorecardCalculations._weightageFactors = results;
-      resolve();
-    })),
+  importWeightageFactors: () => new Promise(resolve => models.WeightDef.findAll().then((results) => {
+    scorecardCalculations._weightageFactors = results;
+    resolve();
+  })),
 
   accountColumnImport: (account, accountColumnName, fallbackValue) => new Promise((resolve) => {
     resolve(account[accountColumnName] || fallbackValue);
@@ -115,8 +102,7 @@ const scorecardCalculations = {
     let result;
 
     scorecardCalculations.columns[columnName](account).then((columnValue) => {
-      const weightageFactor = scorecardCalculations._weightageFactors.filter(wf =>
-        wf.criteria === columnLabel)[0];
+      const weightageFactor = scorecardCalculations._weightageFactors.filter(wf => wf.criteria === columnLabel)[0];
 
       try {
         result = weightageFactor.weightage * columnValue;
@@ -129,12 +115,11 @@ const scorecardCalculations = {
   }),
 
   fillTradeLineState: () => {
-    new Promise(resolve =>
-      models.sequelize
-        .query('INSERT INTO "public"."TradelinesStates" ( "createdAt", "updatedAt", "tradeLineId") SELECT "createdAt","updatedAt","tradeLineId" FROM "public"."ScorecardRecords" WHERE "tradeLineId" NOT IN ( SELECT "tradeLineId" FROM  "public"."TradelinesStates");')
-        .then(() => {
-          resolve();
-        }),);
+    new Promise(resolve => models.sequelize
+      .query('INSERT INTO "public"."TradelinesStates" ( "createdAt", "updatedAt", "tradeLineId") SELECT "createdAt","updatedAt","tradeLineId" FROM "public"."ScorecardRecords" WHERE "tradeLineId" NOT IN ( SELECT "tradeLineId" FROM  "public"."TradelinesStates");')
+      .then(() => {
+        resolve();
+      }));
   },
 
   columns: {
@@ -172,8 +157,7 @@ const scorecardCalculations = {
       let result;
 
       scorecardCalculations.columns.metrics_stateOfResidency(account).then((metrics_stateOfResidency) => {
-        const state = scorecardCalculations._states.filter(st =>
-          st.code === metrics_stateOfResidency)[0];
+        const state = scorecardCalculations._states.filter(st => st.code === metrics_stateOfResidency)[0];
 
         try {
           result = state.points;
@@ -189,8 +173,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_monthlyPayment(account).then((metrics_monthlyPayment) => {
         try {
-          const range = scorecardCalculations._monthlyProgramPaymentRanges.filter(a =>
-            metrics_monthlyPayment >= a.rangeFrom && metrics_monthlyPayment <= a.rangeTo)[0];
+          const range = scorecardCalculations._monthlyProgramPaymentRanges.filter(a => metrics_monthlyPayment >= a.rangeFrom && metrics_monthlyPayment <= a.rangeTo)[0];
 
           result = range.points;
         } catch (ex) {
@@ -205,8 +188,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_accountDelinquency(account).then((metrics_accountDelinquency) => {
         try {
-          const range = scorecardCalculations._accountDelinquencyRanges.filter(a =>
-            metrics_accountDelinquency >= a.rangeFrom && metrics_accountDelinquency <= a.rangeTo)[0];
+          const range = scorecardCalculations._accountDelinquencyRanges.filter(a => metrics_accountDelinquency >= a.rangeFrom && metrics_accountDelinquency <= a.rangeTo)[0];
 
           result = range.points;
         } catch (ex) {
@@ -221,8 +203,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_pctAvgSettlement(account).then((metrics_pctAvgSettlement) => {
         try {
-          const range = scorecardCalculations._avgAcceptedSettlementRanges.filter(a =>
-            metrics_pctAvgSettlement >= a.rangeFrom && metrics_pctAvgSettlement <= a.rangeTo)[0];
+          const range = scorecardCalculations._avgAcceptedSettlementRanges.filter(a => metrics_pctAvgSettlement >= a.rangeFrom && metrics_pctAvgSettlement <= a.rangeTo)[0];
 
           result = range.points;
         } catch (ex) {
@@ -237,8 +218,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_settlementTerm(account).then((metrics_settlementTerm) => {
         try {
-          const range = scorecardCalculations._settlementTermRanges.filter(a =>
-            metrics_settlementTerm <= a.rangeFrom && metrics_settlementTerm >= a.rangeTo)[0];
+          const range = scorecardCalculations._settlementTermRanges.filter(a => metrics_settlementTerm <= a.rangeFrom && metrics_settlementTerm >= a.rangeTo)[0];
 
           result = range.points;
         } catch (ex) {
@@ -253,8 +233,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_accountStatus(account).then((metrics_accountStatus) => {
         try {
-          const accountStatus = scorecardCalculations._accountStatusValues.filter(a =>
-            a.name.toLowerCase() === (metrics_accountStatus || '').toLowerCase())[0];
+          const accountStatus = scorecardCalculations._accountStatusValues.filter(a => a.name.toLowerCase() === (metrics_accountStatus || '').toLowerCase())[0];
 
           result = accountStatus.points;
         } catch (ex) {
@@ -269,8 +248,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_enrolledDebt(account).then((metrics_enrolledDebt) => {
         try {
-          const range = scorecardCalculations._enrollDebtRanges.filter(a =>
-            metrics_enrolledDebt >= a.rangeFrom && metrics_enrolledDebt <= a.rangeTo)[0];
+          const range = scorecardCalculations._enrollDebtRanges.filter(a => metrics_enrolledDebt >= a.rangeFrom && metrics_enrolledDebt <= a.rangeTo)[0];
 
           result = range.points;
         } catch (ex) {
@@ -285,8 +263,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_firstMonthFeeFundPct(account).then((metrics_firstMonthFeeFundPct) => {
         try {
-          const range = scorecardCalculations._firstMonthFeeFundPctRanges.filter(a =>
-            metrics_firstMonthFeeFundPct >= a.rangeFrom && metrics_firstMonthFeeFundPct <= a.rangeTo)[0];
+          const range = scorecardCalculations._firstMonthFeeFundPctRanges.filter(a => metrics_firstMonthFeeFundPct >= a.rangeFrom && metrics_firstMonthFeeFundPct <= a.rangeTo)[0];
 
           result = range.points;
         } catch (ex) {
@@ -301,8 +278,7 @@ const scorecardCalculations = {
 
       scorecardCalculations.columns.metrics_feeEstimate(account).then((metrics_feeEstimate) => {
         try {
-          const range = scorecardCalculations._feeEstimateRanges.filter(a =>
-            metrics_feeEstimate >= a.rangeFrom && metrics_feeEstimate <= a.rangeTo)[0];
+          const range = scorecardCalculations._feeEstimateRanges.filter(a => metrics_feeEstimate >= a.rangeFrom && metrics_feeEstimate <= a.rangeTo)[0];
 
           result = range.points;
         } catch (ex) {

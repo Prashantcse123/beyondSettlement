@@ -1,7 +1,7 @@
 require('require-sql');
 
-const models = require('../../models/index');
 const Redshift = require('node-redshift');
+const models = require('../../models/index');
 
 const clientConfiguration = {
   user: process.env.REDSHIFT_USER,
@@ -46,16 +46,15 @@ const dataImport = {
 
     console.log('>> Attempting to create ##temp_Creditor_Variables temporary table');
 
-    return new Promise((resolve, reject) =>
-      redshift.rawQuery(sql, { raw: true })
-        .then((data) => {
-          console.log('<< ##temp_Creditor_Variables temporary table created successfully');
-          resolve(data);
-        })
-        .catch((err) => {
-          console.log('<< Could not create ##temp_Creditor_Variables temporary table');
-          reject(err);
-        }));
+    return new Promise((resolve, reject) => redshift.rawQuery(sql, { raw: true })
+      .then((data) => {
+        console.log('<< ##temp_Creditor_Variables temporary table created successfully');
+        resolve(data);
+      })
+      .catch((err) => {
+        console.log('<< Could not create ##temp_Creditor_Variables temporary table');
+        reject(err);
+      }));
   },
 
   getAllActiveAccounts: () => {
@@ -63,33 +62,30 @@ const dataImport = {
 
     console.log('>> Attempting to select ActiveAccounts data from ##temp_Creditor_Variables table');
 
-    return new Promise((resolve, reject) =>
-      redshift.rawQuery(sql, { raw: true })
-        .then((data) => {
-          console.log('<< ActiveAccounts data selected successfully');
-          resolve(data);
-        })
-        .catch((err) => {
-          console.log('<< Could not select ActiveAccounts data from ##temp_Creditor_Variables ');
-          reject(err);
-        }));
+    return new Promise((resolve, reject) => redshift.rawQuery(sql, { raw: true })
+      .then((data) => {
+        console.log('<< ActiveAccounts data selected successfully');
+        resolve(data);
+      })
+      .catch((err) => {
+        console.log('<< Could not select ActiveAccounts data from ##temp_Creditor_Variables ');
+        reject(err);
+      }));
   },
 
   saveData: () => {
     console.log('** Importing Data from RedShift...');
 
     const promises = [
-      new Promise((resolve, reject) =>
-        dataImport.getAllActiveAccounts()
-          .then((varData) => {
-            console.log('** Importing Query Finished, Appending Data');
-            models.ImportedActiveAccount.destroy({ truncate: true });
-            models.ImportedActiveAccount.bulkCreate(varData).then(() => resolve());
-          }))
+      new Promise((resolve, reject) => dataImport.getAllActiveAccounts()
+        .then((varData) => {
+          console.log('** Importing Query Finished, Appending Data');
+          models.ImportedActiveAccount.destroy({ truncate: true });
+          models.ImportedActiveAccount.bulkCreate(varData).then(() => resolve());
+        })),
     ];
 
-    return new Promise(resolve =>
-      Promise.all(promises).then(resolve()));
+    return new Promise(resolve => Promise.all(promises).then(resolve()));
   },
 };
 

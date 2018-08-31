@@ -11,64 +11,60 @@ const eligibleAccountsCalculations = {
       eligibleAccountsCalculations.importActiveAccounts(),
     ]);
 
-    return new Promise((resolve, reject) =>
-      init.then(() => {
-        const records = eligibleAccountsCalculations._scorecardRecords;
+    return new Promise((resolve, reject) => init.then(() => {
+      const records = eligibleAccountsCalculations._scorecardRecords;
 
-        calculationsHelper.calculateAllRows(eligibleAccountsCalculations, 'Eligibility', models.ScorecardRecord, records, 'update')
-          .then(() => resolve('Eligibility Calculations Success! :)'))
-          .catch(() => resolve('Eligibility Calculations Error! :('));
-      }),
-    );
+      calculationsHelper.calculateAllRows(eligibleAccountsCalculations, 'Eligibility', models.ScorecardRecord, records, 'update')
+        .then(() => resolve('Eligibility Calculations Success! :)'))
+        .catch(() => resolve('Eligibility Calculations Error! :('));
+    }));
   },
 
   // / Internal Service Functions --------------------------------------------------------------------------------------
 
   importScorecardRecords: () => {
-    const minAccountRanks = {};       // / e.g: { 'P-1312': 2, 'P-2312': 1 }
-    const accountRepeats = [];        // / e.g: [ { 'P-1312': 1, 'P-1312': 2, 'P-2255': 1, 'P-1312': 3 } ] note: ordered by index
+    const minAccountRanks = {}; // / e.g: { 'P-1312': 2, 'P-2312': 1 }
+    const accountRepeats = []; // / e.g: [ { 'P-1312': 1, 'P-1312': 2, 'P-2255': 1, 'P-1312': 3 } ] note: ordered by index
     const accountRepeatCounters = {}; // / e.g: { 'P-1312': 2, 'P-2312': 1 } note: last repeat count for each program name
-    const scoreRepeats = [];          // / note: ordered by index
-    const scoreRepeatCounters = {};   // / note: last repeat count for each program name
+    const scoreRepeats = []; // / note: ordered by index
+    const scoreRepeatCounters = {}; // / note: last repeat count for each program name
 
-    return new Promise(resolve =>
-      models.ScorecardRecord.findAll({ order: [['totalScore', 'DESC'], ['creditor', 'ASC']] }).then((results) => {
-        // / set min account ranking , account repeats by index & score repeats by index (score repeats are for ranking system)
-        results.forEach((scorecardRec, i) => {
-          const rank = i + 1;
-          const programName = [scorecardRec.programName];
-          const val = minAccountRanks[programName];
+    return new Promise(resolve => models.ScorecardRecord.findAll({ order: [['totalScore', 'DESC'], ['creditor', 'ASC']] }).then((results) => {
+      // / set min account ranking , account repeats by index & score repeats by index (score repeats are for ranking system)
+      results.forEach((scorecardRec, i) => {
+        const rank = i + 1;
+        const programName = [scorecardRec.programName];
+        const val = minAccountRanks[programName];
 
-          if (!val) {
+        if (!val) {
+          minAccountRanks[programName] = rank;
+          accountRepeatCounters[programName] = 1;
+          scoreRepeatCounters[programName] = 1;
+        } else {
+          if (minAccountRanks[programName] > rank) {
             minAccountRanks[programName] = rank;
-            accountRepeatCounters[programName] = 1;
-            scoreRepeatCounters[programName] = 1;
-          } else {
-            if (minAccountRanks[programName] > rank) {
-              minAccountRanks[programName] = rank;
-            }
-            accountRepeatCounters[programName]++;
-            scoreRepeatCounters[programName]++;
           }
+          accountRepeatCounters[programName]++;
+          scoreRepeatCounters[programName]++;
+        }
 
-          accountRepeats.push({ [programName]: accountRepeatCounters[programName] });
-          scoreRepeats.push({ [programName]: scoreRepeatCounters[programName] });
-        });
+        accountRepeats.push({ [programName]: accountRepeatCounters[programName] });
+        scoreRepeats.push({ [programName]: scoreRepeatCounters[programName] });
+      });
 
-        eligibleAccountsCalculations._scorecardRecords = results;
-        eligibleAccountsCalculations._minAccountRanks = minAccountRanks;
-        eligibleAccountsCalculations._accountRepeats = accountRepeats;
-        eligibleAccountsCalculations._scoreRepeats = scoreRepeats;
+      eligibleAccountsCalculations._scorecardRecords = results;
+      eligibleAccountsCalculations._minAccountRanks = minAccountRanks;
+      eligibleAccountsCalculations._accountRepeats = accountRepeats;
+      eligibleAccountsCalculations._scoreRepeats = scoreRepeats;
 
-        resolve();
-      }));
+      resolve();
+    }));
   },
 
-  importActiveAccounts: () => new Promise(resolve =>
-    models.ImportedActiveAccount.findAll({ raw: true }).then((results) => {
-      eligibleAccountsCalculations._accounts = results;
-      resolve();
-    })),
+  importActiveAccounts: () => new Promise(resolve => models.ImportedActiveAccount.findAll({ raw: true }).then((results) => {
+    eligibleAccountsCalculations._accounts = results;
+    resolve();
+  })),
 
   columns: {
 
@@ -95,7 +91,7 @@ const eligibleAccountsCalculations = {
       const repeatCount = eligibleAccountsCalculations._accountRepeats[index][scorecardRecord.programName];
 
       if (!repeatCount) {
-        throw 'Something strange happened, there is no program name ("' + scorecardRecord.programName + '") for that index';
+        throw `Something strange happened, there is no program name ("${scorecardRecord.programName}") for that index`;
       }
 
       resolve(
@@ -104,8 +100,7 @@ const eligibleAccountsCalculations = {
     }),
     calculatedCreditScore: scorecardRecord => new Promise((resolve) => {
       let result;
-      const activeAccountRecord = eligibleAccountsCalculations._accounts.filter(account =>
-        account.tradelinename === scorecardRecord.tradeLineName)[0];
+      const activeAccountRecord = eligibleAccountsCalculations._accounts.filter(account => account.tradelinename === scorecardRecord.tradeLineName)[0];
       const creditScore = (activeAccountRecord.credit_score || 5);
 
       try {
@@ -135,8 +130,7 @@ const eligibleAccountsCalculations = {
         const minAccountRank = results[0];
         const accountRepeatCountByIndex = results[1];
         const calculatedCreditScore = results[2];
-        const activeAccountRecord = eligibleAccountsCalculations._accounts.filter(account =>
-          account.tradelinename === scorecardRecord.tradeLineName)[0];
+        const activeAccountRecord = eligibleAccountsCalculations._accounts.filter(account => account.tradelinename === scorecardRecord.tradeLineName)[0];
         const isEligible = activeAccountRecord.eligibility === 'eligible';
 
         try {

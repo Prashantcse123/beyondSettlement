@@ -1,5 +1,5 @@
-const models = require('../../../models');
 const express = require('express');
+const models = require('../../../models');
 const dataImportLogic = require('../../../logic/sourceData/dataImport');
 
 const router = express.Router();

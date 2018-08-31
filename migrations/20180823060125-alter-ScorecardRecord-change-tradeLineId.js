@@ -1,5 +1,6 @@
-'use strict';
-var models = require('../models')
+
+const models = require('../models');
+
 module.exports = {
   up: async (queryInterface, Sequelize) => queryInterface.changeColumn('ScorecardRecords', 'tradeLineId', {
     type: Sequelize.INTEGER,
@@ -8,5 +9,5 @@ module.exports = {
     primaryKey: true,
   }),
 
-  down: (queryInterface, Sequelize) => { }
+  down: (queryInterface, Sequelize) => { },
 };
