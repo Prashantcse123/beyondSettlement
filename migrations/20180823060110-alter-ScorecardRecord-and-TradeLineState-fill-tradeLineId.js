@@ -1,5 +1,6 @@
 'use strict';
-var models = require('../models')
+let models = require('../models')
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     let rows = await models.ScorecardRecord.findAll({
