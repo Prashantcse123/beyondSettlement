@@ -14,15 +14,13 @@ const clientConfiguration = {
 const redshift = new Redshift(clientConfiguration, { rawConnection: true });
 
 const dataImport = {
-  importData: () => {
-    return new Promise((resolve, reject) => {
-      dataImport.updateProgress('Data Import', -1)
-        .then(() => dataImport.createTempCreditorVariablesTempTable()) // createTempCreditorVariablesTempTable.sql
-        .then(() => dataImport.saveData()) // calls getAllActiveAccounts => selectActiveAccounts.sql
-        .then(() => dataImport.updateProgress('Data Import', -1))
-        .then(() => resolve('Import Success! :)'));
-    });
-  },
+  importData: () => new Promise((resolve, reject) => {
+    dataImport.updateProgress('Data Import', -1)
+      .then(() => dataImport.createTempCreditorVariablesTempTable()) // createTempCreditorVariablesTempTable.sql
+      .then(() => dataImport.saveData()) // calls getAllActiveAccounts => selectActiveAccounts.sql
+      .then(() => dataImport.updateProgress('Data Import', -1))
+      .then(() => resolve('Import Success! :)'));
+  }),
 
   updateProgress: (task, value) => {
     const type = 'Progress';
@@ -30,7 +28,7 @@ const dataImport = {
 
 
     return new Promise((resolve, reject) => {
-      models.Progress.findAll({ where: { type } }).then(rows => {
+      models.Progress.findAll({ where: { type } }).then((rows) => {
         const row = rows[0];
 
         if (row) {
@@ -90,7 +88,7 @@ const dataImport = {
           }))
     ];
 
-    return new Promise((resolve) =>
+    return new Promise(resolve =>
       Promise.all(promises).then(resolve()));
   },
 };

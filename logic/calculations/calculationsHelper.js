@@ -50,7 +50,9 @@ const calculationsHelper = {
       Promise.all(promises).then((resultsColumns) => {
         const resultObj = {};
 
-        resultsColumns.forEach(rc => resultObj[Object.keys(rc)[0]] = rc[Object.keys(rc)[0]]);
+        resultsColumns.forEach((rc) => {
+          resultObj[Object.keys(rc)[0]] = rc[Object.keys(rc)[0]];
+        });
         resolve(resultObj);
       });
     });
