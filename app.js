@@ -223,13 +223,12 @@ app.use((req, res, next) => {
 // / api
 app.use('/api', api);
 
-// roles tree TODO: use these endpoints
-// app.get('/rolestree', async (req, res) => {
-//   const data = await crm.pullRolesTree();
-//   const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
-//   const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
-//   res.json({ data });
-// });
+app.get('/api/beyond/roles_tree', async (req, res) => {
+  const data = await crm.pullRolesTree();
+  // const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
+  // const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
+  res.json({ ...data });
+});
 
 
 // / catch 404 and forward to error handler
