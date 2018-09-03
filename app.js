@@ -246,7 +246,7 @@ app.get('/api/beyond/me', async (req, res) => {
   }
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   const data = await crm.pullRolesTree().catch((error) => {
     console.error('ERROR: could not load roles_tree from CRM', error);

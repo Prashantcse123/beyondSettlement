@@ -37,7 +37,7 @@ paths:
         '401':
           description: Unauthorized
         '500':
-          description: Internal Server Error
+          description: Internal server error
       requestBody:
         content:
           application/json:
@@ -89,6 +89,8 @@ paths:
                     type: integer
         '401':
           description: Unauthorized
+        '500':
+          description: Internal server error
   /calculations/scorecard_eligible:
     get:
       security:
@@ -121,6 +123,8 @@ paths:
                     type: integer
         '401':
           description: Unauthorized
+        '500':
+          description: Internal server error
   /calculations/update_scorecard:
     put:
       security:
@@ -136,6 +140,8 @@ paths:
           description: successfully update scorecard
         '401':
           description: Unauthorized
+        '500':
+          description: Internal server error
       requestBody:
         content:
           application/json:
@@ -204,6 +210,8 @@ paths:
                     type: integer
         '401':
           description: Unauthorized
+        '500':
+          description: Internal server error
   /calculations/progress:
     get:
       security:
@@ -236,6 +244,8 @@ paths:
                     type: string
         '401':
           description: Unauthorized
+        '500':
+          description: Internal server error
   /calculations/status:
     get:
       security:
@@ -262,6 +272,8 @@ paths:
                     type: string
         '401':
           description: Unauthorized
+        '500':
+          description: Internal server error
   /source/data/get:
     get:
       security:
@@ -277,6 +289,8 @@ paths:
           description: Success
         '401':
           description: Unauthorized
+        '500':
+          description: Internal server error
 servers:
   - url: 'http://localhost:3000/api/beyond/'
 components:
