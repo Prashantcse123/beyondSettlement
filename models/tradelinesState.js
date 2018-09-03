@@ -6,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
         return false;
       },
     },
+    status: DataTypes.INTEGER,
+    teamLeadId: DataTypes.STRING,
+    agentId: DataTypes.STRING,
   });
 
   return TradelinesState;
