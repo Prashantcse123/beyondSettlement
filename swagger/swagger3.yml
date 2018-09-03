@@ -8,6 +8,8 @@ tags:
     description: Login
   - name: Scorecard
     description: Operations with scorecard
+  - name: Import
+    description: Data import
 paths:
   /login:
     post:
@@ -267,24 +269,9 @@ paths:
             - 'write:user'
             - 'read:user'
       tags:
-        - Scorecard
-      summary: Data Import
-      description: Data Import
-      responses:
-        '200':
-          description: Success
-        '401':
-          description: Unauthorized
-  /source/data/test:
-    get:
-      security:
-        - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
-      tags:
-        - Scorecard
-      summary: Test application
-      description: Test application
+        - Import
+      summary: Data import
+      description: Data import
       responses:
         '200':
           description: Success
