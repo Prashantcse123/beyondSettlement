@@ -11,8 +11,7 @@ const request = require("request");
 const cors = require('cors');
 
 const api = require('./routes/api');
-// const ui = require('./routes/ui');
-// const isReachable = require('is-reachable');
+const crm = require('./services/crm.service');
 
 const app = express();
 app.use(cors({
@@ -226,7 +225,14 @@ app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
 
-/// catch 404 and forward to error handler
+// // roles tree TODO: use this endpoint
+// app.get('/rolestree', async (req, res) => {
+//   const data = await crm.pullRolesTree();
+//   res.json({ data });
+// });
+
+
+// / catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
