@@ -89,6 +89,10 @@ paths:
           description: Unauthorized
   /calculations/scorecard_eligible:
     get:
+      security:
+        - salesforceAuth:
+            - 'write:user'
+            - 'read:user'
       tags:
         - Scorecard
       summary: Scorecard eligible
@@ -117,6 +121,10 @@ paths:
           description: Unauthorized
   /calculations/update_scorecard:
     put:
+      security:
+        - salesforceAuth:
+            - 'write:user'
+            - 'read:user'
       tags:
         - Scorecard
       summary: Update scorecard details
@@ -143,6 +151,10 @@ paths:
         required: true
   /calculations/client_ranking:
     get:
+      security:
+        - salesforceAuth:
+            - 'write:user'
+            - 'read:user'
       tags:
         - Scorecard
       summary: Client ranking
@@ -192,6 +204,10 @@ paths:
           description: Unauthorized
   /calculations/progress:
     get:
+      security:
+        - salesforceAuth:
+            - 'write:user'
+            - 'read:user'
       tags:
         - Scorecard
       summary: Scorecard progress
@@ -220,6 +236,10 @@ paths:
           description: Unauthorized
   /calculations/status:
     get:
+      security:
+        - salesforceAuth:
+            - 'write:user'
+            - 'read:user'
       tags:
         - Scorecard
       summary: Scorecard status
@@ -238,6 +258,36 @@ paths:
                     type: number
                   task:
                     type: string
+        '401':
+          description: Unauthorized
+  /source/data/get:
+    get:
+      security:
+        - salesforceAuth:
+            - 'write:user'
+            - 'read:user'
+      tags:
+        - Scorecard
+      summary: Data Import
+      description: Data Import
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+  /source/data/test:
+    get:
+      security:
+        - salesforceAuth:
+            - 'write:user'
+            - 'read:user'
+      tags:
+        - Scorecard
+      summary: Test application
+      description: Test application
+      responses:
+        '200':
+          description: Success
         '401':
           description: Unauthorized
 servers:
