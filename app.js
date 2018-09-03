@@ -223,9 +223,10 @@ app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
 
-// // roles tree TODO: use this endpoint
+// roles tree TODO: use these endpoints
 // app.get('/rolestree', async (req, res) => {
-//   const data = await crm.pullRolesTree();
+//   // const data = await crm.pullRolesTree();
+//   const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
 //   res.json({ data });
 // });
 
