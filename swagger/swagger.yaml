@@ -1,0 +1,389 @@
+swagger: '2.0'
+info:
+  description: BeyondSettelments
+  version: 1.0.0
+  title: BeyondSettelments APIs
+host: 'localhost:3000'
+basePath: /api/beyond/
+schemes:
+  - http
+tags:
+  - name: Login
+    description: Login
+  - name: Scorecard
+    description: Operations with scorecard
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  /login:
+    post:
+      tags:
+        - Login
+      summary: Authenticate user-1
+      description: Authenticate user API-1
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: userCredentials
+          description: User's credentials
+          required: true
+          schema:
+            type: object
+            example:
+              username: abc
+              password: '123'
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+                format: password
+      responses:
+        '200':
+          description: Authentication successful
+          schema:
+            type: object
+            properties:
+              user:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  _id:
+                    type: string
+              token:
+                type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /oauth/authenticate:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-2
+      description: Authenticate user API-2
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
+  /oauth/refresh:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-3
+      description: Authenticate user API-3
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
+  /oauth/callback:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-4
+      description: Authenticate user API-4
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
+  /oauth/user_info:
+    get:
+      tags:
+        - Login
+      summary: Authenticate user-5
+      description: Authenticate user API-5
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Unauthorized
+  /calculations/scorecard:
+    get:
+      tags:
+        - Scorecard
+      summary: Scorecard
+      description: Scorecard API
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Scorecard generated
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items: 
+                  $ref: '#/definitions/ScorecardResponse'
+              page:
+                type: integer
+              page_size:
+                type: integer
+              total_count:
+                type: integer
+              page_count:
+                type: integer
+        '401':
+            description: Unauthorized
+  /calculations/scorecard_eligible:
+    get:
+      tags:
+        - Scorecard
+      summary: Scorecard eligible
+      description: Scorecard eligible API
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Scorecard eligible generated
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/ScorecardResponse'
+              page:
+                type: integer
+              page_size:
+                type: integer
+              total_count:
+                type: integer
+              page_count:
+                type: integer
+        '401':
+            description: Unauthorized
+  /calculations/update_scorecard:
+    put:
+      tags:
+        - Scorecard
+      summary: Update scorecard details
+      description: Update scorecard API
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: updatedUserBody
+          description: Send updated data values in request body
+          required: true
+          schema:
+            type: object
+            required: 
+              - tradeLineId
+              - isDone
+            properties:
+              tradeLineId:
+                type: integer
+              isDone:
+                type: boolean
+      responses:
+        '200':
+          description: successfully update scorecard
+        '401':
+            description: Unauthorized
+  /calculations/client_ranking:
+    get:
+      tags:
+        - Scorecard
+      summary: Client ranking
+      description: Client ranking API
+      parameters:
+        - in: query
+          name: sortBy
+          type: string
+          description: Use for sorting the data
+        - in: query
+          name: sortOrder
+          type: string
+          description: Use for sorting the data
+        - in: query
+          name: page
+          type: integer
+          description: Use for pagination
+        - in: query
+          name: page_size
+          type: integer
+          description: Use for pagination
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Client ranking data successfully
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/ScorecardResponse'
+              page:
+                type: integer
+              page_size:
+                type: integer
+              total_count:
+                type: integer
+              page_count:
+                type: integer
+        '401':
+            description: Unauthorized
+  /calculations/progress:
+    get:
+      tags:
+        - Scorecard
+      summary: Scorecard progress 
+      description: Scorecard progress
+      produces: 
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              type:
+                type: string
+              task:
+                type: string
+              value:
+                type: number
+              createdAt:
+                type: string
+              updatedAt:
+                type: string
+        '401':
+            description: Unauthorized
+  /calculations/status:
+    get:
+      tags:
+        - Scorecard
+      summary: Scorecard status 
+      description: Scorecard Progress
+      produces: 
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              busy:
+                type: boolean
+              progress:
+                type: number
+              task:
+                type: string
+        '401':
+            description: Unauthorized
+definitions:
+  ScorecardResponse:
+      type: "object"
+      properties:
+        id:
+          type: integer
+        tradeLineName:
+          type: string
+        tradeLineId:
+          type: integer
+        programName:
+          type: string
+        creditor:
+          type: string
+        eligibility:
+          type: integer
+        balance:
+          type: integer
+        endOfCurrentMonthFundAccumulation:
+          type: integer
+        lastWorkedOn:
+          type: string
+        creditorTerms:
+          type: string
+        metrics_creditorScore:
+          type: integer
+        metrics_stateOfResidency:
+          type: string
+        metrics_monthlyPayment:
+          type: integer
+        metrics_accountDelinquency:
+          type: integer
+        metrics_pctAvgSettlement:
+          type: number
+        metrics_settlementTerm:
+          type: integer
+        metrics_firstMonthFeeFundPct:
+          type: number
+        metrics_feeEstimate:
+          type: number
+        metrics_accountStatus:
+          type: string
+        metrics_enrolledDebt:
+          type: number
+        points_creditorScore:
+          type: integer
+        points_stateOfResidency:
+          type: integer
+        points_monthlyPayment:
+          type: integer
+        points_accountDelinquency:
+          type: integer
+        points_pctAvgSettlement:
+          type: integer
+        points_settlementTerm:
+          type: integer
+        points_firstMonthFeeFundPct:
+          type: integer
+        points_feeEstimate:
+          type: integer
+        points_accountStatus:
+          type: integer
+        points_enrolledDebt:
+          type: integer
+        weight_creditorScore:
+          type: integer
+        weight_stateOfResidency:
+          type: integer
+        weight_monthlyPayment:
+          type: integer
+        weight_accountDelinquency:
+          type: integer
+        weight_pctAvgSettlement:
+          type: integer
+        weight_settlementTerm:
+          type: integer
+        weight_firstMonthFeeFundPct:
+          type: integer
+        weight_feeEstimate:
+          type: integer
+        weight_accountStatus:
+          type: integer
+        weight_enrolledDebt:
+          type: integer
+        totalScore:
+          type: integer
+        rank:
+          type: integer
+        minAccountRank:
+          type: integer
+        accountRepeatCountByIndex:
+          type: integer
+        calculatedCreditScore:
+          type: integer
+        concatenatedIndex:
+          type: integer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string

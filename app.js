@@ -10,6 +10,11 @@ const jwt = require('jsonwebtoken');
 const request = require('request');
 const cors = require('cors');
 
+//Swagger integration
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger/swagger3.yml');
+
 const api = require('./routes/api');
 const crm = require('./services/crm.service');
 
@@ -222,6 +227,7 @@ app.use((req, res, next) => {
 app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // roles tree TODO: use these endpoints
 // app.get('/rolestree', async (req, res) => {
