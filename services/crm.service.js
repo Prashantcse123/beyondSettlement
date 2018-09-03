@@ -156,6 +156,7 @@ function toTradelineId(tradeLineName) {
 
 // push tradelines to crm
 function syncTradelineNameAttributes(tradeline) {
+  console.log('syncTradelineNameAttributes', tradeline);
   /*
     status: null,
     teamLeadId: null,
@@ -170,6 +171,26 @@ function syncTradelineNameAttributes(tradeline) {
   const att = {};
   att.team_lead_id = tradeline.teamLeadId || null;
   att.agent_id = tradeline.agentId || null;
+  // pending review and confirm
+  /*
+    "review_status": "None",
+    "submission_status": "pending_review",
+    "review_status": "confirmed",
+   */
+  const { status } = tradeline;
+  console.log('status', status);
+  if (!status) {
+    att.review_status = 'None';
+    att.submission_status = 'None';
+  } else if (status === 1) {
+    att.submission_status = 'pending_review';
+    att.review_status = 'None';
+  } else if (status === 2) {
+    att.submission_status = 'reviewed';
+    att.review_status = 'confirmed';
+  }
+  att.agent_id = tradeline.agentId || null;
+  att.agent_id = tradeline.agentId || null;
   return att;
 }
 async function pushTradelinesCrm(payload) {
@@ -177,6 +198,8 @@ async function pushTradelinesCrm(payload) {
   const url = getCrmUrl('trade-lines');
   console.log(`pushTradelinesCrm ${url}`);
   const { data } = await axios.patch(url, payload);
+  console.log('url', url);
+  console.log('payload', JSON.stringify(payload));
   return data.data;
 }
 module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
@@ -202,13 +225,15 @@ module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
 
   // sync
   toSend = { data: toSend };
-  return await pushTradelinesCrm(toSend);
+  const ret = await pushTradelinesCrm(toSend);
+  console.log('done pushTradelinesCrm');
+  return ret;
 };
 
 // sync from salesforce
-function sqlNullStr(str){
-  if(!str)  return 'null';
-  else return "'"+ str + "'";
+function sqlNullStr(str) {
+  if (!str) return 'null';
+  return `'${str}'`;
 }
 async function pullTradelinesCrm(tradelineIds) {
   // get the data
@@ -220,7 +245,7 @@ async function pullTradelinesCrm(tradelineIds) {
 }
 module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
   // pull ids and create a hash
-  let tradelineIds = await redshift.getTradelineId(tradelineNames);
+  const tradelineIds = await redshift.getTradelineId(tradelineNames);
   const tradelineMaps = _.invert(tradelineIds);
   // get tradelinds from salesforce
   const tradelines = await pullTradelinesCrm(_.values(tradelineIds));
