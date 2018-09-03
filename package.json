@@ -48,9 +48,7 @@
     "sequelize-cli": "^3.1.0",
     "serve-static": "^1.13.2",
     "serverless-http": "^1.5.3",
-    "splunk-bunyan-logger": "^0.9.3",
-    "swagger-ui-express": "^4.0.0",
-    "yamljs": "^0.3.0"
+    "splunk-bunyan-logger": "^0.9.3"
   },
   "devDependencies": {
     "cross-env": "^3.1.3",
