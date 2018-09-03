@@ -5,6 +5,7 @@ const express = require('express');
 const scorecardCalculationsLogic = require('../../../logic/calculations/scorecardCalculations');
 const eligibleAccountsCalculationsLogic = require('../../../logic/calculations/eligibleAccountsCalculations');
 const eligibleAccountsFilter = require('../../../logic/calculations/eligibleAccountsFilter');
+const _ = require('lodash');
 
 const router = express.Router();
 
@@ -42,6 +43,9 @@ router.get('/scorecard', (req, res) => {
   const pageSize = parseInt(req.query.page_size || 10);
   options.offset = page;
   options.limit = pageSize;
+  options.include = [{
+    model: models.TradelinesState,
+  }];
 
   models.ScorecardRecord.findAndCountAll(options).then((result) => {
     const totalCount = result.count; // number of rows in the table
@@ -71,6 +75,9 @@ router.get('/client_ranking', (req, res) => {
   const pageSize = parseInt(req.query.page_size || 10);
   options.offset = page;
   options.limit = pageSize;
+  options.include = [{
+    model: models.TradelinesState,
+  }];
 
   models.ScorecardRecord.findAndCountAll(options).then((result) => {
     const totalCount = result.count; // number of rows in the table
@@ -103,6 +110,9 @@ router.get('/scorecard_eligible', (req, res) => {
   const pageSize = parseInt(req.query.page_size || 10);
   options.offset = page;
   options.limit = pageSize;
+  options.include = [{
+    model: models.TradelinesState,
+  }];
 
   eligibleAccountsFilter.getEligibleScorecardRecords(options).then(async (rows) => {
     // count the query rows (row count before pagination)
@@ -121,8 +131,13 @@ router.get('/scorecard_eligible', (req, res) => {
 });
 
 router.put('/update_scorecard', (req, res) => {
-  models.TradelinesState.findOne({ where: { tradeLineId: req.body.tradeLineId } }).then((row) => {
-    row.update({ isDone: req.body.isDone }).then(() => res.status(200).json('Tradeline updated'));
+  models.TradelinesState.findOne({
+    where: {
+      tradeLineId: req.body.tradeLineId,
+    },
+  }).then((row) => {
+    const data = _.omit(req.body, ['id', 'tradeLineId']);
+    row.update(data).then(() => res.status(200).json('Tradeline updated'));
   });
 });
 
