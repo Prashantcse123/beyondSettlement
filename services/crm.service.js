@@ -98,76 +98,10 @@ module.exports.pullRolesTree = async () => {
 // sync from and to the crm
 
 /*
-use: TODO change this
-let tldata = await redshift.getTradelineName(['a0Q46000006JAiAEAW', 'a0Q46000006JAhqEAG', 'a0Q46000006JAeGEAW']);
+use:
+  const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
+  const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
 
-let tldata = await redshift.getTradelineName(['a0Q46000006JAiAEAW', 'a0Q46000006JAhqEAG', 'a0Q46000006JAeGEAW']);
-let tldata = await redshift.getTradelineId(['TL-00160409', 'TL-00160412', 'TL-00160416']);
- */
-
-function idsToIn(ids, isString) {
-  const wrap = isString ? '\'' : '';
-  const wrappedIds = ids.map(id => `${wrap}${id}${wrap}`);
-  return ['\'\'', ...wrappedIds].join(',');
-}
-
-function toTradelineId(tradeLineName) {
-  return tradeLineName.replace(/TL\-(0?)+/, '');
-}
-
-function syncTradelineNameAttributes(tradeline) {
-  /*
-    status: null,
-    teamLeadId: null,
-    agentId: null
-    =>
-    'submission_status': 'pending_review',
-    'review_status': 'confirmed',
-    'team_lead_id': '00546000001rswp',
-    'agent_id': '00546000001sOF'
- */
-  // TODO add status attributes
-  const att = {};
-  att.team_lead_id = tradeline.teamLeadId || null;
-  att.agent_id = tradeline.agentId || null;
-  return att;
-}
-
-async function pushTradelinesCrm(payload) {
-  // get the data
-  const url = getCrmUrl('trade-lines');
-  console.log(`pushTradelinesCrm ${url}`);
-  const { data } = await axios.patch(url, payload);
-  return data.data;
-}
-module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
-  let toSend = [];
-  // get the data
-  const Ids = idsToIn(tradelineNames, true);
-  const sql = `SELECT "public"."ScorecardRecords"."tradeLineName", "public"."TradelinesStates".*
-              FROM "public"."TradelinesStates" 
-              INNER JOIN "public"."ScorecardRecords" 
-                  ON "public"."TradelinesStates"."tradeLineId" = "public"."ScorecardRecords"."tradeLineId"
-              WHERE "ScorecardRecords"."tradeLineName" IN(${Ids})`;
-  const tradelines = await models.sequelize.query(sql, { type: models.sequelize.QueryTypes.SELECT });
-  const tradelineIds = await redshift.getTradelineId(tradelineNames);
-
-  // build object
-  tradelines.forEach((tradeline) => {
-    const len = toSend.push({
-      type: 'trade_lines',
-      id: tradelineIds[tradeline.tradeLineName],
-    });
-    toSend[len - 1].attributes = syncTradelineNameAttributes(tradeline);
-  });
-
-  // sync
-  toSend = { data: toSend };
-  return await pushTradelinesCrm(toSend);
-
-  /*
-  1. get data from sql
-  2. get id's
   [ { tradeLineName: 'TL-00037395',
     id: 3687,
     isDone: null,
@@ -209,4 +143,97 @@ module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
     }
   ]
    */
+
+function idsToIn(ids, isString) {
+  const wrap = isString ? '\'' : '';
+  const wrappedIds = ids.map(id => `${wrap}${id}${wrap}`);
+  return ['\'\'', ...wrappedIds].join(',');
+}
+
+function toTradelineId(tradeLineName) {
+  return tradeLineName.replace(/TL\-(0?)+/, '');
+}
+
+// push tradelines to crm
+function syncTradelineNameAttributes(tradeline) {
+  /*
+    status: null,
+    teamLeadId: null,
+    agentId: null
+    =>
+    'submission_status': 'pending_review',
+    'review_status': 'confirmed',
+    'team_lead_id': '00546000001rswp',
+    'agent_id': '00546000001sOF'
+ */
+  // TODO add status attributes
+  const att = {};
+  att.team_lead_id = tradeline.teamLeadId || null;
+  att.agent_id = tradeline.agentId || null;
+  return att;
+}
+async function pushTradelinesCrm(payload) {
+  // get the data
+  const url = getCrmUrl('trade-lines');
+  console.log(`pushTradelinesCrm ${url}`);
+  const { data } = await axios.patch(url, payload);
+  return data.data;
+}
+module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
+  let toSend = [];
+  // get the data
+  const Ids = idsToIn(tradelineNames, true);
+  const sql = `SELECT "public"."ScorecardRecords"."tradeLineName", "public"."TradelinesStates".*
+              FROM "public"."TradelinesStates" 
+              INNER JOIN "public"."ScorecardRecords" 
+                  ON "public"."TradelinesStates"."tradeLineId" = "public"."ScorecardRecords"."tradeLineId"
+              WHERE "ScorecardRecords"."tradeLineName" IN(${Ids})`;
+  const tradelines = await models.sequelize.query(sql, { type: models.sequelize.QueryTypes.SELECT });
+  const tradelineIds = await redshift.getTradelineId(tradelineNames);
+
+  // build object
+  tradelines.forEach((tradeline) => {
+    const len = toSend.push({
+      type: 'trade_lines',
+      id: tradelineIds[tradeline.tradeLineName],
+    });
+    toSend[len - 1].attributes = syncTradelineNameAttributes(tradeline);
+  });
+
+  // sync
+  toSend = { data: toSend };
+  return await pushTradelinesCrm(toSend);
+};
+
+// sync from salesforce
+function sqlNullStr(str){
+  if(!str)  return 'null';
+  else return "'"+ str + "'";
+}
+async function pullTradelinesCrm(tradelineIds) {
+  // get the data
+  let url = getCrmUrl('trade-lines');
+  url = `${url}?filter[id]=${tradelineIds.join(',')}`;
+  console.log('pullTradelinesCrm ', url);
+  const { data } = await axios.get(url);
+  return data.data;
+}
+module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
+  // pull ids and create a hash
+  let tradelineIds = await redshift.getTradelineId(tradelineNames);
+  const tradelineMaps = _.invert(tradelineIds);
+  // get tradelinds from salesforce
+  const tradelines = await pullTradelinesCrm(_.values(tradelineIds));
+
+  // iterate and run sql
+  tradelines.forEach((tradeline) => {
+    const tradelineId = toTradelineId(tradelineMaps[tradeline.id]);
+    console.log('tradeline', tradeline);
+    // TODO add status to the query
+    // TODO improve performance with update...from
+    const sql = `UPDATE "public"."TradelinesStates" set "agentId" = ${sqlNullStr(tradeline.attributes['agent-id'])}, "teamLeadId" = ${sqlNullStr(tradeline.attributes['team-lead-id'])} WHERE "TradelinesStates"."tradeLineId" = ${tradelineId}`;
+
+    models.sequelize.query(sql).spread((results, metadata) => {});
+  });
+  return { status: 'ok' };
 };
