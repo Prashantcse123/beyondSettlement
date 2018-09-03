@@ -227,7 +227,7 @@ app.use((req, res, next) => {
 app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // roles tree TODO: use these endpoints
 // app.get('/rolestree', async (req, res) => {
