@@ -63,6 +63,13 @@ router.get('/scorecard', (req, res) => {
 router.get('/client_ranking', (req, res) => {
   let order = [];
   const where = { eligibility: 'eligible' };
+  // agent/team lead filter
+  if (req.query.agent) {
+    // where['TradelinesStates.agentId'] = req.query.agent;
+  }
+  if (req.query.team_lead) {
+    // where['TradelinesStates.teamLeadId'] = req.query.team_lead;
+  }
   if (req.query.sortBy) {
     order = [[req.query.sortBy, req.query.sortOrder.toUpperCase()]];
   } else {
