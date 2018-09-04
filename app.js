@@ -14,7 +14,8 @@ const _ = require('lodash');
 
 const api = require('./routes/api');
 const crm = require('./services/crm.service');
-crm.startSyncAllFromCrmCron();
+
+crm.startSyncAllFromCrmCron(); // cron job
 
 const app = express();
 app.use(cors({
@@ -186,7 +187,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
+  if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/sync_from_crm') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
     next();
     return;
   }
@@ -261,6 +262,10 @@ app.get('/api/beyond/roles_tree', async (req, res) => {
   res.json({ ...data });
 });
 
+app.get('/api/beyond/sync_from_crm', async (req, res) => {
+  crm.syncAllFromCrm();
+  res.json({ data: 'ok' });
+});
 
 // / catch 404 and forward to error handler
 app.use((req, res, next) => {

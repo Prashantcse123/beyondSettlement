@@ -288,13 +288,43 @@ async function pullTradelinesCrm(tradelineIds) {
   const { data } = await axios.get(url);
   return data.data;
 }
+async function pullTradelinesCrmBigArray(tradelineIds) {
+  // get the data
+  /*
+  {
+  "data": {
+    "type": "trade-lines",
+    "filter": {
+      "id": "a0Q46000003nY86EAE,a0Q46000003nY86EAE,a0Q46000003nY86EAE"
+    }
+  }
+   */
+  const url = getCrmUrl('trade-lines/list');
+  const payload = {
+    data: {
+      type: 'trade-lines',
+      filter: {
+        id: tradelineIds.join(','),
+      },
+    },
+  };
+  console.log('pullTradelinesCrmBigArray ', url);
+  console.log('pullTradelinesCrm payload', JSON.stringify(payload));
+  const { data } = await axios.post(url, payload);
+  console.log('finished pulling trade-lines/list');
+  return data.data;
+}
 module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
   console.log('syncTradelineNameFromCrm');
   // pull ids and create a hash
+  // tradelineNames = tradelineNames.slice(1, 11); //for testing
+  console.log('redshift.getTradelineId(tradelineNames)');
   const tradelineIds = await redshift.getTradelineId(tradelineNames);
+  console.log('finish redshift');
+
   const tradelineMaps = _.invert(tradelineIds);
   // get tradelinds from salesforce
-  const tradelines = await pullTradelinesCrm(_.values(tradelineIds));
+  const tradelines = await pullTradelinesCrmBigArray(_.values(tradelineIds));
 
   const tlSql = [];
   tradelines.forEach((tradeline) => {
@@ -312,22 +342,22 @@ module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
     'where c.tradeLineId = "ts"."tradeLineId";',
   ].join(' ');
   console.log('sqls', sqls);
-  models.sequelize.query(sqls).spread((results, metadata) => {});
+  await models.sequelize.query(sqls).spread((results, metadata) => {});
   return { status: 'ok' };
 };
 
 // sync all to crm - function and cron job
 module.exports.syncAllFromCrm = async function () {
   console.log('syncAllFromCrm');
-  //TODO switch to post so we could retrieve all tradelines. right now GET isn't sufficient, long URL error (414)
-  const result = await models.ScorecardRecord.findAll({ limit: 10 });
-  const tradelineNames = result.map( tradeline => tradeline.tradeLineName);
+  // right now we are limiting to config.syncAllFromCrmRecordsLimit because of the trade-lines/list endpoint limit
+  const result = await models.ScorecardRecord.findAll({ order: [['totalScore', 'DESC']], limit: config.syncAllFromCrmRecordsLimit });
+  const tradelineNames = result.map(tradeline => tradeline.tradeLineName);
   await this.syncTradelineNameFromCrm(tradelineNames);
-  console.log('syncAllFromCrm finished')
+  console.log('syncAllFromCrm finished');
 };
-module.exports.startSyncAllFromCrmCron = function(){
+module.exports.startSyncAllFromCrmCron = function () {
   const func = this.syncAllFromCrm.bind(this);
-  console.log('start sync to crm cron job');
+  console.log(`start sync to crm cron job every ${config.syncAllFromCrmMinutesInterval} minutes`);
   const job = new CronJob({
     cronTime: `0 */${config.syncAllFromCrmMinutesInterval} * * * *`,
     onTick: func,

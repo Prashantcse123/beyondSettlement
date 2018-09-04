@@ -31,5 +31,6 @@ module.exports = {
     host: 'db',
     port: '5432',
   },
-  syncAllFromCrmMinutesInterval: 10,
+  syncAllFromCrmMinutesInterval: 5,
+  syncAllFromCrmRecordsLimit: 250,
 };
