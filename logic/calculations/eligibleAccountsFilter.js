@@ -5,6 +5,12 @@ const eligibleAccountsFilter = {
   getEligibleScorecardRecords: (options = {}) => {
     let sql = require('./sql/eligibleAccountsFilter.sql');
 
+    if (options.where) {
+      const whereAdd = Object.keys(options.where).reduce((res, key) => (
+        `${res} AND ${key} = ${options.where[key]} `
+      ), '');
+      sql += whereAdd;
+    }
     if (options.order) {
       const orderArr = [];
       let orderStr = 'ORDER BY ';

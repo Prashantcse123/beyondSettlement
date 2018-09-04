@@ -26,15 +26,22 @@ router.get('/eligibility/set', (req, res) => {
 });
 
 router.get('/scorecard', (req, res) => {
-  let options = {};
+  const options = {};
 
   if (req.query.sortBy) {
-    options = {
-      order: [[req.query.sortBy, req.query.sortOrder.toUpperCase()]],
-    };
+    options.order = [[req.query.sortBy, req.query.sortOrder.toUpperCase()]];
   } else {
-    options = {
-      order: [['totalScore', 'DESC']],
+    options.order = [['totalScore', 'DESC']];
+  }
+  // agent/team lead filter
+  if (req.query.agent) {
+    options.where = {
+      '$TradelinesState.agentId$': req.query.agent,
+    };
+  }
+  if (req.query.team_lead) {
+    options.where = {
+      '$TradelinesState.teamLeadId$': req.query.team_lead,
     };
   }
 
@@ -65,10 +72,10 @@ router.get('/client_ranking', (req, res) => {
   const where = { eligibility: 'eligible' };
   // agent/team lead filter
   if (req.query.agent) {
-    // where['TradelinesStates.agentId'] = req.query.agent;
+    where['$TradelinesState.agentId$'] = req.query.agent;
   }
   if (req.query.team_lead) {
-    // where['TradelinesStates.teamLeadId'] = req.query.team_lead;
+    where['$TradelinesState.teamLeadId$'] = req.query.team_lead;
   }
   if (req.query.sortBy) {
     order = [[req.query.sortBy, req.query.sortOrder.toUpperCase()]];
@@ -100,15 +107,23 @@ router.get('/client_ranking', (req, res) => {
 });
 
 router.get('/scorecard_eligible', (req, res) => {
-  let options = {};
+  const options = {};
 
   if (req.query.sortBy) {
-    options = {
-      order: [[req.query.sortBy, req.query.sortOrder.toUpperCase()]],
-    };
+    options.order = [[req.query.sortBy, req.query.sortOrder.toUpperCase()]];
   } else {
-    options = {
-      order: [['totalScore', 'DESC']],
+    options.order = [['totalScore', 'DESC']];
+  }
+
+  // agent/team lead filter
+  if (req.query.agent) {
+    options.where = {
+      '"TradelinesStates"."agentId"': `'${req.query.agent}'`,
+    };
+  }
+  if (req.query.team_lead) {
+    options.where = {
+      '"TradelinesStates"."teamLeadId"': `'${req.query.team_lead}'`,
     };
   }
 
