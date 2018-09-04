@@ -11,6 +11,7 @@ const request = require('request');
 const cors = require('cors');
 const _ = require('lodash');
 var fs = require('fs');
+var publicDir = require('path'). join(__dirname,'beyond.png');
 
 // Swagger integration
 const swaggerUi = require('swagger-ui-express');
@@ -146,6 +147,7 @@ const config = {
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
+app. use(express. static(publicDir));
 // if (process.env.NODE_ENV === 'production') {
 //   const splunkStream = splunkBunyan.createStream(config);
 //   app.use(require('express-bunyan-logger')({
@@ -154,17 +156,29 @@ app.use(logger('dev'));
 //   }));
 // }
 
+
 //Swagger ReDoc added
-app.get('/swaggerAPI', (req, res) => {
-  var text = fs.readFileSync(__dirname + '/swaggerUi.html', 'utf8');
-  console.log(text)
-  res.send(text)
+app.get('/documentation', (req, res) => {
+  var swaggerFile = fs.readFileSync(__dirname + '/swagger/swaggerUi.html', 'utf8');
+  res.send(swaggerFile);
 })
 
 app.get('/swagger.json', (req, res) => {
-  var jsonData = require('./swagger/swagger')
-  res.json(jsonData)
+  var jsonData = require('./swagger/swagger');
+  res.json(jsonData);
 })
+
+// Pass client ID and client secret key to oauth
+var options = {
+  validatorUrl: null,
+  oauth: {
+    clientId: process.env.SF_CUSTOMER_KEY,
+    clientSecret: process.env.SF_CUSTOMER_SECRET
+  }
+};
+
+//Swagger API
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
 
 app.get('/status', (req, res) => {
   //   var failed = 0;
@@ -244,14 +258,7 @@ app.use((req, res, next) => {
   }
 });
 
-// Pass client ID and client secret key to oauth
-var options = {
-  validatorUrl: null,
-  oauth: {
-    clientId: process.env.SF_CUSTOMER_KEY,
-    clientSecret: process.env.SF_CUSTOMER_SECRET
-  }
-};
+
 
 
 // / api
@@ -267,7 +274,7 @@ app.get('/api/beyond/me', async (req, res) => {
   }
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
+
 
   const data = await crm.pullRolesTree().catch((error) => {
     console.error('ERROR: could not load roles_tree from CRM', error);
