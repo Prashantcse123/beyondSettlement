@@ -4,8 +4,8 @@ module.exports = {
     username: 'docker',
     password: 'docker',
     database: 'docker',
-    host: 'localhost',
-    port: '5434',
+    host: 'db',
+    port: '5432',
   },
   staging: {
     dialect: 'postgres',
