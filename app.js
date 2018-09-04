@@ -29,13 +29,7 @@ app.use(cors({
   credentials: true,
 }));
 
-const config = {
-  token: process.env.SPLUNK_TOKEN,
-  url: process.env.SPLUNK_URL,
-  jwt_secret: process.env.JWT_SECRET,
-};
-
-
+const config = require('./config/config');
 // / catch 403 and forward to error handler
 // app.use((req, res, next) => {
 //     /*
@@ -173,9 +167,9 @@ app.get('/status', (req, res) => {
 //   if (failed > 0) {
 //     res.status(500).json("false");
 //   } else {
-  res.status(200).json('true');
-  // }
-},
+    res.status(200).json('true');
+    // }
+  },
 
 // start()
 
@@ -197,7 +191,7 @@ app.use((req, res, next) => {
   if (cookie) {
     console.log('Found cookie... ', cookie);
 
-    const protocol = req.protocol;
+    const protocol = config.getConfig('salesforceAuthProtocol');
     const requestUrl = `${protocol}://${process.env.BASE_URL}/api/beyond/oauth/user_info?${cookie}`;
     console.log('fetch user_info from url:', requestUrl);
 
