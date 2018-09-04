@@ -9,6 +9,7 @@ const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 const cors = require('cors');
+const _ = require('lodash');
 
 
 const api = require('./routes/api');
@@ -208,6 +209,11 @@ app.use((req, res, next) => {
           },
         });
       }
+      try {
+        req.userProfile = _.pick(JSON.parse(body), ['user_id', 'first_name', 'last_name', 'display_name']);
+      } catch (err) {
+        console.error('ERROR on parsing user profile from SalesForce', error);
+      }
       next();
     });
   } else {
@@ -222,6 +228,31 @@ app.use((req, res, next) => {
 
 // / api
 app.use('/api', api);
+
+app.get('/api/beyond/me', async (req, res) => {
+  if (!req.userProfile) {
+    return res.status(404).json({
+      error: {
+        msg: 'No profile found',
+      },
+    });
+  }
+
+  const data = await crm.pullRolesTree().catch((error) => {
+    console.error('ERROR: could not load roles_tree from CRM', error);
+    return res.status(500).json({
+      error: {
+        msg: 'Could not load permissions',
+        error,
+      },
+    });
+  });
+  const userData = data.users[req.userProfile.user_id];
+  // add the third object here to override `permission` if you want to test
+  // app under different user roles
+  // Example: { permissions: ['SETTLEMENTS'] }
+  return res.status(200).json(Object.assign({}, userData));
+});
 
 app.get('/api/beyond/roles_tree', async (req, res) => {
   const data = await crm.pullRolesTree();
