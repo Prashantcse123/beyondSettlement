@@ -9,6 +9,7 @@ const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 const cors = require('cors');
+var fs = require('fs');
 
 // Swagger integration
 const swaggerUi = require('swagger-ui-express');
@@ -149,6 +150,18 @@ app.use(logger('dev'));
 //     streams: [splunkStream],
 //   }));
 // }
+
+//Swagger ReDoc added
+app.get('/swaggerAPI', (req, res) => {
+  var text = fs.readFileSync(__dirname + '/swaggerUi.html', 'utf8');
+  console.log(text)
+  res.send(text)
+})
+
+app.get('/swagger.json', (req, res) => {
+  var jsonData = require('./swagger/swagger')
+  res.json(jsonData)
+})
 
 app.get('/status', (req, res) => {
   //   var failed = 0;
