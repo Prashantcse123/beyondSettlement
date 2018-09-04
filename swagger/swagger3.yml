@@ -255,7 +255,7 @@ paths:
       tags:
         - Scorecard
       summary: Scorecard status
-      description: Scorecard Progress
+      description: Scorecard progress
       responses:
         '200':
           description: Success
