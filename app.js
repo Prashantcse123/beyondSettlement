@@ -151,36 +151,36 @@ app.use(logger('dev'));
 // }
 
 app.get('/status', (req, res) => {
-//   var failed = 0;
-//   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
-//                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
+  //   var failed = 0;
+  //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
+  //                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
 
-// const asyncForEach = async (array, callback) => {
-//   for (let index = 0; index < array.length; index++) {
-//     await callback(array[index], index, array)
-//   }
-// }
+  // const asyncForEach = async (array, callback) => {
+  //   for (let index = 0; index < array.length; index++) {
+  //     await callback(array[index], index, array)
+  //   }
+  // }
 
-// const start = async () => {
-//   await asyncForEach(checks, async (item) => {
-//     await isReachable(item).then(reachable => {
-//       console.log(item + ": " + reachable);
-//       if (!reachable) {
-//         failed++;
-//         console.log(item + ": " + reachable);
-//       }
-//     });
-//   })
-//   if (failed > 0) {
-//     res.status(500).json("false");
-//   } else {
+  // const start = async () => {
+  //   await asyncForEach(checks, async (item) => {
+  //     await isReachable(item).then(reachable => {
+  //       console.log(item + ": " + reachable);
+  //       if (!reachable) {
+  //         failed++;
+  //         console.log(item + ": " + reachable);
+  //       }
+  //     });
+  //   })
+  //   if (failed > 0) {
+  //     res.status(500).json("false");
+  //   } else {
   res.status(200).json('true');
   // }
 },
 
-// start()
+  // start()
 
-// }
+  // }
 );
 
 app.use(bodyParser.json());
@@ -223,11 +223,20 @@ app.use((req, res, next) => {
   }
 });
 
+var options = {
+  validatorUrl: null,
+  oauth: {
+    clientId: "3MVG9AzPSkglhtptqHGKkfsPDyzWiYxWmXX2HUgsemfcHyelhfXavEZHqthPpZ_FkvDzplRfainKimDFXQOvB",
+    clientSecret: "461865499270135865"
+  }
+};
+
+
 // / api
 app.use('/api', api);
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
 
 // roles tree TODO: use these endpoints
 // app.get('/rolestree', async (req, res) => {
