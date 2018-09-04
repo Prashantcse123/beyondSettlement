@@ -11,7 +11,7 @@ const request = require('request');
 const cors = require('cors');
 const _ = require('lodash');
 var fs = require('fs');
-var publicDir = require('path'). join(__dirname,'beyond.png');
+
 
 // Swagger integration
 const swaggerUi = require('swagger-ui-express');
@@ -141,7 +141,6 @@ const config = require('./config/config');
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app. use(express. static(publicDir));
 // if (process.env.NODE_ENV === 'production') {
 //   const splunkStream = splunkBunyan.createStream(config);
 //   app.use(require('express-bunyan-logger')({
