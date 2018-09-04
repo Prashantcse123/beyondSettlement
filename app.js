@@ -13,6 +13,7 @@ const cors = require('cors');
 
 const api = require('./routes/api');
 const crm = require('./services/crm.service');
+crm.startSyncAllFromCrmCron();
 
 const app = express();
 app.use(cors({
@@ -221,9 +222,6 @@ app.use((req, res, next) => {
 
 // / api
 app.use('/api', api);
-app.use('/', express.static('ui/dist'));
-app.use('/assets', express.static('ui/dist/assets'));
-
 
 // roles tree TODO: use these endpoints
 // app.get('/rolestree', async (req, res) => {

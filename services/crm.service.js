@@ -3,6 +3,9 @@ const path = require('path');
 const _ = require('lodash');
 const redshift = require('./redshift.service');
 const models = require('../models');
+const config = require('../config/config');
+const { CronJob } = require('cron');
+
 // roles tree
 
 // splits full name
@@ -235,6 +238,48 @@ function sqlNullStr(str) {
   if (!str) return 'null';
   return `'${str}'`;
 }
+function buildTradelineSqlValue(tradeline, tradelineId) {
+  const { attributes } = tradeline;
+  // status
+  let status = 'NULL::text';
+  if (attributes['review-status'] == 'confirmed') status = 2;
+  else if (attributes['submission-status'] == 'pending_review') status = 1;
+  else status = 'NULL::int4';
+
+  const sql = [
+    tradelineId, status,
+    sqlNullStr(attributes['team-lead-id']), sqlNullStr(attributes['agent-id']),
+  ];
+  return ['(', sql.join(','), ')'].join('');
+  /*
+      // sqls.push(`UPDATE "public"."TradelinesStates" set "agentId" = ${sqlNullStr(tradeline.attributes['agent-id'])}, "teamLeadId" = ${sqlNullStr(tradeline.attributes['team-lead-id'])} WHERE "TradelinesStates"."tradeLineId" = ${tradelineId}`);
+
+  tradeLineId, "status", "teamLeadId", "agentId"
+
+  { id: 'a0Q46000003MZxdEAG',
+    type: 'trade-lines',
+    links: { self: '/api/v1/settlements/trade-lines/a0Q46000003MZxdEAG' },
+    attributes:
+     { 'submission-status': 'reviewed',
+       'review-status': 'confirmed',
+       'team-lead-id': null,
+       'team-lead-name': null,
+       'agent-id': null,
+       'agent-name': null } }
+
+
+ if (!status) {
+    att.review_status = 'None';
+    att.submission_status = 'None';
+  } else if (status === 1) {
+    att.submission_status = 'pending_review';
+    att.review_status = 'None';
+  } else if (status === 2) {
+    att.submission_status = 'reviewed';
+    att.review_status = 'confirmed';
+  }
+   */
+}
 async function pullTradelinesCrm(tradelineIds) {
   // get the data
   let url = getCrmUrl('trade-lines');
@@ -244,21 +289,48 @@ async function pullTradelinesCrm(tradelineIds) {
   return data.data;
 }
 module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
+  console.log('syncTradelineNameFromCrm');
   // pull ids and create a hash
   const tradelineIds = await redshift.getTradelineId(tradelineNames);
   const tradelineMaps = _.invert(tradelineIds);
   // get tradelinds from salesforce
   const tradelines = await pullTradelinesCrm(_.values(tradelineIds));
 
-  // iterate and run sql
+  const tlSql = [];
   tradelines.forEach((tradeline) => {
     const tradelineId = toTradelineId(tradelineMaps[tradeline.id]);
-    console.log('tradeline', tradeline);
-    // TODO add status to the query
-    // TODO improve performance with update...from
-    const sql = `UPDATE "public"."TradelinesStates" set "agentId" = ${sqlNullStr(tradeline.attributes['agent-id'])}, "teamLeadId" = ${sqlNullStr(tradeline.attributes['team-lead-id'])} WHERE "TradelinesStates"."tradeLineId" = ${tradelineId}`;
-
-    models.sequelize.query(sql).spread((results, metadata) => {});
+    tlSql.push(buildTradelineSqlValue(tradeline, tradelineId));
   });
+  // iterate and run sql
+  const sqls = ['update "public"."TradelinesStates" as ts set',
+    '"status" = c."status",',
+    '"teamLeadId" = c."teamLeadId",',
+    '"agentId" = c."agentId"',
+    'from (values',
+    tlSql.join(', '),
+    ') as c(tradeLineId, "status", "teamLeadId", "agentId") ',
+    'where c.tradeLineId = "ts"."tradeLineId";',
+  ].join(' ');
+  console.log('sqls', sqls);
+  models.sequelize.query(sqls).spread((results, metadata) => {});
   return { status: 'ok' };
+};
+
+// sync all to crm - function and cron job
+module.exports.syncAllFromCrm = async function () {
+  console.log('syncAllFromCrm');
+  //TODO switch to post so we could retrieve all tradelines. right now GET isn't sufficient, long URL error (414)
+  const result = await models.ScorecardRecord.findAll({ limit: 10 });
+  const tradelineNames = result.map( tradeline => tradeline.tradeLineName);
+  await this.syncTradelineNameFromCrm(tradelineNames);
+  console.log('syncAllFromCrm finished')
+};
+module.exports.startSyncAllFromCrmCron = function(){
+  const func = this.syncAllFromCrm.bind(this);
+  console.log('start sync to crm cron job');
+  const job = new CronJob({
+    cronTime: `0 */${config.syncAllFromCrmMinutesInterval} * * * *`,
+    onTick: func,
+    start: true,
+  });
 };
