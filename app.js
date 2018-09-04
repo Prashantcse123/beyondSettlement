@@ -223,11 +223,12 @@ app.use((req, res, next) => {
   }
 });
 
+// Pass client ID and client secret key to oauth
 var options = {
   validatorUrl: null,
   oauth: {
-    clientId: "3MVG9AzPSkglhtptqHGKkfsPDyzWiYxWmXX2HUgsemfcHyelhfXavEZHqthPpZ_FkvDzplRfainKimDFXQOvB",
-    clientSecret: "461865499270135865"
+    clientId: process.env.SF_CUSTOMER_KEY,
+    clientSecret: process.env.SF_CUSTOMER_SECRET
   }
 };
 
