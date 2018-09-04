@@ -199,10 +199,12 @@ app.use((req, res, next) => {
 
     const protocol = req.protocol;
     const requestUrl = `${protocol}://${process.env.BASE_URL}/api/beyond/oauth/user_info?${cookie}`;
+    console.log('fetch user_info from url:', requestUrl);
 
     request(requestUrl, (error, response, body) => {
+      console.log('user_info response body: ', body);
       if (error || response.statusCode !== 200) {
-        console.log('error... ', error);
+        console.log('ERROR on fetching user_info', error);
         console.log(`url error: ${requestUrl}`);
         return res.status(401).json({
           error: {
@@ -210,10 +212,16 @@ app.use((req, res, next) => {
           },
         });
       }
-      try {
-        req.userProfile = _.pick(JSON.parse(body), ['user_id', 'first_name', 'last_name', 'display_name']);
-      } catch (err) {
-        console.error('ERROR on parsing user profile from SalesForce', error);
+      if (typeof body === 'string') {
+        console.log('try to parse user_info response body as it is a string');
+        try {
+          req.userProfile = _.pick(JSON.parse(body), ['user_id', 'first_name', 'last_name', 'display_name']);
+        } catch (err) {
+          console.error('ERROR on parsing user profile from SalesForce', err);
+        }
+      } else if (typeof body === 'object') {
+        console.log('user_info response body is an object');
+        req.userProfile = _.pick(body, ['user_id', 'first_name', 'last_name', 'display_name']);
       }
       next();
     });
