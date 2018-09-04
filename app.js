@@ -192,7 +192,7 @@ app.use((req, res, next) => {
     console.log('Found cookie... ', cookie);
 
     const protocol = config.getConfig('salesforceAuthProtocol');
-    const requestUrl = `${protocol}://${process.env.BASE_URL}/api/beyond/oauth/user_info?${cookie}`;
+    const requestUrl = `${protocol}://${process.env.BASE_API_URL}/api/beyond/oauth/user_info?${cookie}`;
     console.log('fetch user_info from url:', requestUrl);
 
     request(requestUrl, (error, response, body) => {
