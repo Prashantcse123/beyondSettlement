@@ -263,7 +263,13 @@ app.use((req, res, next) => {
   }
 });
 
-
+var options = {
+  validatorUrl: null,
+  oauth: {
+    clientId: "3MVG9AzPSkglhtptqHGKkfsPDyzWiYxWmXX2HUgsemfcHyelhfXavEZHqthPpZ_FkvDzplRfainKimDFXQOvB",
+    clientSecret: "461865499270135865"
+  }
+};
 
 
 // / api
@@ -279,7 +285,7 @@ app.get('/api/beyond/me', async (req, res) => {
   }
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
 
   const data = await crm.pullRolesTree().catch((error) => {
     console.error('ERROR: could not load roles_tree from CRM', error);
