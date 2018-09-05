@@ -3,7 +3,12 @@
   "info": {
     "description": "BeyondSettelments",
     "version": "1.0.0",
-    "title": "BeyondSettelments APIs"
+    "title": "BeyondSettelments APIs",
+    "x-logo": {
+      "url": "/beyond.png",
+      "backgroundColor": "#FFFFFF",
+      "altText": "Beyond"
+    }
   },
   "tags": [
     {
