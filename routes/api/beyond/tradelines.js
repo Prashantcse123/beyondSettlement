@@ -20,6 +20,7 @@ router.patch('/tradeline/:tradelineId', (req, res) => {
     res.status(200).json(result);
   }).catch((error) => {
     console.error('ERROR: could not update tradeline ', error);
+
     return res.status(500).json({ message: 'Could not update tradeline' });
   });
 });

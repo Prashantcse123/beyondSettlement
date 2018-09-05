@@ -1,12 +1,9 @@
 const models = require('../../../models');
 const express = require('express');
-// const creditorCalculationsLogic = require('../../../logic/calculations/old/creditorCalculations');
-// const accountCalculationsLogic = require('../../../logic/calculations/old/accountCalculations');
 const scorecardCalculationsLogic = require('../../../logic/calculations/scorecardCalculations');
 const eligibleAccountsCalculationsLogic = require('../../../logic/calculations/eligibleAccountsCalculations');
 const eligibleAccountsFilter = require('../../../logic/calculations/eligibleAccountsFilter');
 const _ = require('lodash');
-const crm = require('../../../services/crm.service');
 
 const router = express.Router();
 
@@ -33,12 +30,14 @@ router.get('/scorecard', (req, res) => {
   } else {
     options.order = [['totalScore', 'DESC']];
   }
+
   // agent/team lead filter
   if (req.query.agent) {
     options.where = {
       '$TradelinesState.agentId$': req.query.agent,
     };
   }
+
   if (req.query.team_lead) {
     options.where = {
       '$TradelinesState.teamLeadId$': req.query.team_lead,
@@ -46,9 +45,9 @@ router.get('/scorecard', (req, res) => {
   }
 
   // pagination
-  let page = parseInt(req.query.page || 1);
-  page--; // base 0
-  const pageSize = parseInt(req.query.page_size || 10);
+  let page = parseInt(req.query.page || 1, 10);
+  page -= 1; // base 0
+  const pageSize = parseInt(req.query.page_size || 10, 10);
   options.offset = page;
   options.limit = pageSize;
   options.include = [{
@@ -70,13 +69,16 @@ router.get('/scorecard', (req, res) => {
 router.get('/client_ranking', (req, res) => {
   let order = [];
   const where = { eligibility: 'eligible' };
+
   // agent/team lead filter
   if (req.query.agent) {
     where['$TradelinesState.agentId$'] = req.query.agent;
   }
+
   if (req.query.team_lead) {
     where['$TradelinesState.teamLeadId$'] = req.query.team_lead;
   }
+
   if (req.query.sortBy) {
     order = [[req.query.sortBy, req.query.sortOrder.toUpperCase()]];
   } else {
@@ -85,9 +87,9 @@ router.get('/client_ranking', (req, res) => {
   const options = { where, order };
 
   // pagination
-  let page = parseInt(req.query.page || 1);
-  page--; // base 0
-  const pageSize = parseInt(req.query.page_size || 10);
+  let page = parseInt(req.query.page || 1, 10);
+  page -= 1; // base 0
+  const pageSize = parseInt(req.query.page_size || 10, 10);
   options.offset = page;
   options.limit = pageSize;
   options.include = [{
@@ -121,6 +123,7 @@ router.get('/scorecard_eligible', (req, res) => {
       '"TradelinesStates"."agentId"': `'${req.query.agent}'`,
     };
   }
+
   if (req.query.team_lead) {
     options.where = {
       '"TradelinesStates"."teamLeadId"': `'${req.query.team_lead}'`,
@@ -128,9 +131,9 @@ router.get('/scorecard_eligible', (req, res) => {
   }
 
   // pagination
-  let page = parseInt(req.query.page || 1);
-  page--; // base 0
-  const pageSize = parseInt(req.query.page_size || 10);
+  let page = parseInt(req.query.page || 1, 10);
+  page -= 1; // base 0
+  const pageSize = parseInt(req.query.page_size || 10, 10);
   options.offset = page;
   options.limit = pageSize;
   options.include = [{

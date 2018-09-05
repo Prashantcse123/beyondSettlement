@@ -15,6 +15,7 @@ module.exports.rawQuery = rawQuery;
 function idsToIn(ids, isString) {
   const wrap = isString ? '\'' : '';
   const wrappedIds = ids.map(id => `${wrap}${id}${wrap}`);
+
   return ['\'\'', ...wrappedIds].join(',');
 }
 
@@ -24,6 +25,7 @@ function mapRecords(data, whatToMap, mapTo) {
   data.forEach((record) => {
     ret[record[whatToMap]] = record[mapTo];
   });
+
   return ret;
 }
 
@@ -39,6 +41,7 @@ module.exports.getTradelineName = async function (tradelineIds) {
   console.log('redshift sql', sql);
   const data = await rawQuery(sql);
   const ret = mapRecords(data, 'id', 'name');
+
   return ret;
 };
 
@@ -54,5 +57,6 @@ module.exports.getTradelineId = async function (tradelineNames) {
   console.log('redshift sql', sql);
   const data = await rawQuery(sql);
   const ret = mapRecords(data, 'name', 'id');
+
   return ret;
 };

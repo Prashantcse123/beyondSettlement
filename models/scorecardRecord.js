@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const ScorecardRecord = sequelize.define('ScorecardRecord', {
 
-    // / Metadata
+    // Metadata
     id: {
       type: DataTypes.INTEGER,
       // primaryKey: true,
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     lastWorkedOn: DataTypes.STRING,
     creditorTerms: DataTypes.STRING,
 
-    // / Metrics
+    // Metrics
     metrics_creditorScore: DataTypes.INTEGER,
     metrics_stateOfResidency: DataTypes.STRING,
     metrics_monthlyPayment: DataTypes.INTEGER,
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     metrics_accountStatus: DataTypes.STRING,
     metrics_enrolledDebt: DataTypes.FLOAT,
 
-    // / Assigned Points
+    // Assigned Points
     points_creditorScore: DataTypes.INTEGER,
     points_stateOfResidency: DataTypes.INTEGER,
     points_monthlyPayment: DataTypes.INTEGER,
@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     points_enrolledDebt: DataTypes.INTEGER,
 
 
-    // / ﻿Weighted Score
+    // Weighted Score
     weight_creditorScore: DataTypes.INTEGER,
     weight_stateOfResidency: DataTypes.INTEGER,
     weight_monthlyPayment: DataTypes.INTEGER,
@@ -65,17 +65,17 @@ module.exports = (sequelize, DataTypes) => {
     weight_accountStatus: DataTypes.INTEGER,
     weight_enrolledDebt: DataTypes.INTEGER,
 
-    // / Summary
+    // Summary
     totalScore: DataTypes.INTEGER,
     rank: DataTypes.INTEGER,
 
-    // / Account Eligibility Ranking
+    // Account Eligibility Ranking
     minAccountRank: DataTypes.INTEGER,
     accountRepeatCountByIndex: DataTypes.INTEGER,
     calculatedCreditScore: DataTypes.INTEGER,
     concatenatedIndex: DataTypes.INTEGER,
 
-    // / Operative
+    // Operative
     // isDone: DataTypes.BOOLEAN,
   });
 

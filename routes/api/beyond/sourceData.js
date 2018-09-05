@@ -1,4 +1,3 @@
-const models = require('../../../models');
 const express = require('express');
 const dataImportLogic = require('../../../logic/sourceData/dataImport');
 

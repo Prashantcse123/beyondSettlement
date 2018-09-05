@@ -1,7 +1,9 @@
 require('require-sql');
 
-const models = require('../../models/index');
 const Redshift = require('node-redshift');
+const models = require('../../models/index');
+const createTempCreditorVariablesSQL = require('./sql/createTempCreditorVariables.sql');
+const selectActiveAccountsSQL = require('./sql/selectActiveAccounts.sql');
 
 const clientConfiguration = {
   user: process.env.REDSHIFT_USER,
@@ -14,7 +16,8 @@ const clientConfiguration = {
 const redshift = new Redshift(clientConfiguration, { rawConnection: true });
 
 const dataImport = {
-  importData: () => new Promise((resolve, reject) => {
+  // todo: remove new Promise
+  importData: () => new Promise((resolve) => {
     dataImport.updateProgress('Data Import', -1)
       .then(() => dataImport.createTempCreditorVariablesTempTable()) // createTempCreditorVariablesTempTable.sql
       .then(() => dataImport.saveData()) // calls getAllActiveAccounts => selectActiveAccounts.sql
@@ -27,7 +30,8 @@ const dataImport = {
     console.log(`>> updateProgress for ${task} to ${value} outer`);
 
 
-    return new Promise((resolve, reject) => {
+    // todo: remove new Promise
+    return new Promise((resolve) => {
       models.Progress.findAll({ where: { type } }).then((rows) => {
         const row = rows[0];
 
@@ -42,12 +46,10 @@ const dataImport = {
   },
 
   createTempCreditorVariablesTempTable: () => {
-    const sql = require('./sql/createTempCreditorVariables.sql');
-
     console.log('>> Attempting to create ##temp_Creditor_Variables temporary table');
 
     return new Promise((resolve, reject) =>
-      redshift.rawQuery(sql, { raw: true })
+      redshift.rawQuery(createTempCreditorVariablesSQL, { raw: true })
         .then((data) => {
           console.log('<< ##temp_Creditor_Variables temporary table created successfully');
           resolve(data);
@@ -59,12 +61,11 @@ const dataImport = {
   },
 
   getAllActiveAccounts: () => {
-    const sql = require('./sql/selectActiveAccounts.sql');
-
     console.log('>> Attempting to select ActiveAccounts data from ##temp_Creditor_Variables table');
 
+    // todo: remove new Promise
     return new Promise((resolve, reject) =>
-      redshift.rawQuery(sql, { raw: true })
+      redshift.rawQuery(selectActiveAccountsSQL, { raw: true })
         .then((data) => {
           console.log('<< ActiveAccounts data selected successfully');
           resolve(data);
@@ -78,8 +79,9 @@ const dataImport = {
   saveData: () => {
     console.log('** Importing Data from RedShift...');
 
+    // todo: remove new Promise
     const promises = [
-      new Promise((resolve, reject) =>
+      new Promise(resolve =>
         dataImport.getAllActiveAccounts()
           .then((varData) => {
             console.log('** Importing Query Finished, Appending Data');

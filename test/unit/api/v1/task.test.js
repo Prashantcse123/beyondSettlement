@@ -1,11 +1,12 @@
 const expect = require('expect.js');
+const models = require('../../../../models');
 
 describe('models/task', () => {
-  before(() => require('../../models').sequelize.sync());
+  before(() => models.sequelize.sync());
 
   beforeEach(() => {
-    this.User = require('../../models').User;
-    this.Task = require('../../models').Task;
+    this.User = models.User;
+    this.Task = models.Task;
   });
 
   describe('create', () => {

@@ -2,7 +2,7 @@ require('dotenv').config(); // .env file
 
 const app = require('./app');
 const debug = require('debug')('express-sequelize');
-const models = require('./models/index');
+require('./models/index');
 
 const port = process.env.PORT || 3000;
 
