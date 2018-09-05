@@ -61,8 +61,8 @@ paths:
     get:
       security:
         - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
+            - 'admin'
+            - 'user'
       tags:
         - Scorecard
       summary: Scorecard
@@ -95,8 +95,8 @@ paths:
     get:
       security:
         - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
+            - 'admin'
+            - 'user'
       tags:
         - Scorecard
       summary: Scorecard eligible
@@ -129,8 +129,8 @@ paths:
     put:
       security:
         - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
+            - 'admin'
+            - 'user'
       tags:
         - Scorecard
       summary: Update scorecard details
@@ -161,8 +161,8 @@ paths:
     get:
       security:
         - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
+            - 'admin'
+            - 'user'
       tags:
         - Scorecard
       summary: Client ranking
@@ -216,8 +216,8 @@ paths:
     get:
       security:
         - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
+            - 'admin'
+            - 'user'
       tags:
         - Scorecard
       summary: Scorecard progress
@@ -250,8 +250,8 @@ paths:
     get:
       security:
         - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
+            - 'admin'
+            - 'user'
       tags:
         - Scorecard
       summary: Scorecard status
@@ -278,8 +278,8 @@ paths:
     get:
       security:
         - salesforceAuth:
-            - 'write:user'
-            - 'read:user'
+            - 'admin'
+            - 'user'
       tags:
         - Import
       summary: Data import
@@ -300,9 +300,10 @@ components:
       flows:
         implicit:
           authorizationUrl: 'http://localhost:3000/api/beyond/oauth/authenticate'
+          refreshUrl: 'http://localhost:3000/api/beyond/oauth/refresh'
           scopes:
-            'write:user': modify user in your account
-            'read:user': read your user
+            'admin': Admin scope
+            'user': User scope
   schemas:
     ScorecardResponse:
       type: object
