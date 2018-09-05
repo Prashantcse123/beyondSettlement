@@ -11,6 +11,7 @@ const request = require('request');
 const cors = require('cors');
 const _ = require('lodash');
 var fs = require('fs');
+var publicDir = require('path'). join(__dirname,'beyond.png');
 
 // Swagger integration
 const swaggerUi = require('swagger-ui-express');
@@ -145,6 +146,7 @@ const config = require('./config/config');
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
+app. use(express. static(publicDir));
 // if (process.env.NODE_ENV === 'production') {
 //   const splunkStream = splunkBunyan.createStream(config);
 //   app.use(require('express-bunyan-logger')({
@@ -263,14 +265,7 @@ app.use((req, res, next) => {
   }
 });
 
-// Pass client ID and client secret key to oauth
-var options = {
-  validatorUrl: null,
-  oauth: {
-    clientId: process.env.SF_CUSTOMER_KEY,
-    clientSecret: process.env.SF_CUSTOMER_SECRET
-  }
-};
+
 
 
 // / api
@@ -286,7 +281,7 @@ app.get('/api/beyond/me', async (req, res) => {
   }
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
+
 
   const data = await crm.pullRolesTree().catch((error) => {
     console.error('ERROR: could not load roles_tree from CRM', error);
