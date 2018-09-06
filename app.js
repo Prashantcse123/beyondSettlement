@@ -18,6 +18,9 @@ const jsonData = require('./swagger/swagger');
 
 const swaggerDocument = YAML.load('./swagger/swagger3.yml');
 swaggerDocument.servers[0].url = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond`;
+swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.authorizationUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/authenticate`;
+swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.refreshUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/refresh`;
+
 
 const api = require('./routes/api');
 const crm = require('./services/crm.service');

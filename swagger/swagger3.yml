@@ -292,15 +292,15 @@ paths:
         '500':
           description: Internal server error
 servers:
-  - url: '/api/beyond/'
+  - url: ''
 components:
   securitySchemes:
     salesforceAuth:
       type: oauth2
       flows:
         implicit:
-          authorizationUrl: '/api/beyond/oauth/authenticate'
-          refreshUrl: '/api/beyond/oauth/refresh'
+          authorizationUrl: ''
+          refreshUrl: ''
           scopes:
             'admin': Admin scope
             'user': User scope
