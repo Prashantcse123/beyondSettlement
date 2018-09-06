@@ -18,8 +18,15 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger/swagger3.yml');
 swaggerDocument.servers[0].url = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond`;
 
+// Swagger integration
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger/swagger3.yml');
+
 const api = require('./routes/api');
 const crm = require('./services/crm.service');
+
+crm.startSyncAllFromCrmCron(); // cron job
 
 const app = express();
 app.use(cors({
@@ -33,13 +40,7 @@ app.use(cors({
   credentials: true,
 }));
 
-const config = {
-  token: process.env.SPLUNK_TOKEN,
-  url: process.env.SPLUNK_URL,
-  jwt_secret: process.env.JWT_SECRET,
-};
-
-
+const config = require('./config/config');
 // / catch 403 and forward to error handler
 // app.use((req, res, next) => {
 //     /*
@@ -217,7 +218,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
+  if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/sync_from_crm') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
     next();
     return;
   }
@@ -227,18 +228,31 @@ app.use((req, res, next) => {
   if (cookie) {
     console.log('Found cookie... ', cookie);
 
-    const protocol = req.protocol;
-    const requestUrl = `${protocol}://${process.env.BASE_URL}/api/beyond/oauth/user_info?${cookie}`;
+    const protocol = config.getConfig('salesforceAuthProtocol');
+    const requestUrl = `${protocol}://${process.env.BASE_API_URL}/api/beyond/oauth/user_info?${cookie}`;
+    console.log('fetch user_info from url:', requestUrl);
 
     request(requestUrl, (error, response, body) => {
+      console.log('user_info response body: ', body);
       if (error || response.statusCode !== 200) {
-        console.log('error... ', error);
+        console.log('ERROR on fetching user_info', error);
         console.log(`url error: ${requestUrl}`);
         return res.status(401).json({
           error: {
             msg: 'Failed to authenticate token!',
           },
         });
+      }
+      if (typeof body === 'string') {
+        console.log('try to parse user_info response body as it is a string');
+        try {
+          req.userProfile = _.pick(JSON.parse(body), ['user_id', 'first_name', 'last_name', 'display_name']);
+        } catch (err) {
+          console.error('ERROR on parsing user profile from SalesForce', err);
+        }
+      } else if (typeof body === 'object') {
+        console.log('user_info response body is an object');
+        req.userProfile = _.pick(body, ['user_id', 'first_name', 'last_name', 'display_name']);
       }
       next();
     });
@@ -257,18 +271,46 @@ app.use((req, res, next) => {
 
 // / api
 app.use('/api', api);
+
+app.get('/api/beyond/me', async (req, res) => {
+  if (!req.userProfile) {
+    return res.status(404).json({
+      error: {
+        msg: 'No profile found',
+      },
+    });
+  }
 app.use('/', express.static('ui/dist'));
 app.use('/assets', express.static('ui/dist/assets'));
 
 
-// roles tree TODO: use these endpoints
-// app.get('/rolestree', async (req, res) => {
-//   const data = await crm.pullRolesTree();
-//   const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
-//   const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
-//   res.json({ data });
-// });
+  const data = await crm.pullRolesTree().catch((error) => {
+    console.error('ERROR: could not load roles_tree from CRM', error);
+    return res.status(500).json({
+      error: {
+        msg: 'Could not load permissions',
+        error,
+      },
+    });
+  });
+  const userData = data.users[req.userProfile.user_id];
+  // add the third object here to override `permission` if you want to test
+  // app under different user roles
+  // Example: { permissions: ['SETTLEMENTS'] }
+  return res.status(200).json(Object.assign({}, userData));
+});
 
+app.get('/api/beyond/roles_tree', async (req, res) => {
+  const data = await crm.pullRolesTree();
+  // const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
+  // const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
+  res.json({ ...data });
+});
+
+app.get('/api/beyond/sync_from_crm', async (req, res) => {
+  crm.syncAllFromCrm();
+  res.json({ data: 'ok' });
+});
 
 // / catch 404 and forward to error handler
 app.use((req, res, next) => {

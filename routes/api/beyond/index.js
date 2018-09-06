@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const sourceData = require('./sourceData');
 const calculations = require('./calculations');
+const tradelines = require('./tradelines');
 const bcrypt = require('bcrypt-nodejs');
 const models = require('../../../models');
 
@@ -19,6 +20,7 @@ const config = {
 
 router.use('/source/data', sourceData);
 router.use('/calculations', calculations);
+router.use(tradelines);
 
 router.post('/login', (req, res) => {
   const username = req.body.username;

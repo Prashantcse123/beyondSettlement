@@ -3,6 +3,9 @@ const path = require('path');
 const _ = require('lodash');
 const redshift = require('./redshift.service');
 const models = require('../models');
+const config = require('../config/config');
+const { CronJob } = require('cron');
+
 // roles tree
 
 // splits full name
@@ -156,6 +159,7 @@ function toTradelineId(tradeLineName) {
 
 // push tradelines to crm
 function syncTradelineNameAttributes(tradeline) {
+  console.log('syncTradelineNameAttributes', tradeline);
   /*
     status: null,
     teamLeadId: null,
@@ -170,6 +174,26 @@ function syncTradelineNameAttributes(tradeline) {
   const att = {};
   att.team_lead_id = tradeline.teamLeadId || null;
   att.agent_id = tradeline.agentId || null;
+  // pending review and confirm
+  /*
+    "review_status": "None",
+    "submission_status": "pending_review",
+    "review_status": "confirmed",
+   */
+  const { status } = tradeline;
+  console.log('status', status);
+  if (!status) {
+    att.review_status = 'None';
+    att.submission_status = 'None';
+  } else if (status === 1) {
+    att.submission_status = 'pending_review';
+    att.review_status = 'None';
+  } else if (status === 2) {
+    att.submission_status = 'reviewed';
+    att.review_status = 'confirmed';
+  }
+  att.agent_id = tradeline.agentId || null;
+  att.agent_id = tradeline.agentId || null;
   return att;
 }
 async function pushTradelinesCrm(payload) {
@@ -177,6 +201,8 @@ async function pushTradelinesCrm(payload) {
   const url = getCrmUrl('trade-lines');
   console.log(`pushTradelinesCrm ${url}`);
   const { data } = await axios.patch(url, payload);
+  console.log('url', url);
+  console.log('payload', JSON.stringify(payload));
   return data.data;
 }
 module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
@@ -202,13 +228,57 @@ module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
 
   // sync
   toSend = { data: toSend };
-  return await pushTradelinesCrm(toSend);
+  const ret = await pushTradelinesCrm(toSend);
+  console.log('done pushTradelinesCrm');
+  return ret;
 };
 
 // sync from salesforce
-function sqlNullStr(str){
-  if(!str)  return 'null';
-  else return "'"+ str + "'";
+function sqlNullStr(str) {
+  if (!str) return 'null';
+  return `'${str}'`;
+}
+function buildTradelineSqlValue(tradeline, tradelineId) {
+  const { attributes } = tradeline;
+  // status
+  let status = 'NULL::text';
+  if (attributes['review-status'] == 'confirmed') status = 2;
+  else if (attributes['submission-status'] == 'pending_review') status = 1;
+  else status = 'NULL::int4';
+
+  const sql = [
+    tradelineId, status,
+    sqlNullStr(attributes['team-lead-id']), sqlNullStr(attributes['agent-id']),
+  ];
+  return ['(', sql.join(','), ')'].join('');
+  /*
+      // sqls.push(`UPDATE "public"."TradelinesStates" set "agentId" = ${sqlNullStr(tradeline.attributes['agent-id'])}, "teamLeadId" = ${sqlNullStr(tradeline.attributes['team-lead-id'])} WHERE "TradelinesStates"."tradeLineId" = ${tradelineId}`);
+
+  tradeLineId, "status", "teamLeadId", "agentId"
+
+  { id: 'a0Q46000003MZxdEAG',
+    type: 'trade-lines',
+    links: { self: '/api/v1/settlements/trade-lines/a0Q46000003MZxdEAG' },
+    attributes:
+     { 'submission-status': 'reviewed',
+       'review-status': 'confirmed',
+       'team-lead-id': null,
+       'team-lead-name': null,
+       'agent-id': null,
+       'agent-name': null } }
+
+
+ if (!status) {
+    att.review_status = 'None';
+    att.submission_status = 'None';
+  } else if (status === 1) {
+    att.submission_status = 'pending_review';
+    att.review_status = 'None';
+  } else if (status === 2) {
+    att.submission_status = 'reviewed';
+    att.review_status = 'confirmed';
+  }
+   */
 }
 async function pullTradelinesCrm(tradelineIds) {
   // get the data
@@ -218,22 +288,79 @@ async function pullTradelinesCrm(tradelineIds) {
   const { data } = await axios.get(url);
   return data.data;
 }
+async function pullTradelinesCrmBigArray(tradelineIds) {
+  // get the data
+  /*
+  {
+  "data": {
+    "type": "trade-lines",
+    "filter": {
+      "id": "a0Q46000003nY86EAE,a0Q46000003nY86EAE,a0Q46000003nY86EAE"
+    }
+  }
+   */
+  const url = getCrmUrl('trade-lines/list');
+  const payload = {
+    data: {
+      type: 'trade-lines',
+      filter: {
+        id: tradelineIds.join(','),
+      },
+    },
+  };
+  console.log('pullTradelinesCrmBigArray ', url);
+  console.log('pullTradelinesCrm payload', JSON.stringify(payload));
+  const { data } = await axios.post(url, payload);
+  console.log('finished pulling trade-lines/list');
+  return data.data;
+}
 module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
+  console.log('syncTradelineNameFromCrm');
   // pull ids and create a hash
-  let tradelineIds = await redshift.getTradelineId(tradelineNames);
+  // tradelineNames = tradelineNames.slice(1, 11); //for testing
+  console.log('redshift.getTradelineId(tradelineNames)');
+  const tradelineIds = await redshift.getTradelineId(tradelineNames);
+  console.log('finish redshift');
+
   const tradelineMaps = _.invert(tradelineIds);
   // get tradelinds from salesforce
-  const tradelines = await pullTradelinesCrm(_.values(tradelineIds));
+  const tradelines = await pullTradelinesCrmBigArray(_.values(tradelineIds));
 
-  // iterate and run sql
+  const tlSql = [];
   tradelines.forEach((tradeline) => {
     const tradelineId = toTradelineId(tradelineMaps[tradeline.id]);
-    console.log('tradeline', tradeline);
-    // TODO add status to the query
-    // TODO improve performance with update...from
-    const sql = `UPDATE "public"."TradelinesStates" set "agentId" = ${sqlNullStr(tradeline.attributes['agent-id'])}, "teamLeadId" = ${sqlNullStr(tradeline.attributes['team-lead-id'])} WHERE "TradelinesStates"."tradeLineId" = ${tradelineId}`;
-
-    models.sequelize.query(sql).spread((results, metadata) => {});
+    tlSql.push(buildTradelineSqlValue(tradeline, tradelineId));
   });
+  // iterate and run sql
+  const sqls = ['update "public"."TradelinesStates" as ts set',
+    '"status" = c."status",',
+    '"teamLeadId" = c."teamLeadId",',
+    '"agentId" = c."agentId"',
+    'from (values',
+    tlSql.join(', '),
+    ') as c(tradeLineId, "status", "teamLeadId", "agentId") ',
+    'where c.tradeLineId = "ts"."tradeLineId";',
+  ].join(' ');
+  console.log('sqls', sqls);
+  await models.sequelize.query(sqls).spread((results, metadata) => {});
   return { status: 'ok' };
+};
+
+// sync all to crm - function and cron job
+module.exports.syncAllFromCrm = async function () {
+  console.log('syncAllFromCrm');
+  // right now we are limiting to config.syncAllFromCrmRecordsLimit because of the trade-lines/list endpoint limit
+  const result = await models.ScorecardRecord.findAll({ order: [['totalScore', 'DESC']], limit: config.syncAllFromCrmRecordsLimit });
+  const tradelineNames = result.map(tradeline => tradeline.tradeLineName);
+  await this.syncTradelineNameFromCrm(tradelineNames);
+  console.log('syncAllFromCrm finished');
+};
+module.exports.startSyncAllFromCrmCron = function () {
+  const func = this.syncAllFromCrm.bind(this);
+  console.log(`start sync to crm cron job every ${config.syncAllFromCrmMinutesInterval} minutes`);
+  const job = new CronJob({
+    cronTime: `0 */${config.syncAllFromCrmMinutesInterval} * * * *`,
+    onTick: func,
+    start: true,
+  });
 };

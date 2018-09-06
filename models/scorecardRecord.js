@@ -79,5 +79,9 @@ module.exports = (sequelize, DataTypes) => {
     // isDone: DataTypes.BOOLEAN,
   });
 
+  ScorecardRecord.associate = function (models) {
+    models.ScorecardRecord.hasOne(models.TradelinesState, { foreignKey: 'tradeLineId' });
+  };
+
   return ScorecardRecord;
 };

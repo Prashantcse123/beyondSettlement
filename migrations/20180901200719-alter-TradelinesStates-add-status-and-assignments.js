@@ -2,6 +2,11 @@ module.exports = {
   up: (queryInterface, Sequelize) => [
     queryInterface.addColumn('TradelinesStates', 'status', {
       type: Sequelize.INTEGER,
+      references: {
+        model: 'TradelinesStatuses',
+        key: 'id',
+      },
+      allowNull: true,
     }),
     queryInterface.addColumn('TradelinesStates', 'teamLeadId', {
       type: Sequelize.STRING,
