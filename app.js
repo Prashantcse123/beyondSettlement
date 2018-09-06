@@ -11,17 +11,13 @@ const request = require('request');
 const cors = require('cors');
 const fs = require('fs');
 
-
 // Swagger integration
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const jsonData = require('./swagger/swagger');
+
 const swaggerDocument = YAML.load('./swagger/swagger3.yml');
 swaggerDocument.servers[0].url = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond`;
-
-// Swagger integration
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger/swagger3.yml');
 
 const api = require('./routes/api');
 const crm = require('./services/crm.service');
@@ -155,56 +151,55 @@ app.use(logger('dev'));
 // }
 
 
-//Swagger ReDoc added
+// Swagger ReDoc added
 app.get('/documentation', (req, res) => {
-  var swaggerFile = fs.readFileSync(__dirname + '/swagger/swaggerUi.html', 'utf8');
+  const swaggerFile = fs.readFileSync(`${__dirname}/swagger/swaggerUi.html`, 'utf8');
   res.send(swaggerFile);
-})
+});
 
 app.get('/swagger.json', (req, res) => {
-  var jsonData = require('./swagger/swagger');
   res.json(jsonData);
-})
+});
 
 // Pass client ID and client secret key to oauth
-var options = {
+const options = {
   validatorUrl: null,
   oauth: {
     clientId: process.env.SF_CUSTOMER_KEY,
-    clientSecret: process.env.SF_CUSTOMER_SECRET
-  }
+    clientSecret: process.env.SF_CUSTOMER_SECRET,
+  },
 };
 
-//Swagger API
+// Swagger API
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
 
 app.get('/status', (req, res) => {
-    //   var failed = 0;
-    //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
-    //                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
+  //   var failed = 0;
+  //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
+  //                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
 
-    // const asyncForEach = async (array, callback) => {
-    //   for (let index = 0; index < array.length; index++) {
-    //     await callback(array[index], index, array)
-    //   }
-    // }
+  // const asyncForEach = async (array, callback) => {
+  //   for (let index = 0; index < array.length; index++) {
+  //     await callback(array[index], index, array)
+  //   }
+  // }
 
-    // const start = async () => {
-    //   await asyncForEach(checks, async (item) => {
-    //     await isReachable(item).then(reachable => {
-    //       console.log(item + ": " + reachable);
-    //       if (!reachable) {
-    //         failed++;
-    //         console.log(item + ": " + reachable);
-    //       }
-    //     });
-    //   })
-    //   if (failed > 0) {
-    //     res.status(500).json("false");
-    //   } else {
-    res.status(200).json('true');
-    // }
-  },
+  // const start = async () => {
+  //   await asyncForEach(checks, async (item) => {
+  //     await isReachable(item).then(reachable => {
+  //       console.log(item + ": " + reachable);
+  //       if (!reachable) {
+  //         failed++;
+  //         console.log(item + ": " + reachable);
+  //       }
+  //     });
+  //   })
+  //   if (failed > 0) {
+  //     res.status(500).json("false");
+  //   } else {
+  res.status(200).json('true');
+  // }
+},
 
   // start()
 
@@ -213,7 +208,7 @@ app.get('/status', (req, res) => {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-  extended: false
+  extended: false,
 }));
 app.use(cookieParser());
 
@@ -267,8 +262,6 @@ app.use((req, res, next) => {
 });
 
 
-
-
 // / api
 app.use('/api', api);
 
@@ -280,8 +273,8 @@ app.get('/api/beyond/me', async (req, res) => {
       },
     });
   }
-app.use('/', express.static('ui/dist'));
-app.use('/assets', express.static('ui/dist/assets'));
+  app.use('/', express.static('ui/dist'));
+  app.use('/assets', express.static('ui/dist/assets'));
 
 
   const data = await crm.pullRolesTree().catch((error) => {
