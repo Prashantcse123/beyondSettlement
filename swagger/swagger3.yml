@@ -292,15 +292,15 @@ paths:
         '500':
           description: Internal server error
 servers:
-  - url: 'http://localhost:3000/api/beyond/'
+  - url: '/api/beyond/'
 components:
   securitySchemes:
     salesforceAuth:
       type: oauth2
       flows:
         implicit:
-          authorizationUrl: 'http://localhost:3000/api/beyond/oauth/authenticate'
-          refreshUrl: 'http://localhost:3000/api/beyond/oauth/refresh'
+          authorizationUrl: '/api/beyond/oauth/authenticate'
+          refreshUrl: '/api/beyond/oauth/refresh'
           scopes:
             'admin': Admin scope
             'user': User scope

@@ -9,13 +9,14 @@ const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 const cors = require('cors');
-var fs = require('fs');
+const fs = require('fs');
 
 
 // Swagger integration
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger/swagger3.yml');
+swaggerDocument.servers[0].url = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond`;
 
 const api = require('./routes/api');
 const crm = require('./services/crm.service');
@@ -177,32 +178,32 @@ var options = {
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
 
 app.get('/status', (req, res) => {
-  //   var failed = 0;
-  //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
-  //                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
+    //   var failed = 0;
+    //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
+    //                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
 
-  // const asyncForEach = async (array, callback) => {
-  //   for (let index = 0; index < array.length; index++) {
-  //     await callback(array[index], index, array)
-  //   }
-  // }
+    // const asyncForEach = async (array, callback) => {
+    //   for (let index = 0; index < array.length; index++) {
+    //     await callback(array[index], index, array)
+    //   }
+    // }
 
-  // const start = async () => {
-  //   await asyncForEach(checks, async (item) => {
-  //     await isReachable(item).then(reachable => {
-  //       console.log(item + ": " + reachable);
-  //       if (!reachable) {
-  //         failed++;
-  //         console.log(item + ": " + reachable);
-  //       }
-  //     });
-  //   })
-  //   if (failed > 0) {
-  //     res.status(500).json("false");
-  //   } else {
-  res.status(200).json('true');
-  // }
-},
+    // const start = async () => {
+    //   await asyncForEach(checks, async (item) => {
+    //     await isReachable(item).then(reachable => {
+    //       console.log(item + ": " + reachable);
+    //       if (!reachable) {
+    //         failed++;
+    //         console.log(item + ": " + reachable);
+    //       }
+    //     });
+    //   })
+    //   if (failed > 0) {
+    //     res.status(500).json("false");
+    //   } else {
+    res.status(200).json('true');
+    // }
+  },
 
   // start()
 
@@ -210,7 +211,9 @@ app.get('/status', (req, res) => {
 );
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
