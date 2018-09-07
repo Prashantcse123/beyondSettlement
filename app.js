@@ -8,8 +8,7 @@ const request = require('request');
 const cors = require('cors');
 const _ = require('lodash');
 
-
-const api = require('./routes/api');
+const createRouter = require('./routes/create-router');
 const crm = require('./services/crm.service');
 
 crm.startSyncAllFromCrmCron(); // cron job
@@ -31,10 +30,6 @@ const config = require('./config/config');
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-
-app.get('/status', (req, res) => {
-  res.status(200).json('true');
-});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -99,46 +94,10 @@ app.use((req, res, next) => {
   }
 });
 
-app.use('/api', api);
-
-app.get('/api/beyond/me', async (req, res) => {
-  if (!req.userProfile) {
-    return res.status(404).json({
-      error: {
-        msg: 'No profile found',
-      },
-    });
-  }
-
-  const data = await crm.pullRolesTree().catch((error) => {
-    console.error('ERROR: could not load roles_tree from CRM', error);
-
-    return res.status(500).json({
-      error: {
-        msg: 'Could not load permissions',
-        error,
-      },
-    });
-  });
-  const userData = data.users[req.userProfile.user_id];
-
-  // add the third object here to override `permission` if you want to test
-  // app under different user roles
-  // Example: { permissions: ['SETTLEMENTS'] }
-  return res.status(200).json(Object.assign({}, userData));
-});
-
-app.get('/api/beyond/roles_tree', async (req, res) => {
-  const data = await crm.pullRolesTree();
-  // const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
-  // const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
-  res.json({ ...data });
-});
-
-app.get('/api/beyond/sync_from_crm', async (req, res) => {
-  crm.syncAllFromCrm();
-  res.json({ data: 'ok' });
-});
+app.use('/api/beyond', createRouter([
+  'routes/api/**/*.router.js',
+  'routes/api/**/router.js',
+]));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

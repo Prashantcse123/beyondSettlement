@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const models = require('../../models/index');
+require('require-sql');
 const eligibleAccountsFilterSQL = require('./sql/eligibleAccountsFilter.sql');
 
 const eligibleAccountsFilter = {

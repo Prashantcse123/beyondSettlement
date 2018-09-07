@@ -1,11 +1,5 @@
-const express = require('express');
-
-const router = express.Router();
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const sourceData = require('./sourceData');
-const calculations = require('./calculations');
-const tradelines = require('./tradelines');
 const bcrypt = require('bcrypt-nodejs');
 const models = require('../../../models');
 
@@ -19,11 +13,7 @@ function validPassword(password, hashedPassword) {
   return bcrypt.compareSync(password, hashedPassword);
 }
 
-router.use('/source/data', sourceData);
-router.use('/calculations', calculations);
-router.use(tradelines);
-
-router.post('/login', (req, res) => {
+const login = (req, res) => {
   const {
     username,
     password,
@@ -46,7 +36,7 @@ router.post('/login', (req, res) => {
   } else {
     res.status(401).json({ error });
   }
-});
+};
 
 // (salesforce-oauth2) -------------------------------------------------------------------------------------------
 
@@ -58,7 +48,7 @@ const consumerSecret = process.env.SF_CUSTOMER_SECRET;
 const callbackUrl = process.env.SF_CALLBACK_URL;
 const baseUrl = process.env.SF_BASE_URL;
 
-router.get('/oauth/authenticate', (req, res) => {
+const oauthAuthenticate = (req, res) => {
   const uri = oauth2.getAuthorizationUrl({
     redirect_uri: callbackUrl,
     client_id: consumerKey,
@@ -69,9 +59,9 @@ router.get('/oauth/authenticate', (req, res) => {
   });
 
   return res.redirect(uri);
-});
+};
 
-router.get('/oauth/refresh', (req, res) => {
+const oauthRefresh = (req, res) => {
   const refreshToken = req.param('refresh_token');
 
   const uri = oauth2.getAuthorizationUrl({
@@ -85,9 +75,9 @@ router.get('/oauth/refresh', (req, res) => {
   });
 
   return res.redirect(uri);
-});
+};
 
-router.get('/oauth/callback', (req, res) => {
+const oauthCallback = (req, res) => {
   const authorizationCode = req.param('code');
 
   oauth2.authenticate({
@@ -146,9 +136,9 @@ router.get('/oauth/callback', (req, res) => {
      * Authorization: OAuth 00D50000000IZ3Z!AQ0AQDpEDKYsn7ioKug2aSmgCjgrPjG...
      * */
   });
-});
+};
 
-router.get('/oauth/user_info', (req, res) => {
+const getOauthUserInfo = (req, res) => {
   const { id, token } = req.query;
 
   request(`${id}?format=json&oauth_token=${token}`, (error, response, body) => {
@@ -158,6 +148,12 @@ router.get('/oauth/user_info', (req, res) => {
       res.status(200).json(JSON.parse(body));
     }
   });
-});
+};
 
-module.exports = router;
+module.exports = {
+  login,
+  oauthAuthenticate,
+  oauthRefresh,
+  oauthCallback,
+  getOauthUserInfo,
+};
