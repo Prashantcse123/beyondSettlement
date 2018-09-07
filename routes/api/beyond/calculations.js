@@ -4,14 +4,13 @@ const scorecardCalculationsLogic = require('../../../logic/calculations/scorecar
 const eligibleAccountsCalculationsLogic = require('../../../logic/calculations/eligibleAccountsCalculations');
 const eligibleAccountsFilter = require('../../../logic/calculations/eligibleAccountsFilter');
 const _ = require('lodash');
+const crm = require('../../../services/crm.service');
+const childprocess = require('../../../services/childprocess.service');
 
 const router = express.Router();
 
 router.get('/scorecard/set', (req, res) => {
-  Promise.resolve()
-    .then(() => scorecardCalculationsLogic.setData())
-    .then(() => eligibleAccountsCalculationsLogic.setData());
-
+  childprocess.makeChildProcess('calculation', 'calculation', config.child_process_timeout || 1800000)
   res.status(200).json('Calculation started....');
 });
 

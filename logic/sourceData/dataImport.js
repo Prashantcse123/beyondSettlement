@@ -18,10 +18,10 @@ const redshift = new Redshift(clientConfiguration, { rawConnection: true });
 const dataImport = {
   // todo: remove new Promise
   importData: () => new Promise((resolve) => {
-    dataImport.updateProgress('Data Import', -1)
+    dataImport.updateProgress('Data Import', 0)
       .then(() => dataImport.createTempCreditorVariablesTempTable()) // createTempCreditorVariablesTempTable.sql
       .then(() => dataImport.saveData()) // calls getAllActiveAccounts => selectActiveAccounts.sql
-      .then(() => dataImport.updateProgress('Data Import', -1))
+      .then(() => dataImport.updateProgress('Data Import', 100))
       .then(() => resolve('Import Success! :)'));
   }),
 

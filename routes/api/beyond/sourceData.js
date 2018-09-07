@@ -1,10 +1,9 @@
 const express = require('express');
-const dataImportLogic = require('../../../logic/sourceData/dataImport');
-
 const router = express.Router();
+const childprocess = require('../../../services/childprocess.service');
 
 router.get('/get', (req, res) => {
-  dataImportLogic.importData();
+  childprocess.makeChildProcess('import', 'import', config.child_process_timeout || 1800000)
   res.status(200).json('Success!');
 });
 
