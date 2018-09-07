@@ -2,8 +2,8 @@ node_modules
 npm-debug.log
 *.sqlite
 .env
+.DS_Store
 
 /.idea
-/ui/dist/
 old/
 excluded/

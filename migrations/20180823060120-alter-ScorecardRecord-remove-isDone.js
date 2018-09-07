@@ -1,10 +1,8 @@
-
-const models = require('../models');
-
+// todo: maybe remove this strange migration file?
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async () => {
     // await queryInterface.removeColumn('ScorecardRecords', 'isDone');
   },
 
-  down: (queryInterface, Sequelize) => { },
+  down: () => {},
 };

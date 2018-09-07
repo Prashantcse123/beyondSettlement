@@ -1,7 +1,11 @@
 const expect = require('expect.js');
 
 describe('calculations', () => {
-  before(() => this.accountCalculationsLogic = require('../../../logic/calculations/old/accountCalculations'));
+  before(() => {
+    // todo: this test seems to be useless as we do not have /logic/calculations/old/accountCalculations
+    // eslint-disable-next-line
+    this.accountCalculationsLogic = require('../../../logic/calculations/old/accountCalculations')
+  });
 
   describe('account', () => {
     // before(() => this.accountCalculationsLogic.importActiveAccounts());
@@ -11,7 +15,7 @@ describe('calculations', () => {
     it('test column calc_accountDelinquency', () => {
       let rawAccount = {};
 
-      // / programname is empty
+      // programname is empty
       rawAccount = {
         id: 36543,
         programname: '',
@@ -49,9 +53,9 @@ describe('calculations', () => {
           expect(result).to.be(null);
         });
 
-      // / programname is not empty
-      // / creditor is 'Capital One' (factor is -30 with factor condition)
-      // / account_deliquency is 59 and is not falling into factor condition (is bigger then 0 after reducing 30)
+      // programname is not empty
+      // creditor is 'Capital One' (factor is -30 with factor condition)
+      // account_deliquency is 59 and is not falling into factor condition (is bigger then 0 after reducing 30)
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -90,9 +94,9 @@ describe('calculations', () => {
           expect(result).to.be(0);
         });
 
-      // / programname is not empty
-      // / creditor is 'Capital One' (factor is -30 with factor condition)
-      // / account_deliquency is 22 and is falling into factor condition (is smaller then 0 after reducing 30)
+      // programname is not empty
+      // creditor is 'Capital One' (factor is -30 with factor condition)
+      // account_deliquency is 22 and is falling into factor condition (is smaller then 0 after reducing 30)
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -131,9 +135,9 @@ describe('calculations', () => {
           expect(result).to.be(-8);
         });
 
-      // / programname is not empty
-      // / creditor is 'Barclays' (factor is 60 without factor condition)
-      // / account_deliquency is 29
+      // programname is not empty
+      // creditor is 'Barclays' (factor is 60 without factor condition)
+      // account_deliquency is 29
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -172,9 +176,9 @@ describe('calculations', () => {
           expect(result).to.be(89);
         });
 
-      // / programname is not empty
-      // / creditor is 'Lending Club' (factor is 90 without factor condition)
-      // / account_deliquency is 29
+      // programname is not empty
+      // creditor is 'Lending Club' (factor is 90 without factor condition)
+      // account_deliquency is 29
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -213,9 +217,9 @@ describe('calculations', () => {
           expect(result).to.be(119);
         });
 
-      // / programname is not empty
-      // / creditor is 'Prosper' (factor is 120 without factor condition)
-      // / account_deliquency is 29
+      // programname is not empty
+      // creditor is 'Prosper' (factor is 120 without factor condition)
+      // account_deliquency is 29
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -254,9 +258,9 @@ describe('calculations', () => {
           expect(result).to.be(149);
         });
 
-      // / programname is not empty
-      // / creditor is 'Best Egg' (factor is 150 without factor condition)
-      // / account_deliquency is 29
+      // programname is not empty
+      // creditor is 'Best Egg' (factor is 150 without factor condition)
+      // account_deliquency is 29
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -295,9 +299,9 @@ describe('calculations', () => {
           expect(result).to.be(179);
         });
 
-      // / programname is not empty
-      // / creditor is 'Absolute Resolution LLC' (no factor)
-      // / account_deliquency is 29
+      // programname is not empty
+      // creditor is 'Absolute Resolution LLC' (no factor)
+      // account_deliquency is 29
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -340,7 +344,7 @@ describe('calculations', () => {
     it('test column calc_currentBalance', () => {
       let rawAccount = {};
 
-      // / programname is empty string
+      // programname is empty string
       rawAccount = {
         id: 36543,
         programname: '',
@@ -378,9 +382,9 @@ describe('calculations', () => {
           expect(result).to.be(null);
         });
 
-      // / programname not empty string
-      // / currentbalance is null
-      // / originalbalance is 1746
+      // programname not empty string
+      // currentbalance is null
+      // originalbalance is 1746
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -419,9 +423,9 @@ describe('calculations', () => {
           expect(result).to.be(1746);
         });
 
-      // / programname not empty string
-      // / currentbalance is 850
-      // / originalbalance is 1746
+      // programname not empty string
+      // currentbalance is 850
+      // originalbalance is 1746
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -464,7 +468,7 @@ describe('calculations', () => {
     it('test column rangesFlag', () => {
       let rawAccount = {};
 
-      // / creditor is not 'Capital One'
+      // creditor is not 'Capital One'
       rawAccount = {
         id: 36543,
         programname: '',
@@ -502,9 +506,9 @@ describe('calculations', () => {
           expect(result).to.be(null);
         });
 
-      // / creditor is 'Capital One'
-      // / originalbalance is bigger then currentbalance
-      // / originalbalance is smaller then 500
+      // creditor is 'Capital One'
+      // originalbalance is bigger then currentbalance
+      // originalbalance is smaller then 500
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -543,9 +547,9 @@ describe('calculations', () => {
           expect(result).to.be(2);
         });
 
-      // / creditor is 'Capital One'
-      // / originalbalance is bigger then currentbalance
-      // / originalbalance is smaller then 1000
+      // creditor is 'Capital One'
+      // originalbalance is bigger then currentbalance
+      // originalbalance is smaller then 1000
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -584,9 +588,9 @@ describe('calculations', () => {
           expect(result).to.be(3);
         });
 
-      // / creditor is 'Capital One'
-      // / originalbalance is bigger then currentbalance
-      // / originalbalance is smaller then 2000
+      // creditor is 'Capital One'
+      // originalbalance is bigger then currentbalance
+      // originalbalance is smaller then 2000
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -625,9 +629,9 @@ describe('calculations', () => {
           expect(result).to.be(4);
         });
 
-      // / creditor is 'Capital One'
-      // / originalbalance is bigger then currentbalance
-      // / originalbalance is smaller then 5000
+      // creditor is 'Capital One'
+      // originalbalance is bigger then currentbalance
+      // originalbalance is smaller then 5000
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -666,9 +670,9 @@ describe('calculations', () => {
           expect(result).to.be(5);
         });
 
-      // / creditor is 'Capital One'
-      // / originalbalance is bigger then currentbalance
-      // / originalbalance is smaller then 6000
+      // creditor is 'Capital One'
+      // originalbalance is bigger then currentbalance
+      // originalbalance is smaller then 6000
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -707,9 +711,9 @@ describe('calculations', () => {
           expect(result).to.be(6);
         });
 
-      // / creditor is 'Capital One'
-      // / originalbalance is bigger then currentbalance
-      // / originalbalance is bigger then 6000
+      // creditor is 'Capital One'
+      // originalbalance is bigger then currentbalance
+      // originalbalance is bigger then 6000
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -752,7 +756,7 @@ describe('calculations', () => {
     it('test column multipleProductsFlag', () => {
       let rawAccount = {};
 
-      // / creditor is 'Capital One'
+      // creditor is 'Capital One'
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -790,8 +794,8 @@ describe('calculations', () => {
           expect(result).to.be(null);
         });
 
-      // / creditor is 'US BANK'
-      // / account_number is '8192-4156-3180-24' (length is bigger then 16)
+      // creditor is 'US BANK'
+      // account_number is '8192-4156-3180-24' (length is bigger then 16)
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -830,8 +834,8 @@ describe('calculations', () => {
           expect(result).to.be(1);
         });
 
-      // / creditor is 'Wells Fargo'
-      // / account_number is '8192-4156' (length is smaller then 16)
+      // creditor is 'Wells Fargo'
+      // account_number is '8192-4156' (length is smaller then 16)
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -874,10 +878,10 @@ describe('calculations', () => {
     it('test generic function endOfMonthPct', () => {
       let rawAccount = {};
 
-      // / m0_bal is 1350
-      // / currentbalance is null
-      // / originalbalance is 1746
-      // / [CALCULATED] calc_currentBalance is 1746
+      // m0_bal is 1350
+      // currentbalance is null
+      // originalbalance is 1746
+      // [CALCULATED] calc_currentBalance is 1746
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -916,10 +920,10 @@ describe('calculations', () => {
           expect(result).to.be(0.7734020618556701);
         });
 
-      // / m0_bal is 1350
-      // / currentbalance is null
-      // / originalbalance is 1746
-      // / [CALCULATED] calc_currentBalance is 850
+      // m0_bal is 1350
+      // currentbalance is null
+      // originalbalance is 1746
+      // [CALCULATED] calc_currentBalance is 850
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -958,10 +962,10 @@ describe('calculations', () => {
           expect(result).to.be(1.5886588235294117);
         });
 
-      // / m0_bal is 1350
-      // / currentbalance is null
-      // / originalbalance is 0
-      // / [CALCULATED] calc_currentBalance is 0 (will cause a division by 0 exception)
+      // m0_bal is 1350
+      // currentbalance is null
+      // originalbalance is 0
+      // [CALCULATED] calc_currentBalance is 0 (will cause a division by 0 exception)
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -998,17 +1002,19 @@ describe('calculations', () => {
         .then((result) => {
           expect(result).to.be(null);
         });
-    }); // note: this is a generic function that represents ﻿Fund Accumulation columns (endOfCurrentMonth, monthOut1, etc...)
+    });
+    // note: this is a generic function that represents Fund Accumulation columns
+    // (endOfCurrentMonth, monthOut1, etc...)
 
     it('test generic function creditorReprocess.reprocessColumnWithOverride', () => {
       let rawAccount = {};
 
-      // / creditor is 'Lowes' (has creditor override)
-      // / [CALCULATED] calc_accountDelinquency is null
-      // / [CALCULATED] rangesFlag is null
-      // / [CALCULATED] multipleProductsFlag is 1746
-      // / originalbalance is 1746
-      // / [CALCULATED] calc_currentBalance is 1746
+      // creditor is 'Lowes' (has creditor override)
+      // [CALCULATED] calc_accountDelinquency is null
+      // [CALCULATED] rangesFlag is null
+      // [CALCULATED] multipleProductsFlag is 1746
+      // originalbalance is 1746
+      // [CALCULATED] calc_currentBalance is 1746
 
       rawAccount = {
         id: 36543,
@@ -1052,23 +1058,23 @@ describe('calculations', () => {
     it('test column minOfFunds', () => {
       let rawAccount = {};
 
-      // / currentbalance is null
-      // / originalbalance is 1746
-      // / [CALCULATED] calc_currentBalance is 1746
-      // / [CALCULATED] monthOut2 is 1.5468041237113401
-      // / [CALCULATED] monthOut3 is 1.9335051546391753
-      // / [CALCULATED] monthOut4 is 2.3202061855670104
-      // / [CALCULATED] monthOut5 is 2.7069072164948453
-      // / [CALCULATED] monthOut6 is 3.0936082474226803
-      // / [CALCULATED] monthOut7 is 3.4803092783505156
-      // / [CALCULATED] monthOut8 is 3.8670103092783505
-      // / [CALCULATED] monthOut9 is 4.253711340206185
-      // / [CALCULATED] monthOut10 is 4.640412371134021
-      // / [CALCULATED] monthOut11 is 5.027113402061856
-      // / [CALCULATED] monthOut12 is 5.413814432989691
+      // currentbalance is null
+      // originalbalance is 1746
+      // [CALCULATED] calc_currentBalance is 1746
+      // [CALCULATED] monthOut2 is 1.5468041237113401
+      // [CALCULATED] monthOut3 is 1.9335051546391753
+      // [CALCULATED] monthOut4 is 2.3202061855670104
+      // [CALCULATED] monthOut5 is 2.7069072164948453
+      // [CALCULATED] monthOut6 is 3.0936082474226803
+      // [CALCULATED] monthOut7 is 3.4803092783505156
+      // [CALCULATED] monthOut8 is 3.8670103092783505
+      // [CALCULATED] monthOut9 is 4.253711340206185
+      // [CALCULATED] monthOut10 is 4.640412371134021
+      // [CALCULATED] monthOut11 is 5.027113402061856
+      // [CALCULATED] monthOut12 is 5.413814432989691
 
 
-      // / [CALCULATED] creditorReprocess.avgPctSettlement is 5.413814432989691
+      // [CALCULATED] creditorReprocess.avgPctSettlement is 5.413814432989691
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -1111,8 +1117,8 @@ describe('calculations', () => {
     it('test column notSettlePreChargeOffFlag', () => {
       let rawAccount = {};
 
-      // / creditor is 'Best Egg'
-      // / [CALCULATED] calc_accountDelinquency is 209 (bigger then 180)
+      // creditor is 'Best Egg'
+      // [CALCULATED] calc_accountDelinquency is 209 (bigger then 180)
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -1151,10 +1157,10 @@ describe('calculations', () => {
           expect(result).to.be(0);
         });
 
-      // / creditor is 'Capital One' (falling into relevant creditors condition)
-      // / [CALCULATED] calc_accountDelinquency is 0 (smaller then 180)
-      // / [CALCULATED] rangesFlag is 2
-      // / [CALCULATED] multipleProductsFlag is null
+      // creditor is 'Capital One' (falling into relevant creditors condition)
+      // [CALCULATED] calc_accountDelinquency is 0 (smaller then 180)
+      // [CALCULATED] rangesFlag is 2
+      // [CALCULATED] multipleProductsFlag is null
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -1193,10 +1199,11 @@ describe('calculations', () => {
           expect(result).to.be(1);
         });
 
-      // / creditor is 'US BANK' and is not falling into relevant concat creditors condition because rangesFlag + multipleProductsFlag is not 0
-      // / [CALCULATED] calc_accountDelinquency is 0 (smaller then 180)
-      // / [CALCULATED] rangesFlag is null
-      // / [CALCULATED] multipleProductsFlag is 1
+      // creditor is 'US BANK' and is not falling into relevant concat creditors condition
+      // because rangesFlag + multipleProductsFlag is not 0
+      // [CALCULATED] calc_accountDelinquency is 0 (smaller then 180)
+      // [CALCULATED] rangesFlag is null
+      // [CALCULATED] multipleProductsFlag is 1
       rawAccount = {
         id: 36543,
         programname: 'P-2445',
@@ -1235,10 +1242,11 @@ describe('calculations', () => {
           expect(result).to.be(0);
         });
 
-      // / creditor is 'Wells Fargo' and is falling into relevant concat creditors condition because rangesFlag + multipleProductsFlag is 0 (Wells Fargo0)
-      // / [CALCULATED] calc_accountDelinquency is 0 (smaller then 180)
-      // / [CALCULATED] rangesFlag is null
-      // / [CALCULATED] multipleProductsFlag is 0
+      // creditor is 'Wells Fargo' and is falling into relevant concat creditors condition
+      // because rangesFlag + multipleProductsFlag is 0 (Wells Fargo0)
+      // [CALCULATED] calc_accountDelinquency is 0 (smaller then 180)
+      // [CALCULATED] rangesFlag is null
+      // [CALCULATED] multipleProductsFlag is 0
       rawAccount = {
         id: 36543,
         programname: 'P-2445',

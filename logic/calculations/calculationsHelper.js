@@ -7,6 +7,7 @@ const calculationsHelper = {
     const calcRowIndex = (rowIndex) => {
       console.log('Calculating index', rowIndex, rows.length);
       calculationsHelper.updateProgress(`${processName} calculations`, (rowIndex + 1) / rows.length);
+
       if (rowIndex === rows.length) {
         resolve();
       } else {
@@ -24,16 +25,14 @@ const calculationsHelper = {
 
     if (method === 'create') {
       models.sequelize.transaction((t) => {
-        const options = { raw: true, transaction: t };
+        console.log('alter table TradelinesStates: drop tradeLineId constraint');
 
         return models.sequelize
           .query('ALTER TABLE "public"."TradelinesStates" DROP CONSTRAINT IF EXISTS "TradelinesStates_tradeLineId_fkey";')
           .then(() => models.sequelize.query('truncate table "public"."ScorecardRecords";'))
-          .then(() => {
-            // return models.sequelize.query('ALTER TABLE "public"."TradelinesStates" ADD CONSTRAINT "TradelinesStates_tradeLineId_fkey" FOREIGN KEY ("tradeLineId") REFERENCES "public"."ScorecardRecords"("tradeLineId");')
-          })
           .catch((err) => {
             console.log('err', err);
+
             return t.rollback();
           });
       });
@@ -47,11 +46,14 @@ const calculationsHelper = {
     const promises = Object.keys(calculationsUnit.columns).map(column =>
       calculationsHelper.setCalculationValue(calculationsUnit, row, column));
 
+    // todo: remove new Promise, replace forEach with reduce
     return new Promise((resolve) => {
       Promise.all(promises).then((resultsColumns) => {
         const resultObj = {};
 
-        resultsColumns.forEach(rc => resultObj[Object.keys(rc)[0]] = rc[Object.keys(rc)[0]]);
+        resultsColumns.forEach((rc) => {
+          resultObj[Object.keys(rc)[0]] = rc[Object.keys(rc)[0]];
+        });
         resolve(resultObj);
       });
     });
@@ -67,6 +69,7 @@ const calculationsHelper = {
 
     if (calculationsHelper._progRow) {
       calculationsHelper._progRow.update({ type, task, value });
+
       return;
     }
 

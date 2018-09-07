@@ -1,7 +1,6 @@
 const express = require('express');
 
 const router = express.Router();
-// const users = require('./users');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const sourceData = require('./sourceData');
@@ -10,21 +9,25 @@ const tradelines = require('./tradelines');
 const bcrypt = require('bcrypt-nodejs');
 const models = require('../../../models');
 
-
 const config = {
   token: process.env.SPLUNK_TOKEN,
   url: process.env.SPLUNK_URL,
   jwt_secret: process.env.JWT_SECRET,
 };
 
+function validPassword(password, hashedPassword) {
+  return bcrypt.compareSync(password, hashedPassword);
+}
 
 router.use('/source/data', sourceData);
 router.use('/calculations', calculations);
 router.use(tradelines);
 
 router.post('/login', (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
+  const {
+    username,
+    password,
+  } = req.body;
   const error = { message: 'Wrong username or password!' };
 
   if (req.body.username && req.body.password) {
@@ -45,23 +48,15 @@ router.post('/login', (req, res) => {
   }
 });
 
-function generateHash(password) {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-}
-
-function validPassword(password, hashedPassword) {
-  return bcrypt.compareSync(password, hashedPassword);
-}
-
-// / (salesforce-oauth2) -------------------------------------------------------------------------------------------
+// (salesforce-oauth2) -------------------------------------------------------------------------------------------
 
 const request = require('request');
 const oauth2 = require('salesforce-oauth2');
 
-let consumerKey = process.env.SF_CUSTOMER_KEY,
-  consumerSecret = process.env.SF_CUSTOMER_SECRET,
-  callbackUrl = process.env.SF_CALLBACK_URL,
-  baseUrl = process.env.SF_BASE_URL;
+const consumerKey = process.env.SF_CUSTOMER_KEY;
+const consumerSecret = process.env.SF_CUSTOMER_SECRET;
+const callbackUrl = process.env.SF_CALLBACK_URL;
+const baseUrl = process.env.SF_BASE_URL;
 
 router.get('/oauth/authenticate', (req, res) => {
   const uri = oauth2.getAuthorizationUrl({
@@ -72,6 +67,7 @@ router.get('/oauth/authenticate', (req, res) => {
     // You can change loginUrl to connect to sandbox or prerelease env.
     base_url: baseUrl,
   });
+
   return res.redirect(uri);
 });
 
@@ -87,6 +83,7 @@ router.get('/oauth/refresh', (req, res) => {
     // You can change loginUrl to connect to sandbox or prerelease env.
     base_url: baseUrl,
   });
+
   return res.redirect(uri);
 });
 
@@ -104,18 +101,19 @@ router.get('/oauth/callback', (req, res) => {
     if (error) {
       res.status(401).send(error.toString());
     } else {
-      const protocol = req.protocol;
+      const { protocol } = req;
       const hostname = req.headers.host;
       const passInfo = `id=${payload.id}&token=${payload.access_token}`;
 
-      request(`${protocol}://${hostname}/api/beyond/oauth/user_info?${passInfo}`, (error, response, body) => {
+      request(`${protocol}://${hostname}/api/beyond/oauth/user_info?${passInfo}`, (err) => {
         if (error) {
-          res.status(401).send(error.toString());
+          res.status(401).send(err.toString());
         } else {
           const options = {
             maxAge: 24 * 60 * 60 * 1000,
             httpOnly: true,
           };
+
           if (['production', 'staging'].includes(process.env.NODE_ENV)) {
             options.domain = 'beyondfinance.com';
           }
@@ -125,42 +123,33 @@ router.get('/oauth/callback', (req, res) => {
         }
       });
     }
-    /*
-
-        The payload should contain the following fields:
-
-        id 				A URL, representing the authenticated user,
-                        which can be used to access the Identity Service.
-
-        issued_at		The time of token issue, represented as the
-                        number of seconds since the Unix epoch
-                        (00:00:00 UTC on 1 January 1970).
-
-        refresh_token	A long-lived token that may be used to obtain
-                        a fresh access token on expiry of the access
-                        token in this response.
-
-        instance_url	Identifies the Salesforce instance to which API
-                        calls should be sent.
-
-        access_token	The short-lived access token.
-
-
-        The signature field will be verified automatically and can be ignored.
-
-        At this point, the client application can use the access token to authorize requests
-        against the resource server (the Force.com instance specified by the instance URL)
-        via the REST APIs, providing the access token as an HTTP header in
-        each request:
-
-        Authorization: OAuth 00D50000000IZ3Z!AQ0AQDpEDKYsn7ioKug2aSmgCjgrPjG...
-        */
+    /**
+     * The payload should contain the following fields:
+     *  id            A URL, representing the authenticated user,
+     *                which can be used to access the Identity Service.
+     *  issued_at     The time of token issue, represented as the number
+     *                of seconds since the Unix epoch (00:00:00 UTC on 1 January 1970).
+     *  refresh_token A long-lived token that may be used to obtain
+     *                a fresh access token on expiry of the access
+     *                token in this response.
+     *  instance_url  Identifies the Salesforce instance to which API
+     *                calls should be sent.
+     *  access_token  The short-lived access token.
+     *
+     * The signature field will be verified automatically and can be ignored.
+     *
+     * At this point, the client application can use the access token to authorize requests
+     * against the resource server (the Force.com instance specified by the instance URL)
+     * via the REST APIs, providing the access token as an HTTP header in
+     * each request:
+     *
+     * Authorization: OAuth 00D50000000IZ3Z!AQ0AQDpEDKYsn7ioKug2aSmgCjgrPjG...
+     * */
   });
 });
 
 router.get('/oauth/user_info', (req, res) => {
-  const id = req.query.id;
-  const token = req.query.token;
+  const { id, token } = req.query;
 
   request(`${id}?format=json&oauth_token=${token}`, (error, response, body) => {
     if (error || response.statusCode !== 200) {

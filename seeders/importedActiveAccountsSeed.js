@@ -1,7 +1,6 @@
-const staticData = require('../staticData/importedActiveAccountsData');
-
+// todo: maybe remove this strange seed?
 module.exports = {
-  up(queryInterface, Sequelize) {
+  up() {
     return true;
     // removed because each time the service restarts on production it runs
 
@@ -16,7 +15,7 @@ module.exports = {
     return queryInterface.bulkInsert('ImportedActiveAccounts', staticData, {}); */
   },
 
-  down(queryInterface, Sequelize) {
+  down() {
     // return queryInterface.bulkDelete('Person', null, {});
   },
 };
