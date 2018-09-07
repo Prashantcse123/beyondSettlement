@@ -1,0 +1,652 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Beyond Settelments",
+    "version": "1.0.0",
+    "title": "Beyond Settelments APIs",
+    "x-logo": {
+      "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAAsCAMAAAD7JmIuAAABX1BMVEVHcEz8///8///8///8///8///8///Uv9D8///z7PH8///8///8///8///8///8///8///8///8///8///8//9bSpr8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8///8//8sh8j8///8//9gTJzzcybaT0+xWZRFk4z8///8///tdS0ziMHNQ2+/UJ7DPoSVTZxUXKbATJnIKGG/UJ7zcyY9sV8rh8gzh8P8//+/UJ7IJGPzcybUPVFTYKvudC3mXDovsl92qVcsrnPKTX+/UJ6QTJvIJGK/UJ7xdCi7lUcvoJtFc7guicYrs19LbLEvsl9eSprDP4XGJWE3r2nEOHvGJWFcSpqkTZxcSpnGJWEyqYHEkERVrluKpVQ0smAwm6Ush8g0sWD8//+/UJ4sh8jzcybGJWEos14ZF7YiAAAAb3RSTlMAD6P4ZvxfAfEEw31wQLcJzOrhnIj+E9RZUyi8dUUuG9ohp5SrS7KCehY7j2uJM4ZQcPoNFYVu+fwcbf7+/qtuxjWWRqc33jKLbSe/L8H+/kz5303v3v7+bNXs9nqczrOD5Mu/n6a+zd3+z33dwXGq4ilmAAAFxUlEQVRYw+1Z51PjOBSPkxjZgSROQkyKA+mFQOgsfSl77A4c2/dutlzvVSTw/8+9Z7lIdnCyN7M3cMP7gqInP/30ukQodPep1Gwu3TpQC7XaZ0H8KKWxWwc6QenEPeh70Peg7w5oklRvWqXqcxL5mG0J+Q9Ak3hNU2Q51dzs+Jbom0WFUqo0o5I104tGvUJz0eisNVzbOTh98eL0YGfNKymZq5YjkXTCmPNppVGLldNa3aiMD7o0Q21SppOiOENxeCmD2WIexvPCqllK5QLT8c7rS4te7wimIxMpW1CkmxQ5aWePZmE80GqN8jRT4PidmMDTTB0ROGNYEJOhtMjUfHjJ0eE2d/qwsEnF5UhNnhPZJGOA1uq4NJwv6IVGF9WamnXYc2VUfibfK/TyNVRU2jzRFHyg8x4En+VtzLu7u98d/Phyb2/v8vLUQU2sXWYLpSUUVHb8sINmlhMLjXi+rSHs7higZVgXsw8uZRCZ7XMSysvY4qUNWJpGsJ0IpVOcFAPmTVc4uNy9uvr+FYbh8g/Z7N7lIXGXODbU8QBFYoU/Ak3Y1i2hliKjQQNVOeeLyo7AEFhU5j8vgbgEDqqAwE0QKuw0iYPnAPnqoc1YzgLsHctkYAtNctSOqsk5nkVbriyd+eNo0DE+YIjhCIzDaEFYnqfMD0pCKDZAOaY5vgbMrxxBa2eA+iWTvQFe5roxUUG9mhPU0/wWUnks0JGKmGOLthoTdngJEadZuq3yedX88Rz1zEtCXS+bQ1gvtMB4aju9xcT60JPHAV3zzPVgDvvZOdmb2UKhCsxhnLa5UCywdURdvbr6Rlz+VTb7fh2DgLLP3POkGTCUF/fsER4HtK/hhvBrY8GAGPdVtiILQTyQHYqQMTVctwKgH4ur17PZ/UWWxyPEKwfDYGLIHvExQCs+YF1K6/BnGtxk0ksxyzJNZzcJYiyKynuzevWzV9RP2f2tNROHIjKqzJXB3TK+wjlG9pjxTRrMcYVqwFHVCj7LrguQ2bHAHQ1WBY+2Msh+/2QY6DADDWc3QkMs/fGgNxnoahBoNW0NsDx2cbACoB97G6czAL0YADrBrCRSbARo8Km0b3KSdVGYKaaGUMNc1LLyHOQBuWKD3vaKWsu+DwTdZOHj03QuCDSkSVnyTtaZoxlBvTbBUDTYtma9UVcGAz9oNbsVCDrDp07bp0FyKQi0Tv2nSiqsppQ8HYa/64VQxJzFVA+gV73uETrb7weCBvdMedt4zOFzgQ03pJ6YJ31AZMn4kZry264RDmdUtzrGMcWU2cTRYPDAH4hb/cBAxDN7ldYcFmdi9+5Lih3A2nRqr3jkJFcJ8Uz1ZMoJf/XBYHDuTZ+P+v3+egBoVFpa8il6c8TFCLoApcfjgtiVWfXSU3yXYzU6EafdBiVH+Mr4BFR9LKAm34KiH4WCQGMlqfMfVWDTdHLEhWwWUnkqLnZZS1x/pLmdidoVuhss3zJXHLZB1V9crHP18PhLUPRZIGizGoRdkBXslxoj76B53LvLmmY1ig16QuWSH1XalrLj2PkWVSEegFwzQSgOnr77w4K9/ve7Z30zDANBm/20ZvU4ahRvIe0xLr+5CLZ6xenJjbp5H0y45yYtavFa4bSHx+JByIroIE+vry+OP3w4vri+fobOQUaAJubNhc5ML0xs1sw9WnqjNPo2P1/m6p28IaSgfIq/v7UEHkahEPuYqxE1I8S8qIZGgIbmpc7XWyUHV/tcfrSuk4Z9HY6ECx5ep6vcyCtabYdrmaNz8OvfTMzgz29P3MbtZtCQSDVHLRlIV/lWPjfO44o6b9Qytcm8NOxIjVammmn5eVgUN7yvNJ8/OX/z6++//Pn2r8UT4r726J4yJek654Vk1gjHtGJtAleRUi5a+GTPV22rCv1LIp/ogSp40zTru+/Wvz7oiMbmNlJdeEe4G4QvNgt3TdHQbivSHcNMyv7Hh1tPaq/X00P39P+ifwC5oddxL8TPCgAAAABJRU5ErkJggg==",
+      "backgroundColor": "#0000FF",
+      "altText": "Beyond"
+    }
+  },
+  "tags": [
+    {
+      "name": "Login",
+      "description": "Login"
+    },
+    {
+      "name": "Scorecard",
+      "description": "Operations with scorecard"
+    },
+    {
+      "name": "Import",
+      "description": "Data import"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "summary": "Authenticate user-1",
+        "description": "Authenticate user API-1",
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string"
+                        },
+                        "_id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "username": "abc",
+                  "password": "123"
+                },
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          },
+          "description": "User's credentials",
+          "required": true
+        }
+      }
+    },
+    "/calculations/scorecard": {
+      "get": {
+        "security": [
+          {
+            "salesforceAuth": [
+              "admin",
+              "user"
+            ]
+          }
+        ],
+        "tags": [
+          "Scorecard"
+        ],
+        "summary": "Scorecard",
+        "description": "Scorecard API",
+        "responses": {
+          "200": {
+            "description": "Scorecard generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ScorecardResponse"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "page_count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/calculations/scorecard_eligible": {
+      "get": {
+        "security": [
+          {
+            "salesforceAuth": [
+              "admin",
+              "user"
+            ]
+          }
+        ],
+        "tags": [
+          "Scorecard"
+        ],
+        "summary": "Scorecard eligible",
+        "description": "Scorecard eligible API",
+        "responses": {
+          "200": {
+            "description": "Scorecard eligible generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ScorecardResponse"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "page_count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/calculations/update_scorecard": {
+      "put": {
+        "security": [
+          {
+            "salesforceAuth": [
+              "admin",
+              "user"
+            ]
+          }
+        ],
+        "tags": [
+          "Scorecard"
+        ],
+        "summary": "Update scorecard details",
+        "description": "Update scorecard API",
+        "responses": {
+          "200": {
+            "description": "successfully update scorecard"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tradeLineId",
+                  "isDone"
+                ],
+                "properties": {
+                  "tradeLineId": {
+                    "type": "integer"
+                  },
+                  "isDone": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Send updated data values in request body",
+          "required": true
+        }
+      }
+    },
+    "/calculations/client_ranking": {
+      "get": {
+        "security": [
+          {
+            "salesforceAuth": [
+              "admin",
+              "user"
+            ]
+          }
+        ],
+        "tags": [
+          "Scorecard"
+        ],
+        "summary": "Client ranking",
+        "description": "Client ranking API",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sortBy",
+            "description": "Use for sorting the data",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sortOrder",
+            "description": "Use for sorting the data",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Use for pagination",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "description": "Use for pagination",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client ranking data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ScorecardResponse"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "page_count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/calculations/progress": {
+      "get": {
+        "security": [
+          {
+            "salesforceAuth": [
+              "admin",
+              "user"
+            ]
+          }
+        ],
+        "tags": [
+          "Scorecard"
+        ],
+        "summary": "Scorecard progress",
+        "description": "Scorecard progress",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "task": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/calculations/status": {
+      "get": {
+        "security": [
+          {
+            "salesforceAuth": [
+              "admin",
+              "user"
+            ]
+          }
+        ],
+        "tags": [
+          "Scorecard"
+        ],
+        "summary": "Scorecard status",
+        "description": "Scorecard progress",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "busy": {
+                      "type": "boolean"
+                    },
+                    "progress": {
+                      "type": "number"
+                    },
+                    "task": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/source/data/get": {
+      "get": {
+        "security": [
+          {
+            "salesforceAuth": [
+              "admin",
+              "user"
+            ]
+          }
+        ],
+        "tags": [
+          "Import"
+        ],
+        "summary": "Data import",
+        "description": "Data import",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/beyond"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "salesforceAuth": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "/api/beyond/oauth/authenticate",
+            "refreshUrl": "/api/beyond/oauth/refresh",
+            "scopes": {
+              "admin": "Admin scope",
+              "user": "User scope"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ScorecardResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "tradeLineName": {
+            "type": "string"
+          },
+          "tradeLineId": {
+            "type": "integer"
+          },
+          "programName": {
+            "type": "string"
+          },
+          "creditor": {
+            "type": "string"
+          },
+          "eligibility": {
+            "type": "integer"
+          },
+          "balance": {
+            "type": "integer"
+          },
+          "endOfCurrentMonthFundAccumulation": {
+            "type": "integer"
+          },
+          "lastWorkedOn": {
+            "type": "string"
+          },
+          "creditorTerms": {
+            "type": "string"
+          },
+          "metrics_creditorScore": {
+            "type": "integer"
+          },
+          "metrics_stateOfResidency": {
+            "type": "string"
+          },
+          "metrics_monthlyPayment": {
+            "type": "integer"
+          },
+          "metrics_accountDelinquency": {
+            "type": "integer"
+          },
+          "metrics_pctAvgSettlement": {
+            "type": "number"
+          },
+          "metrics_settlementTerm": {
+            "type": "integer"
+          },
+          "metrics_firstMonthFeeFundPct": {
+            "type": "number"
+          },
+          "metrics_feeEstimate": {
+            "type": "number"
+          },
+          "metrics_accountStatus": {
+            "type": "string"
+          },
+          "metrics_enrolledDebt": {
+            "type": "number"
+          },
+          "points_creditorScore": {
+            "type": "integer"
+          },
+          "points_stateOfResidency": {
+            "type": "integer"
+          },
+          "points_monthlyPayment": {
+            "type": "integer"
+          },
+          "points_accountDelinquency": {
+            "type": "integer"
+          },
+          "points_pctAvgSettlement": {
+            "type": "integer"
+          },
+          "points_settlementTerm": {
+            "type": "integer"
+          },
+          "points_firstMonthFeeFundPct": {
+            "type": "integer"
+          },
+          "points_feeEstimate": {
+            "type": "integer"
+          },
+          "points_accountStatus": {
+            "type": "integer"
+          },
+          "points_enrolledDebt": {
+            "type": "integer"
+          },
+          "weight_creditorScore": {
+            "type": "integer"
+          },
+          "weight_stateOfResidency": {
+            "type": "integer"
+          },
+          "weight_monthlyPayment": {
+            "type": "integer"
+          },
+          "weight_accountDelinquency": {
+            "type": "integer"
+          },
+          "weight_pctAvgSettlement": {
+            "type": "integer"
+          },
+          "weight_settlementTerm": {
+            "type": "integer"
+          },
+          "weight_firstMonthFeeFundPct": {
+            "type": "integer"
+          },
+          "weight_feeEstimate": {
+            "type": "integer"
+          },
+          "weight_accountStatus": {
+            "type": "integer"
+          },
+          "weight_enrolledDebt": {
+            "type": "integer"
+          },
+          "totalScore": {
+            "type": "integer"
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "minAccountRank": {
+            "type": "integer"
+          },
+          "accountRepeatCountByIndex": {
+            "type": "integer"
+          },
+          "calculatedCreditScore": {
+            "type": "integer"
+          },
+          "concatenatedIndex": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,7 +9,17 @@ const splunkBunyan = require('splunk-bunyan-logger');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 const cors = require('cors');
-const _ = require('lodash');
+const fs = require('fs');
+
+// Swagger integration
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const jsonData = require('./swagger/swagger');
+
+const swaggerDocument = YAML.load('./swagger/swagger3.yml');
+swaggerDocument.servers[0].url = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond`;
+swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.authorizationUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/authenticate`;
+swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.refreshUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/refresh`;
 
 
 const api = require('./routes/api');
@@ -143,6 +153,29 @@ app.use(logger('dev'));
 //   }));
 // }
 
+
+// ReDoc added
+app.get('/documentation', (req, res) => {
+  const swaggerFile = fs.readFileSync(`${__dirname}/swagger/redoc.html`, 'utf8');
+  res.send(swaggerFile);
+});
+
+app.get('/swagger.json', (req, res) => {
+  res.json(jsonData);
+});
+
+// Pass client ID and client secret key to oauth
+const options = {
+  validatorUrl: null,
+  oauth: {
+    clientId: process.env.SF_CUSTOMER_KEY,
+    clientSecret: process.env.SF_CUSTOMER_SECRET,
+  },
+};
+
+// Swagger API
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
+
 app.get('/status', (req, res) => {
 //   var failed = 0;
 //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
@@ -240,6 +273,9 @@ app.get('/api/beyond/me', async (req, res) => {
       },
     });
   }
+  app.use('/', express.static('ui/dist'));
+  app.use('/assets', express.static('ui/dist/assets'));
+
 
   const data = await crm.pullRolesTree().catch((error) => {
     console.error('ERROR: could not load roles_tree from CRM', error);
