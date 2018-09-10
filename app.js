@@ -144,42 +144,45 @@ app.use(logger('dev'));
 // }
 
 app.get('/status', (req, res) => {
-//   var failed = 0;
-//   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
-//                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
+    //   var failed = 0;
+    //   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
+    //                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
 
-// const asyncForEach = async (array, callback) => {
-//   for (let index = 0; index < array.length; index++) {
-//     await callback(array[index], index, array)
-//   }
-// }
+    // const asyncForEach = async (array, callback) => {
+    //   for (let index = 0; index < array.length; index++) {
+    //     await callback(array[index], index, array)
+    //   }
+    // }
 
-// const start = async () => {
-//   await asyncForEach(checks, async (item) => {
-//     await isReachable(item).then(reachable => {
-//       console.log(item + ": " + reachable);
-//       if (!reachable) {
-//         failed++;
-//         console.log(item + ": " + reachable);
-//       }
-//     });
-//   })
-//   if (failed > 0) {
-//     res.status(500).json("false");
-//   } else {
+    // const start = async () => {
+    //   await asyncForEach(checks, async (item) => {
+    //     await isReachable(item).then(reachable => {
+    //       console.log(item + ": " + reachable);
+    //       if (!reachable) {
+    //         failed++;
+    //         console.log(item + ": " + reachable);
+    //       }
+    //     });
+    //   })
+    //   if (failed > 0) {
+    //     res.status(500).json("false");
+    //   } else {
     res.status(200).json('true');
     // }
   },
 
-// start()
+  // start()
 
-// }
+  // }
 );
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 
+/*
 app.use((req, res, next) => {
   if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/sync_from_crm') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
     next();
@@ -228,7 +231,7 @@ app.use((req, res, next) => {
     });
   }
 });
-
+*/
 // / api
 app.use('/api', api);
 
@@ -261,12 +264,15 @@ app.get('/api/beyond/roles_tree', async (req, res) => {
   const data = await crm.pullRolesTree();
   // const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
   // const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
-  res.json({ ...data });
+  res.json({ ...data
+  });
 });
 
 app.get('/api/beyond/sync_from_crm', async (req, res) => {
   crm.syncAllFromCrm();
-  res.json({ data: 'ok' });
+  res.json({
+    data: 'ok'
+  });
 });
 
 // / catch 404 and forward to error handler
