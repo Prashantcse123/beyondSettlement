@@ -13,7 +13,7 @@ describe('Run set scorecard if user not authenticated', () => {
   });
 })
 
-describe('Run set scorecard if authenticated', () => {
+describe('Run set scorecard if user authenticated', () => {
   test('It should response the GET method', async () => {
     const response = await chai.request(app).get('/api/beyond/calculations/scorecard/set');
     expect(response.status).toEqual(200);
@@ -23,7 +23,7 @@ describe('Run set scorecard if authenticated', () => {
   });
 })
 
-describe('run Set scorecard if server down', () => {
+describe('Run set scorecard if internal server error', () => {
   test('It should response the GET method', async () => {
     const response = await chai.request(app).get('/api/beyond/calculations/scorecard/set');
     expect(response.statusCode).toBe(501);
