@@ -6,7 +6,17 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const request = require('request');
 const cors = require('cors');
-const _ = require('lodash');
+const fs = require('fs');
+
+// Swagger integration
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const jsonData = require('./swagger/swagger');
+
+const swaggerDocument = YAML.load('./swagger/swagger3.yml');
+swaggerDocument.servers[0].url = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond`;
+swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.authorizationUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/authenticate`;
+swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.refreshUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/refresh`;
 
 const createRouter = require('./routes/create-router');
 const crm = require('./services/crm.service');
@@ -30,6 +40,69 @@ const config = require('./config/config');
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
+// if (process.env.NODE_ENV === 'production') {
+//   const splunkStream = splunkBunyan.createStream(config);
+//   app.use(require('express-bunyan-logger')({
+//     name: 'logger',
+//     streams: [splunkStream],
+//   }));
+// }
+
+
+// ReDoc added
+app.get('/documentation', (req, res) => {
+  const swaggerFile = fs.readFileSync(`${__dirname}/swagger/redoc.html`, 'utf8');
+  res.send(swaggerFile);
+});
+
+app.get('/swagger.json', (req, res) => {
+  res.json(jsonData);
+});
+
+// Pass client ID and client secret key to oauth
+const options = {
+  validatorUrl: null,
+  oauth: {
+    clientId: process.env.SF_CUSTOMER_KEY,
+    clientSecret: process.env.SF_CUSTOMER_SECRET,
+  },
+};
+
+// Swagger API
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, false, options));
+
+app.get('/status', (req, res) => {
+//   var failed = 0;
+//   var checks = [process.env.RDS_DB_HOSTNAME +":"+ process.env.RDS_DB_PORT,
+//                 process.env.REDSHIFT_HOST +":"+ process.env.REDSHIFT_PORT];
+
+// const asyncForEach = async (array, callback) => {
+//   for (let index = 0; index < array.length; index++) {
+//     await callback(array[index], index, array)
+//   }
+// }
+
+// const start = async () => {
+//   await asyncForEach(checks, async (item) => {
+//     await isReachable(item).then(reachable => {
+//       console.log(item + ": " + reachable);
+//       if (!reachable) {
+//         failed++;
+//         console.log(item + ": " + reachable);
+//       }
+//     });
+//   })
+//   if (failed > 0) {
+//     res.status(500).json("false");
+//   } else {
+    res.status(200).json('true');
+    // }
+  },
+
+// start()
+
+// }
+);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -92,6 +165,24 @@ app.use((req, res, next) => {
       },
     });
   }
+  app.use('/', express.static('ui/dist'));
+  app.use('/assets', express.static('ui/dist/assets'));
+
+
+  const data = await crm.pullRolesTree().catch((error) => {
+    console.error('ERROR: could not load roles_tree from CRM', error);
+    return res.status(500).json({
+      error: {
+        msg: 'Could not load permissions',
+        error,
+      },
+    });
+  });
+  const userData = data.users[req.userProfile.user_id];
+  // add the third object here to override `permission` if you want to test
+  // app under different user roles
+  // Example: { permissions: ['SETTLEMENTS'] }
+  return res.status(200).json(Object.assign({}, userData));
 });
 
 app.use('/api/beyond', createRouter([
