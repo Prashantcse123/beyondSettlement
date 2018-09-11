@@ -4,8 +4,8 @@ module.exports = {
     username: 'docker',
     password: 'docker',
     database: 'docker',
-    host: 'db',
-    port: '5432',
+    host: 'localhost',
+    port: '5434',
     salesforceAuthProtocol: 'http',
   },
   staging: {
