@@ -1,5 +1,3 @@
-const axios = require('axios');
-const _ = require('lodash');
 const models = require('../models');
 const crm = require('./crm.service');
 
@@ -60,6 +58,7 @@ async function tradelineIdToName(tradelineId) {
                   where "TradelinesStates"."id" = ${tradelineId}
                   LIMIT 1;`;
   const tradeline = await models.sequelize.query(sql, { type: models.sequelize.QueryTypes.SELECT });
+
   return tradeline[0] ? tradeline[0].tradeLineName : null;
 }
 

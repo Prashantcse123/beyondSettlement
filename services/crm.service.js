@@ -13,11 +13,13 @@ function splitName(name) {
   const result = name.split(/\s+/);
   const firstName = result.slice(0, result.length - 1).join(' ');
   const lastName = result[result.length - 1];
+
   return { first_name: firstName, last_name: lastName };
 }
 
 function getCrmUrl(endpoint) {
   const url = path.join(process.env.CRM_URL, endpoint);
+
   return `http://${url}`;
 }
 
@@ -26,6 +28,7 @@ async function pullRolesTreeData() {
   const url = getCrmUrl('users');
   console.log(`pullRolesTreeData from ${url}`);
   const { data } = await axios.get(url);
+
   return data.data;
 }
 
@@ -34,6 +37,7 @@ function createUsers(ret, users) {
     // users
     const { id } = user;
     const { name, permissions } = user.attributes;
+    // eslint-disable-next-line camelcase
     const { first_name, last_name } = splitName(name);
 
     ret.users[id] = {
@@ -65,6 +69,7 @@ function createTeams(ret, users) {
   // iterate again, because we need to make sure the manager is already there
   users.forEach((user) => {
     const managerId = user.attributes['beyond-manager-id'];
+
     if (managerId && ret.tree.teams_hash[managerId]) {
       ret.tree.teams_hash[managerId].agents.push(user.id);
     }
@@ -150,11 +155,12 @@ use:
 function idsToIn(ids, isString) {
   const wrap = isString ? '\'' : '';
   const wrappedIds = ids.map(id => `${wrap}${id}${wrap}`);
+
   return ['\'\'', ...wrappedIds].join(',');
 }
 
 function toTradelineId(tradeLineName) {
-  return tradeLineName.replace(/TL\-(0?)+/, '');
+  return tradeLineName.replace(/TL-(0?)+/, '');
 }
 
 // push tradelines to crm
@@ -182,6 +188,7 @@ function syncTradelineNameAttributes(tradeline) {
    */
   const { status } = tradeline;
   console.log('status', status);
+
   if (!status) {
     att.review_status = 'None';
     att.submission_status = 'None';
@@ -194,6 +201,7 @@ function syncTradelineNameAttributes(tradeline) {
   }
   att.agent_id = tradeline.agentId || null;
   att.agent_id = tradeline.agentId || null;
+
   return att;
 }
 async function pushTradelinesCrm(payload) {
@@ -203,6 +211,7 @@ async function pushTradelinesCrm(payload) {
   const { data } = await axios.patch(url, payload);
   console.log('url', url);
   console.log('payload', JSON.stringify(payload));
+
   return data.data;
 }
 module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
@@ -230,62 +239,40 @@ module.exports.syncTradelineNameToCrm = async function (tradelineNames) {
   toSend = { data: toSend };
   const ret = await pushTradelinesCrm(toSend);
   console.log('done pushTradelinesCrm');
+
   return ret;
 };
 
 // sync from salesforce
 function sqlNullStr(str) {
   if (!str) return 'null';
+
   return `'${str}'`;
 }
 function buildTradelineSqlValue(tradeline, tradelineId) {
   const { attributes } = tradeline;
   // status
   let status = 'NULL::text';
-  if (attributes['review-status'] == 'confirmed') status = 2;
-  else if (attributes['submission-status'] == 'pending_review') status = 1;
+
+  if (attributes['review-status'] === 'confirmed') status = 2;
+  else if (attributes['submission-status'] === 'pending_review') status = 1;
   else status = 'NULL::int4';
 
   const sql = [
     tradelineId, status,
     sqlNullStr(attributes['team-lead-id']), sqlNullStr(attributes['agent-id']),
   ];
+
   return ['(', sql.join(','), ')'].join('');
-  /*
-      // sqls.push(`UPDATE "public"."TradelinesStates" set "agentId" = ${sqlNullStr(tradeline.attributes['agent-id'])}, "teamLeadId" = ${sqlNullStr(tradeline.attributes['team-lead-id'])} WHERE "TradelinesStates"."tradeLineId" = ${tradelineId}`);
-
-  tradeLineId, "status", "teamLeadId", "agentId"
-
-  { id: 'a0Q46000003MZxdEAG',
-    type: 'trade-lines',
-    links: { self: '/api/v1/settlements/trade-lines/a0Q46000003MZxdEAG' },
-    attributes:
-     { 'submission-status': 'reviewed',
-       'review-status': 'confirmed',
-       'team-lead-id': null,
-       'team-lead-name': null,
-       'agent-id': null,
-       'agent-name': null } }
-
-
- if (!status) {
-    att.review_status = 'None';
-    att.submission_status = 'None';
-  } else if (status === 1) {
-    att.submission_status = 'pending_review';
-    att.review_status = 'None';
-  } else if (status === 2) {
-    att.submission_status = 'reviewed';
-    att.review_status = 'confirmed';
-  }
-   */
 }
+// eslint-disable-next-line no-unused-vars
 async function pullTradelinesCrm(tradelineIds) {
   // get the data
   let url = getCrmUrl('trade-lines');
   url = `${url}?filter[id]=${tradelineIds.join(',')}`;
   console.log('pullTradelinesCrm ', url);
   const { data } = await axios.get(url);
+
   return data.data;
 }
 async function pullTradelinesCrmBigArray(tradelineIds) {
@@ -312,6 +299,7 @@ async function pullTradelinesCrmBigArray(tradelineIds) {
   console.log('pullTradelinesCrm payload', JSON.stringify(payload));
   const { data } = await axios.post(url, payload);
   console.log('finished pulling trade-lines/list');
+
   return data.data;
 }
 module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
@@ -342,7 +330,9 @@ module.exports.syncTradelineNameFromCrm = async function (tradelineNames) {
     'where c.tradeLineId = "ts"."tradeLineId";',
   ].join(' ');
   console.log('sqls', sqls);
-  await models.sequelize.query(sqls).spread((results, metadata) => {});
+  // todo: do we need a .spread() here?
+  await models.sequelize.query(sqls).spread(() => {});
+
   return { status: 'ok' };
 };
 
@@ -358,7 +348,8 @@ module.exports.syncAllFromCrm = async function () {
 module.exports.startSyncAllFromCrmCron = function () {
   const func = this.syncAllFromCrm.bind(this);
   console.log(`start sync to crm cron job every ${config.syncAllFromCrmMinutesInterval} minutes`);
-  const job = new CronJob({
+  // eslint-disable-next-line no-new
+  new CronJob({
     cronTime: `0 */${config.syncAllFromCrmMinutesInterval} * * * *`,
     onTick: func,
     start: true,

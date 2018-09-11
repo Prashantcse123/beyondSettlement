@@ -1,6 +1,6 @@
 require('dotenv').config(); // .env file
 
-const app = require('./app');
+require('./app');
 const debug = require('debug')('express-sequelize');
 const models = require('./models/index');
 

@@ -1,7 +1,7 @@
 const staticData = require('../staticData/settlementTermPointsDefData');
 
 module.exports = {
-  up(queryInterface, Sequelize) {
+  up(queryInterface) {
     const date = new Date();
 
     staticData.forEach((sd) => {
@@ -10,10 +10,11 @@ module.exports = {
     });
 
     queryInterface.bulkDelete('SettlementTermPointsDefs', null, {});
+
     return queryInterface.bulkInsert('SettlementTermPointsDefs', staticData, {});
   },
 
-  down(queryInterface, Sequelize) {
+  down() {
     // return queryInterface.bulkDelete('Person', null, {});
   },
 };

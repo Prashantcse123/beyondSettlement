@@ -1,12 +1,9 @@
 require('dotenv').config();
 
 const express = require('express');
-// const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const splunkBunyan = require('splunk-bunyan-logger');
-const jwt = require('jsonwebtoken');
 const request = require('request');
 const cors = require('cors');
 const fs = require('fs');
@@ -21,8 +18,7 @@ swaggerDocument.servers[0].url = `${process.env.PROTOCOL}://${process.env.BASE_U
 swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.authorizationUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/authenticate`;
 swaggerDocument.components.securitySchemes.salesforceAuth.flows.implicit.refreshUrl = `${process.env.PROTOCOL}://${process.env.BASE_URL}/api/beyond/oauth/refresh`;
 
-
-const api = require('./routes/api');
+const createRouter = require('./routes/create-router');
 const crm = require('./services/crm.service');
 
 crm.startSyncAllFromCrmCron(); // cron job
@@ -40,107 +36,6 @@ app.use(cors({
 }));
 
 const config = require('./config/config');
-// / catch 403 and forward to error handler
-// app.use((req, res, next) => {
-//     /*
-//      * Check if authorization header is set
-//      */
-//     if (!req.originalUrl.startsWith('/api') || req.originalUrl === '/api/beyond/oauth/authenticate' || req.originalUrl === '/api/beyond/oauth/refresh') {
-//         next();
-//         return;
-//     }
-//
-//     if (req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')) {
-//         console.log('auth', req.headers['authorization']);
-//         try{
-//             /*
-//              * Try to decode & verify the JWT token
-//              * The token contains user's id ( it can contain more information )
-//              * and this is saved in req.user object
-//              */
-//             let header = req.headers['authorization'].split('|||');
-//             let token = header[0];
-//             let id = header[1];
-//             let protocol = req.protocol;
-//             let hostname = req.headers.host;
-//
-//             request(protocol + '://' + hostname + '/api/beyond/oauth/user_info?id=' + id + '&token=' + token, function(error, response, body) {
-//                 if (error) {
-//                     return res.status(401).json({
-//                         error: {
-//                             msg: 'Failed to authenticate token!'
-//                         }
-//                     });
-//                 }else{
-//                     next();
-//                 }
-//             });
-//         }catch(err){
-//             /*
-//              * If the authorization header is corrupted, it throws exception
-//              * So return 401 status code with JSON error message
-//              */
-//             return res.status(401).json({
-//                 error: {
-//                     msg: 'Failed to authenticate token!'
-//                 }
-//             });
-//         }
-//     }else{
-//         /*
-//          * If there is no autorization header, return 401 status code with JSON
-//          * error message
-//          */
-//         return res.status(401).json({
-//             error: {
-//                 msg: 'No token!'
-//             }
-//         });
-//     }
-// });
-
-// app.use((req, res, next) => {
-//     /*
-//      * Check if authorization header is set
-//      */
-//     if (!req.originalUrl.startsWith('/api') || req.originalUrl === '/api/beyond/login') {
-//         next();
-//         return;
-//     }
-//
-//     if (req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')) {
-//         console.log(req.headers['authorization']);
-//         try{
-//             /*
-//              * Try to decode & verify the JWT token
-//              * The token contains user's id ( it can contain more information )
-//              * and this is saved in req.user object
-//              */
-//             req.user = jwt.verify(req.headers['authorization'], config.jwt_secret);
-//             next();
-//         }catch(err){
-//             /*
-//              * If the authorization header is corrupted, it throws exception
-//              * So return 401 status code with JSON error message
-//              */
-//             return res.status(401).json({
-//                 error: {
-//                     msg: 'Failed to authenticate token!'
-//                 }
-//             });
-//         }
-//     }else{
-//         /*
-//          * If there is no autorization header, return 401 status code with JSON
-//          * error message
-//          */
-//         return res.status(401).json({
-//             error: {
-//                 msg: 'No token!'
-//             }
-//         });
-//     }
-// });
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -216,8 +111,13 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  if (!req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api/beyond/sync_from_crm') || req.originalUrl.startsWith('/api/beyond/oauth/authenticate') || req.originalUrl.startsWith('/api/beyond/oauth/callback') || req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
+  if (!req.originalUrl.startsWith('/api') ||
+    req.originalUrl.startsWith('/api/beyond/sync_from_crm') ||
+    req.originalUrl.startsWith('/api/beyond/oauth/authenticate') ||
+    req.originalUrl.startsWith('/api/beyond/oauth/callback') ||
+    req.originalUrl.startsWith('/api/beyond/oauth/user_info')) {
     next();
+
     return;
   }
 
@@ -232,15 +132,18 @@ app.use((req, res, next) => {
 
     request(requestUrl, (error, response, body) => {
       console.log('user_info response body: ', body);
+
       if (error || response.statusCode !== 200) {
         console.log('ERROR on fetching user_info', error);
         console.log(`url error: ${requestUrl}`);
+
         return res.status(401).json({
           error: {
             msg: 'Failed to authenticate token!',
           },
         });
       }
+
       if (typeof body === 'string') {
         console.log('try to parse user_info response body as it is a string');
         try {
@@ -252,11 +155,13 @@ app.use((req, res, next) => {
         console.log('user_info response body is an object');
         req.userProfile = _.pick(body, ['user_id', 'first_name', 'last_name', 'display_name']);
       }
-      next();
+
+      return next();
     });
   } else {
     console.log('No cookie');
-    return res.status(401).json({
+
+    res.status(401).json({
       error: {
         msg: 'No authentication token provided!',
       },
@@ -264,59 +169,21 @@ app.use((req, res, next) => {
   }
 });
 
+app.use('/api/beyond', createRouter([
+  'routes/api/**/*.router.js',
+  'routes/api/**/router.js',
+]));
 
-// / api
-app.use('/api', api);
-
-app.get('/api/beyond/me', async (req, res) => {
-  if (!req.userProfile) {
-    return res.status(404).json({
-      error: {
-        msg: 'No profile found',
-      },
-    });
-  }
-  app.use('/', express.static('ui/dist'));
-  app.use('/assets', express.static('ui/dist/assets'));
-
-
-  const data = await crm.pullRolesTree().catch((error) => {
-    console.error('ERROR: could not load roles_tree from CRM', error);
-    return res.status(500).json({
-      error: {
-        msg: 'Could not load permissions',
-        error,
-      },
-    });
-  });
-  const userData = data.users[req.userProfile.user_id];
-  // add the third object here to override `permission` if you want to test
-  // app under different user roles
-  // Example: { permissions: ['SETTLEMENTS'] }
-  return res.status(200).json(Object.assign({}, userData));
-});
-
-app.get('/api/beyond/roles_tree', async (req, res) => {
-  const data = await crm.pullRolesTree();
-  // const data = await crm.syncTradelineNameToCrm(['TL-00037395', 'TL-00006075']);
-  // const data = await crm.syncTradelineNameFromCrm(['TL-00037395', 'TL-00006075']);
-  res.json({ ...data });
-});
-
-app.get('/api/beyond/sync_from_crm', async (req, res) => {
-  crm.syncAllFromCrm();
-  res.json({ data: 'ok' });
-});
-
-// / catch 404 and forward to error handler
+// catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// / error handler
-// / no stacktraces leaked to user unless in development environment
+// error handler
+// no stacktraces leaked to user unless in development environment
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({

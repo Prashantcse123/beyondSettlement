@@ -11,7 +11,8 @@ const eligibleAccountsCalculations = {
       eligibleAccountsCalculations.importActiveAccounts(),
     ]);
 
-    return new Promise((resolve, reject) =>
+    // todo: no need to use new Promise here as we are working with Promise already
+    return new Promise(resolve =>
       init.then(() => {
         const records = eligibleAccountsCalculations._scorecardRecords;
 
@@ -46,8 +47,8 @@ const eligibleAccountsCalculations = {
             if (minAccountRanks[programName] > rank) {
               minAccountRanks[programName] = rank;
             }
-            accountRepeatCounters[programName]++;
-            scoreRepeatCounters[programName]++;
+            accountRepeatCounters[programName] += 1;
+            scoreRepeatCounters[programName] += 1;
           }
 
           accountRepeats.push({ [programName]: accountRepeatCounters[programName] });
@@ -94,6 +95,8 @@ const eligibleAccountsCalculations = {
       const repeatCount = eligibleAccountsCalculations._accountRepeats[index][scorecardRecord.programName];
 
       if (!repeatCount) {
+        // todo: use Error object for throw
+        // eslint-disable-next-line no-throw-literal
         throw `Something strange happened, there is no program name ("${scorecardRecord.programName}") for that index`;
       }
 
