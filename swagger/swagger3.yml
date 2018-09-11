@@ -4,19 +4,25 @@ info:
   version: 1.0.0
   title: Beyond Settelments APIs
 tags:
-  - name: Login
-    description: Login
-  - name: Scorecard
+  - name: Auth
+    description: Authentication API
+  - name: Calculations
     description: Operations with scorecard
-  - name: Import
-    description: Data import
+  - name: Source-data
+    description: Operations with source data
+  - name: Users
+    description: User Profile
+  - name: Tradelines
+    description: Operations with tradelinestate and service
+  - name: Roles
+    description:  Operations with roletree and synchronize with CRM
 paths:
   /login:
     post:
       tags:
-        - Login
-      summary: Authenticate user-1
-      description: Authenticate user API-1
+        - Auth
+      summary: Authenticate users
+      description: Authenticate user using login credentials API
       responses:
         '200':
           description: Authentication successful
@@ -57,6 +63,40 @@ paths:
                   format: password
         description: User's credentials
         required: true
+  /calculations/scorecard/set:
+    get:
+      security:
+        - salesforceAuth:
+            - 'admin'
+            - 'user'
+      tags:
+        - Calculations
+      summary: Start scorecard calculation
+      description: Start scorecard calculation API
+      responses:
+        '200':
+          description: Successfully start scorecard calculation
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /calculations/eligibility/set:
+    get:
+      security:
+        - salesforceAuth:
+            - 'admin'
+            - 'user'
+      tags:
+        - Calculations
+      summary: Start eligibility calculation
+      description: Start eligibility calculation API
+      responses:
+        '200':
+          description: Successfully start eligibility calculation
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
   /calculations/scorecard:
     get:
       security:
@@ -64,12 +104,12 @@ paths:
             - 'admin'
             - 'user'
       tags:
-        - Scorecard
-      summary: Scorecard
-      description: Scorecard API
+        - Calculations
+      summary: Get scorecard
+      description: Get Scorecard API
       responses:
         '200':
-          description: Scorecard generated
+          description: Scorecard generated successfuly
           content:
             application/json:
               schema:
@@ -98,7 +138,7 @@ paths:
             - 'admin'
             - 'user'
       tags:
-        - Scorecard
+        - Calculations
       summary: Scorecard eligible
       description: Scorecard eligible API
       responses:
@@ -132,7 +172,7 @@ paths:
             - 'admin'
             - 'user'
       tags:
-        - Scorecard
+        - Calculations
       summary: Update scorecard details
       description: Update scorecard API
       responses:
@@ -164,7 +204,7 @@ paths:
             - 'admin'
             - 'user'
       tags:
-        - Scorecard
+        - Calculations
       summary: Client ranking
       description: Client ranking API
       parameters:
@@ -219,7 +259,7 @@ paths:
             - 'admin'
             - 'user'
       tags:
-        - Scorecard
+        - Calculations
       summary: Scorecard progress
       description: Scorecard progress
       responses:
@@ -253,7 +293,7 @@ paths:
             - 'admin'
             - 'user'
       tags:
-        - Scorecard
+        - Calculations
       summary: Scorecard status
       description: Scorecard progress
       responses:
@@ -274,6 +314,40 @@ paths:
           description: Unauthorized
         '500':
           description: Internal server error
+  /roles_tree:
+    get:
+      security:
+        - salesforceAuth:
+            - 'admin'
+            - 'user'
+      tags:
+        - Roles
+      summary: Get roles tree
+      description: Get roles tree API
+      responses:
+        '200':
+          description: Successfully get roles tree
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /sync_from_crm:
+    get:
+      security:
+        - salesforceAuth:
+            - 'admin'
+            - 'user'
+      tags:
+        - Roles
+      summary: Synchronize from CRM
+      description: Synchronize from CRM API
+      responses:
+        '200':
+          description: Successfully synchronize with CRM
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
   /source/data/get:
     get:
       security:
@@ -281,14 +355,86 @@ paths:
             - 'admin'
             - 'user'
       tags:
-        - Import
-      summary: Data import
-      description: Data import
+        - Source-data
+      summary: Get source data
+      description: Get source data API
+      responses:
+        '200':
+          description: Successfully import source data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /source/data/test:
+    get:
+      security:
+        - salesforceAuth:
+            - 'admin'
+            - 'user'
+      tags:
+        - Source-data
+      summary: Test source data
+      description: Test source data API
+      responses:
+        '200':
+          description: Successfully test source data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /tradeline/{tradelineId}:
+    patch:
+      security:
+        - salesforceAuth:
+            - 'admin'
+            - 'user'
+      tags:
+        - Tradelines
+      summary: Update tradelines state and service
+      description: Update tradelines state and service API
+      parameters:
+        - in: path
+          name: tradelineId
+          schema:
+            type: integer
+          required: true
+          description: tradeLineId for update tradelines state and service
+      requestBody:
+        description: tradelineBody
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tradeline'
+      responses:
+        '200':
+          description: Successfully update tradelines
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "[1]"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /me:
+    get:
+      security:
+        - salesforceAuth:
+            - 'admin'
+            - 'user'
+      tags:
+        - User Profile
+      summary: Show user profile
+      description: Show user profile
       responses:
         '200':
           description: Success
         '401':
           description: Unauthorized
+        '404':
+          description: No Profile Found
         '500':
           description: Internal server error
 servers:
@@ -305,6 +451,25 @@ components:
             'admin': Admin scope
             'user': User scope
   schemas:
+    Tradeline:
+      type: object
+      required:
+        - id
+        - isDone
+        - status
+        - teamLeadId
+        - agentId
+      properties:
+        id:
+          type: integer
+        isDone:
+          type: boolean
+        status:
+          type: integer
+        teamLeadId:
+          type: string
+        agentId:
+          type: string
     ScorecardResponse:
       type: object
       properties:
